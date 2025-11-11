@@ -11,6 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import {
   Command,
   CommandEmpty,
@@ -19,6 +20,8 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { useIsMobile } from "@/hooks/use-is-mobile";
+import { cn } from "@/lib/utils";
 
 /**
  * Searchable timezone picker component that allows users to search
@@ -30,6 +33,7 @@ export function TimezonePicker() {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [currentTime, setCurrentTime] = useState(new Date());
+  const isMobile = useIsMobile();
 
   // Update current time every minute when dropdown is open
   useEffect(() => {
@@ -149,83 +153,105 @@ export function TimezonePicker() {
     setSearch("");
   };
 
+  // Shared content component to avoid duplication
+  const pickerContent = (
+    <Command
+      shouldFilter={false}
+      className="bg-white [&_[cmdk-input-wrapper]]:border-slate-200 flex flex-col h-full min-h-0"
+    >
+      <CommandInput
+        placeholder="Search timezones..."
+        value={search}
+        onValueChange={setSearch}
+        className="h-11 shrink-0"
+      />
+      <CommandList
+        className={cn(
+          "p-1 flex-1 overflow-y-auto min-h-0",
+          isMobile ? "" : "max-h-[400px]"
+        )}
+      >
+        <CommandEmpty className="py-8 text-center text-sm text-slate-600">
+          {search.trim() ? "No timezones found." : "No timezones available."}
+        </CommandEmpty>
+        {Object.entries(filteredTimezonesByRegion).map(([region, ids]) => (
+          <CommandGroup
+            key={region}
+            heading={region}
+            className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-slate-600 [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider"
+          >
+            {ids.map((timezoneId) => {
+              const tzData = timezoneDataMap.get(timezoneId);
+              const displayCity =
+                tzData?.mainCities?.[0] || parseTimezoneId(timezoneId).city;
+              const countryName = tzData?.countryName;
+              const timeInTimezone = formatTime(currentTime, timezoneId);
+
+              return (
+                <CommandItem
+                  key={timezoneId}
+                  value={timezoneId}
+                  onSelect={() => handleSelect(timezoneId)}
+                  className="cursor-pointer px-3 py-2.5 rounded-md transition-colors data-[selected=true]:bg-slate-50 data-[selected=true]:text-slate-900 hover:bg-slate-50"
+                >
+                  <div className="flex-1 flex flex-col gap-0.5">
+                    <span className="text-sm font-medium text-slate-900">
+                      {displayCity}
+                    </span>
+                    {countryName && (
+                      <span className="text-xs text-slate-600">
+                        {countryName}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-col items-end gap-0.5 ml-3">
+                    <span className="text-sm font-medium text-slate-700 tabular-nums">
+                      {timeInTimezone}
+                    </span>
+                    <span className="text-xs text-slate-600 font-mono">
+                      {timezoneId}
+                    </span>
+                  </div>
+                </CommandItem>
+              );
+            })}
+          </CommandGroup>
+        ))}
+      </CommandList>
+    </Command>
+  );
+
+  const triggerButton = (
+    <Button
+      variant="outline"
+      className="h-11 min-w-[90px] lg:h-9 lg:min-w-[140px] lg:w-auto gap-1.5 lg:gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 px-2.5 lg:px-4"
+    >
+      <Plus className="h-4 w-4 shrink-0" />
+      <span className="hidden lg:inline">Add Timezone</span>
+      <span className="lg:hidden text-xs">Add</span>
+    </Button>
+  );
+
+  // Use Drawer on mobile, Popover on desktop
+  if (isMobile) {
+    return (
+      <Drawer open={open} onOpenChange={setOpen}>
+        <DrawerTrigger asChild>{triggerButton}</DrawerTrigger>
+        <DrawerContent className="p-0 flex flex-col" open={open}>
+          {pickerContent}
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          className="h-11 min-w-[90px] lg:h-9 lg:min-w-[140px] lg:w-auto gap-1.5 lg:gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 px-2.5 lg:px-4"
-        >
-          <Plus className="h-4 w-4 shrink-0" />
-          <span className="hidden lg:inline">Add Timezone</span>
-          <span className="lg:hidden text-xs">Add</span>
-        </Button>
-      </PopoverTrigger>
+      <PopoverTrigger asChild>{triggerButton}</PopoverTrigger>
       <PopoverContent
-        className="w-[calc(100vw-2rem)] lg:w-[400px] p-0 bg-white border border-slate-200 shadow-sm"
+        className="w-[400px] p-0 bg-white border border-slate-200 shadow-sm"
         align="start"
       >
-        <Command
-          shouldFilter={false}
-          className="bg-white [&_[cmdk-input-wrapper]]:border-slate-200"
-        >
-          <CommandInput
-            placeholder="Search timezones..."
-            value={search}
-            onValueChange={setSearch}
-            className="h-11"
-          />
-          <CommandList className="max-h-[400px] p-1">
-            <CommandEmpty className="py-8 text-center text-sm text-slate-600">
-              {search.trim()
-                ? "No timezones found."
-                : "No timezones available."}
-            </CommandEmpty>
-            {Object.entries(filteredTimezonesByRegion).map(([region, ids]) => (
-              <CommandGroup
-                key={region}
-                heading={region}
-                className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-slate-600 [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider"
-              >
-                {ids.map((timezoneId) => {
-                  const tzData = timezoneDataMap.get(timezoneId);
-                  const displayCity =
-                    tzData?.mainCities?.[0] || parseTimezoneId(timezoneId).city;
-                  const countryName = tzData?.countryName;
-                  const timeInTimezone = formatTime(currentTime, timezoneId);
-
-                  return (
-                    <CommandItem
-                      key={timezoneId}
-                      value={timezoneId}
-                      onSelect={() => handleSelect(timezoneId)}
-                      className="cursor-pointer px-3 py-2.5 rounded-md transition-colors data-[selected=true]:bg-slate-50 data-[selected=true]:text-slate-900 hover:bg-slate-50"
-                    >
-                      <div className="flex-1 flex flex-col gap-0.5">
-                        <span className="text-sm font-medium text-slate-900">
-                          {displayCity}
-                        </span>
-                        {countryName && (
-                          <span className="text-xs text-slate-600">
-                            {countryName}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex flex-col items-end gap-0.5 ml-3">
-                        <span className="text-sm font-medium text-slate-700 tabular-nums">
-                          {timeInTimezone}
-                        </span>
-                        <span className="text-xs text-slate-600 font-mono">
-                          {timezoneId}
-                        </span>
-                      </div>
-                    </CommandItem>
-                  );
-                })}
-              </CommandGroup>
-            ))}
-          </CommandList>
-        </Command>
+        {pickerContent}
       </PopoverContent>
     </Popover>
   );

@@ -45,3 +45,15 @@
     display: none;
   }
 }
+
+@layer base {
+  /* Prevent Radix Dialog from hiding content during Framer Motion exit animation */
+  /* When forceMount is used, keep content visible during exit animation */
+  [data-radix-dialog-content][data-state="closed"] {
+    pointer-events: none;
+  }
+  
+  [data-radix-dialog-overlay][data-state="closed"] {
+    pointer-events: none;
+  }
+}
