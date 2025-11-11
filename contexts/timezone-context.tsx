@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
+import { createContext, useContext, useState, useCallback, useEffect } from "react";
 import type { Timezone, TimezoneDisplay } from "@/types";
 import { createTimezoneDisplay, getTimezoneById } from "@/lib/timezone";
 
