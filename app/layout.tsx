@@ -1,12 +1,7 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { TimezoneProvider } from "@/contexts/timezone-context";
-
-const inter = Inter({ 
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Timediffs - Timezone Comparison Tool",
@@ -20,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={GeistSans.className}>
         <TimezoneProvider>{children}</TimezoneProvider>
       </body>
     </html>

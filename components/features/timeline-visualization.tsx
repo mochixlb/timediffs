@@ -5,6 +5,8 @@ import { formatInTimeZone } from "date-fns-tz";
 import { useTimezone } from "@/contexts/timezone-context";
 import { getTimelineHours, getTimeOfDay } from "@/lib/timezone";
 import { cn } from "@/lib/utils";
+import { useColumnHighlight } from "./use-column-highlight";
+import { ColumnHighlightRing } from "./column-highlight-ring";
 
 interface TimelineVisualizationProps {
   onRemoveTimezone: (timezoneId: string) => void;
@@ -15,6 +17,7 @@ export function TimelineVisualization({
 }: TimelineVisualizationProps) {
   const { timezoneDisplays, setHomeTimezone } = useTimezone();
   const selectedDate = new Date();
+  const now = new Date();
 
   // Use home timezone as reference, or fallback to first timezone
   const referenceTimezone =
@@ -23,66 +26,64 @@ export function TimelineVisualization({
     ? getTimelineHours(referenceTimezone.timezone.id, selectedDate)
     : [];
 
-  const now = new Date();
+  // Use custom hook for column highlighting logic
+  const { hoveredColumnIndex, setHoveredColumnIndex, highlightedColumnIndex } =
+    useColumnHighlight({
+      referenceTimezone,
+      referenceHours,
+      now,
+    });
 
   if (timezoneDisplays.length === 0) {
     return null;
   }
 
-  // Calculate the position percentage of the "now" line within the timeline
-  // Returns a value between 0-100 representing the position within the timeline container
-  const getNowLinePosition = (): number | null => {
-    if (!referenceTimezone || referenceHours.length === 0) {
-      return null;
+  // Handle mouse move to detect column hovering at container level
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const container = document.querySelector(
+      "[data-timeline-flex-container]"
+    ) as HTMLElement;
+
+    if (!container) return;
+
+    const rect = container.getBoundingClientRect();
+    const mouseX = e.clientX;
+
+    // Check if mouse is within the container horizontally
+    if (mouseX >= rect.left && mouseX <= rect.right) {
+      const relativeX = mouseX - rect.left;
+      const columnWidth = rect.width / referenceHours.length;
+      const columnIndex = Math.floor(relativeX / columnWidth);
+
+      if (columnIndex >= 0 && columnIndex < referenceHours.length) {
+        setHoveredColumnIndex(columnIndex);
+      }
+    } else {
+      setHoveredColumnIndex(null);
     }
-
-    const refCurrentHour = parseInt(
-      formatInTimeZone(now, referenceTimezone.timezone.id, "H"),
-      10
-    );
-    const refCurrentMinute = parseInt(
-      formatInTimeZone(now, referenceTimezone.timezone.id, "m"),
-      10
-    );
-    const refCurrentDay = parseInt(
-      formatInTimeZone(now, referenceTimezone.timezone.id, "d"),
-      10
-    );
-
-    // Find which hour block contains the current time
-    const currentHourIndex = referenceHours.findIndex((hourDate) => {
-      const hourInRef = parseInt(
-        formatInTimeZone(hourDate, referenceTimezone.timezone.id, "H"),
-        10
-      );
-      const dayInRef = parseInt(
-        formatInTimeZone(hourDate, referenceTimezone.timezone.id, "d"),
-        10
-      );
-      return hourInRef === refCurrentHour && dayInRef === refCurrentDay;
-    });
-
-    if (currentHourIndex === -1) {
-      return null;
-    }
-
-    // Calculate position: hour block position + minute offset within that block
-    const hourBlockWidth = 100 / referenceHours.length;
-    const hourBlockStart = (currentHourIndex / referenceHours.length) * 100;
-    const minuteOffset = (refCurrentMinute / 60) * hourBlockWidth;
-
-    return hourBlockStart + minuteOffset;
   };
 
-  const nowLinePosition = getNowLinePosition();
+  const handleMouseLeave = () => {
+    setHoveredColumnIndex(null);
+  };
 
   return (
     <div className="w-full overflow-x-auto">
-      <div className="relative min-w-[800px] sm:min-w-[1200px]">
+      <div
+        className="relative min-w-[800px] sm:min-w-[1200px]"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      >
+        {/* Single column highlight ring spanning all rows */}
+        <ColumnHighlightRing
+          columnIndex={highlightedColumnIndex}
+          totalColumns={referenceHours.length}
+          isHovered={hoveredColumnIndex !== null}
+        />
         {timezoneDisplays.map((display) => {
           return (
             <div key={display.timezone.id} className="mb-3 last:mb-0">
-              <div className="group relative flex items-center pb-2 pt-0.5 overflow-visible min-h-[38px]">
+              <div className="group relative flex items-center pt-0.5 overflow-visible min-h-[38px]">
                 <div className="w-6 shrink-0 flex items-center justify-center -ml-1 mr-3">
                   <button
                     onClick={() => onRemoveTimezone(display.timezone.id)}
@@ -145,16 +146,10 @@ export function TimelineVisualization({
                 </div>
 
                 <div className="relative flex flex-1 pl-2 sm:pl-3">
-                  {/* Vertical "now" line - positioned consistently across all rows */}
-                  {nowLinePosition !== null && (
-                    <div
-                      className="absolute -top-3 -bottom-3 w-0.5 bg-orange-600 pointer-events-none z-30"
-                      style={{
-                        left: `calc(0.5rem + ${nowLinePosition}%)`,
-                      }}
-                    />
-                  )}
-                  <div className="relative flex flex-1 items-start rounded-md border border-slate-400 overflow-hidden">
+                  <div
+                    data-timeline-flex-container
+                    className="relative flex flex-1 items-start rounded-md border border-slate-400 overflow-hidden"
+                  >
                     {referenceHours.map((referenceHourDate, hourIndex) => {
                       const hourInTz = parseInt(
                         formatInTimeZone(
@@ -196,27 +191,6 @@ export function TimelineVisualization({
 
                       const timeOfDay = getTimeOfDay(hourInTz);
 
-                      // Check if this hour block represents the current hour in this timezone
-                      const currentHourInTz = parseInt(
-                        formatInTimeZone(now, display.timezone.id, "H"),
-                        10
-                      );
-                      const currentDayInTz = parseInt(
-                        formatInTimeZone(now, display.timezone.id, "d"),
-                        10
-                      );
-                      const refDayInTz = parseInt(
-                        formatInTimeZone(
-                          referenceHourDate,
-                          display.timezone.id,
-                          "d"
-                        ),
-                        10
-                      );
-                      const isCurrent =
-                        hourInTz === currentHourInTz &&
-                        refDayInTz === currentDayInTz;
-
                       const timeOfDayConfig = {
                         day: {
                           bg: "bg-amber-100",
@@ -235,21 +209,13 @@ export function TimelineVisualization({
                         },
                       };
 
-                      const currentConfig = {
-                        bg: "bg-orange-200",
-                        text: "text-slate-900",
-                        textMuted: "text-slate-800",
-                      };
-
                       const newDayConfig = {
                         bg: "bg-violet-100",
                         text: "text-violet-900",
                         textMuted: "text-violet-700",
                       };
 
-                      const config = isCurrent
-                        ? currentConfig
-                        : isNewDay
+                      const config = isNewDay
                         ? newDayConfig
                         : timeOfDayConfig[timeOfDay];
 
