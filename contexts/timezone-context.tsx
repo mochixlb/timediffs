@@ -6,9 +6,22 @@ import {
   useState,
   useCallback,
   useEffect,
+  useMemo,
+  useRef,
 } from "react";
+import { useQueryStates } from "nuqs";
 import type { Timezone, TimezoneDisplay } from "@/types";
-import { createTimezoneDisplay, createTimezoneFromId } from "@/lib/timezone";
+import {
+  createTimezoneDisplay,
+  createTimezoneFromId,
+  getAllTimezoneIds,
+} from "@/lib/timezone";
+import {
+  parseAsTimezoneArray,
+  parseAsDate,
+  parseAsTimeFormat,
+  parseAsHomeTimezone,
+} from "@/lib/url-parsers";
 
 export type TimeFormat = "12h" | "24h";
 
@@ -32,22 +45,105 @@ const DEFAULT_TIMEZONES = [
   "America/New_York",
   "America/Los_Angeles",
   "Europe/London",
+  "Asia/Tokyo",
+  "Australia/Sydney",
+  "Europe/Paris",
 ];
 
+/**
+ * Validates that a timezone ID exists in the available timezones.
+ */
+function isValidTimezoneId(id: string): boolean {
+  try {
+    const allIds = getAllTimezoneIds();
+    return allIds.includes(id);
+  } catch {
+    return false;
+  }
+}
+
 export function TimezoneProvider({ children }: { children: React.ReactNode }) {
+  // Sync URL state with nuqs hooks
+  const [urlState, setUrlState] = useQueryStates({
+    tz: parseAsTimezoneArray,
+    date: parseAsDate.withDefault(new Date()),
+    format: parseAsTimeFormat,
+    home: parseAsHomeTimezone,
+  });
+
+  // Track if we've initialized from URL to prevent overwriting user changes
+  const initializedFromUrlRef = useRef(false);
+
+  // Initialize timezones from URL or defaults
   const [timezones, setTimezones] = useState<Timezone[]>(() => {
+    // Start with defaults - will be updated from URL in useEffect if present
     const initial = DEFAULT_TIMEZONES.map((id) => createTimezoneFromId(id));
-    // Set first timezone as home by default
     if (initial.length > 0) {
       initial[0].isHome = true;
     }
     return initial;
   });
-  const [selectedDate, setSelectedDate] = useState<Date>(() => new Date());
-  const [timeFormat, setTimeFormat] = useState<TimeFormat>("12h");
+
+  // Initialize from URL on mount (only once)
+  useEffect(() => {
+    if (initializedFromUrlRef.current) return;
+
+    // If URL has timezones, use them (validate first)
+    if (urlState.tz.length > 0) {
+      const validIds = urlState.tz.filter(isValidTimezoneId);
+      if (validIds.length > 0) {
+        const initial = validIds.map((id) => createTimezoneFromId(id));
+        // Set home timezone if specified in URL
+        if (urlState.home && validIds.includes(urlState.home)) {
+          initial.forEach((tz) => {
+            tz.isHome = tz.id === urlState.home;
+          });
+        } else if (initial.length > 0) {
+          initial[0].isHome = true;
+        }
+        setTimezones(initial);
+        initializedFromUrlRef.current = true;
+        return;
+      }
+    }
+    // Mark as initialized even if no URL params (use defaults)
+    initializedFromUrlRef.current = true;
+  }, [urlState.tz, urlState.home]);
+
+  // Use date from URL or default to today
+  const selectedDate = useMemo(() => {
+    return urlState.date || new Date();
+  }, [urlState.date]);
+
+  // Use format from URL or default to 12h
+  const timeFormat = useMemo(() => {
+    return urlState.format || "12h";
+  }, [urlState.format]);
+
   const [timezoneDisplays, setTimezoneDisplays] = useState<TimezoneDisplay[]>(
     []
   );
+
+  // Sync timezones to URL when they change (but not during initial URL load)
+  useEffect(() => {
+    // Don't sync if we haven't initialized from URL yet
+    if (!initializedFromUrlRef.current) return;
+
+    const timezoneIds = timezones.map((tz) => tz.id);
+    const homeId = timezones.find((tz) => tz.isHome)?.id || null;
+
+    // Only update URL if different from current state
+    const tzChanged =
+      JSON.stringify(timezoneIds) !== JSON.stringify(urlState.tz);
+    const homeChanged = homeId !== urlState.home;
+
+    if (tzChanged || homeChanged) {
+      setUrlState({
+        tz: timezoneIds,
+        home: homeId,
+      });
+    }
+  }, [timezones, urlState.tz, urlState.home, setUrlState]);
 
   const updateDisplays = useCallback(() => {
     const displays = timezones.map((tz) =>
@@ -61,6 +157,12 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
   }, [updateDisplays]);
 
   const addTimezone = useCallback((timezoneId: string) => {
+    // Validate timezone ID
+    if (!isValidTimezoneId(timezoneId)) {
+      console.warn(`Invalid timezone ID: ${timezoneId}`);
+      return;
+    }
+
     setTimezones((prev) => {
       // Check if timezone already exists
       if (prev.some((tz) => tz.id === timezoneId)) {
@@ -107,9 +209,21 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const handleSetSelectedDate = useCallback((date: Date) => {
-    setSelectedDate(date);
-  }, []);
+  const handleSetSelectedDate = useCallback(
+    (date: Date) => {
+      // Update URL state, which will trigger selectedDate update
+      setUrlState({ date });
+    },
+    [setUrlState]
+  );
+
+  const handleSetTimeFormat = useCallback(
+    (format: TimeFormat) => {
+      // Update URL state, which will trigger timeFormat update
+      setUrlState({ format });
+    },
+    [setUrlState]
+  );
 
   return (
     <TimezoneContext.Provider
@@ -118,7 +232,7 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
         selectedDate,
         setSelectedDate: handleSetSelectedDate,
         timeFormat,
-        setTimeFormat,
+        setTimeFormat: handleSetTimeFormat,
         addTimezone,
         removeTimezone,
         setHomeTimezone,

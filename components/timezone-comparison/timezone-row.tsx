@@ -10,6 +10,7 @@ interface TimezoneRowProps {
   onSetHome: (timezoneId: string) => void;
   dragHandleProps?: React.ButtonHTMLAttributes<HTMLButtonElement>;
   isDragging?: boolean;
+  isEditMode?: boolean;
 }
 
 /**
@@ -22,42 +23,49 @@ export function TimezoneRow({
   onSetHome,
   dragHandleProps,
   isDragging = false,
+  isEditMode = false,
 }: TimezoneRowProps) {
   return (
     <div>
       <div
         className={cn(
-          "group relative flex items-center pt-0.5 overflow-visible min-h-[38px] rounded-md",
+          "group relative flex items-center pt-0.5 overflow-visible min-h-[44px] lg:min-h-[38px] rounded-md",
           isDragging && "bg-white shadow-lg shadow-slate-900/10"
         )}
       >
         {/* Control Buttons Group */}
-        <div className="flex items-center gap-1 shrink-0 mr-3">
+        <div
+          className={cn(
+            "items-center gap-2 lg:gap-1 shrink-0 mr-2 lg:mr-3",
+            "lg:flex", // Always show on larger screens
+            isEditMode ? "flex" : "hidden" // Show/hide on mobile based on edit mode
+          )}
+        >
           {/* Drag Handle */}
           <button
             className={cn(
-              "flex items-center justify-center h-7 w-7 rounded-md text-slate-400 transition-colors hover:text-slate-600 hover:bg-slate-50 cursor-grab active:cursor-grabbing focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+              "flex items-center justify-center h-11 w-11 lg:h-7 lg:w-7 rounded-md text-slate-400 transition-colors hover:text-slate-600 hover:bg-slate-50 cursor-grab active:cursor-grabbing focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
             )}
             aria-label={`Reorder ${display.timezone.city}`}
             {...dragHandleProps}
           >
-            <GripVertical className="h-3.5 w-3.5" />
+            <GripVertical className="h-5 w-5 lg:h-3.5 lg:w-3.5" />
           </button>
 
           {/* Remove Button */}
           <button
             onClick={() => onRemove(display.timezone.id)}
-            className="flex items-center justify-center h-7 w-7 rounded-md text-slate-500 transition-colors hover:text-red-600 hover:bg-red-50 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+            className="flex items-center justify-center h-11 w-11 lg:h-7 lg:w-7 rounded-md text-slate-500 transition-colors hover:text-red-600 hover:bg-red-50 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
             aria-label={`Remove ${display.timezone.city}`}
           >
-            <X className="h-3.5 w-3.5" />
+            <X className="h-5 w-5 lg:h-3.5 lg:w-3.5" />
           </button>
 
           {/* Home Button */}
           <button
             onClick={() => onSetHome(display.timezone.id)}
             className={cn(
-              "flex items-center justify-center h-7 w-7 rounded-md transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400",
+              "flex items-center justify-center h-11 w-11 lg:h-7 lg:w-7 rounded-md transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400",
               display.timezone.isHome
                 ? "text-slate-700"
                 : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"
@@ -70,7 +78,7 @@ export function TimezoneRow({
           >
             <Home
               className={cn(
-                "h-3.5 w-3.5",
+                "h-5 w-5 lg:h-3.5 lg:w-3.5",
                 display.timezone.isHome && "fill-current"
               )}
             />
@@ -78,24 +86,24 @@ export function TimezoneRow({
         </div>
 
         {/* City and Country Info */}
-        <div className="w-32 shrink-0 px-2 sm:w-40">
-          <div className="flex flex-col gap-[2px]">
+        <div className="sticky left-0 z-20 w-32 shrink-0 px-3 py-1 lg:w-40 lg:px-2 lg:py-0 lg:static lg:z-auto bg-slate-50 lg:bg-transparent">
+          <div className="flex flex-col gap-0.5">
             <div className="flex items-baseline gap-1.5 flex-wrap">
-              <span className="text-xs font-semibold text-foreground leading-tight tracking-tight">
+              <span className="text-xs font-semibold text-slate-900 leading-tight tracking-tight">
                 {display.timezone.city}
               </span>
-              <span className="text-[10px] text-muted-foreground leading-tight tracking-tight">
+              <span className="text-[10px] text-slate-600 leading-tight tracking-tight font-medium">
                 {display.offsetDisplay}
               </span>
             </div>
-            <span className="text-[10px] text-muted-foreground leading-tight tracking-tight">
+            <span className="text-[10px] text-slate-500 leading-tight tracking-tight">
               {display.timezone.country}
             </span>
           </div>
         </div>
 
         {/* Current Time Display */}
-        <div className="w-24 shrink-0 px-2 sm:w-28">
+        <div className="w-24 shrink-0 px-2 lg:w-28">
           <div className="flex flex-col items-start gap-[2px]">
             <span className="text-base font-semibold tracking-tight text-foreground leading-tight">
               {display.formattedTime}
@@ -107,10 +115,10 @@ export function TimezoneRow({
         </div>
 
         {/* Timeline */}
-        <div className="relative flex flex-1 pl-3 sm:pl-4">
+        <div className="relative flex pl-3 lg:pl-4 flex-1 xl:min-w-0">
           <div
             data-timeline-flex-container
-            className="relative flex flex-1 items-start rounded-md border border-slate-400 overflow-hidden"
+            className="relative flex items-start rounded-md border border-slate-400 overflow-hidden w-[1200px] lg:w-[1200px] xl:w-full xl:flex-1 shrink-0"
           >
             {referenceHours.map((referenceHourDate, hourIndex) => (
               <HourCell

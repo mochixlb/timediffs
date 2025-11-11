@@ -29,6 +29,7 @@ import { TimezoneRow } from "./timezone-row";
 
 interface TimelineVisualizationProps {
   onRemoveTimezone: (timezoneId: string) => void;
+  isEditMode?: boolean;
 }
 
 /**
@@ -37,6 +38,7 @@ interface TimelineVisualizationProps {
  */
 export function TimelineVisualization({
   onRemoveTimezone,
+  isEditMode = false,
 }: TimelineVisualizationProps) {
   const { timezoneDisplays, setHomeTimezone, reorderTimezones, selectedDate } =
     useTimezone();
@@ -96,11 +98,16 @@ export function TimelineVisualization({
   );
 
   return (
-    <div className="w-full overflow-x-auto">
+    <div
+      className="w-full overflow-x-auto lg:overflow-x-auto xl:overflow-x-visible"
+      tabIndex={0}
+      role="region"
+      aria-label="Timezone comparison timeline"
+    >
       <div
         ref={timelineContainerRef}
         data-timeline-container
-        className="relative min-w-[800px] sm:min-w-[1200px]"
+        className="relative min-w-[1650px] lg:min-w-[1650px] xl:min-w-0"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
@@ -140,6 +147,7 @@ export function TimelineVisualization({
                   referenceHours={referenceHours}
                   onRemove={onRemoveTimezone}
                   onSetHome={setHomeTimezone}
+                  isEditMode={isEditMode}
                 />
               </div>
             ))}
@@ -153,6 +161,7 @@ export function TimelineVisualization({
                   onRemove={onRemoveTimezone}
                   onSetHome={setHomeTimezone}
                   isDragging
+                  isEditMode={isEditMode}
                 />
               </div>
             ) : null}

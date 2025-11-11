@@ -1,6 +1,6 @@
 /**
  * Logo icon component for timediffs.app
- * 
+ *
  * Represents timezone comparison with two parallel timelines
  * showing time markers at different positions, symbolizing how
  * the same moment appears at different times across timezones.
@@ -27,7 +27,7 @@ export function LogoIcon({ className }: { className?: string }) {
       />
       {/* Top timeline marker - earlier position */}
       <circle cx="7" cy="8" r="2.25" fill="currentColor" />
-      
+
       {/* Bottom timeline */}
       <line
         x1="2"
@@ -40,7 +40,7 @@ export function LogoIcon({ className }: { className?: string }) {
       />
       {/* Bottom timeline marker - later position (showing time difference) */}
       <circle cx="17" cy="16" r="2.25" fill="currentColor" />
-      
+
       {/* Subtle connecting line showing the relationship/difference */}
       <line
         x1="7"

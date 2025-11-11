@@ -1,7 +1,13 @@
 "use client";
 
 import { useMemo } from "react";
-import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay } from "date-fns";
+import {
+  format,
+  startOfWeek,
+  endOfWeek,
+  eachDayOfInterval,
+  isSameDay,
+} from "date-fns";
 import { useTimezone } from "@/contexts/timezone-context";
 import { cn } from "@/lib/utils";
 
@@ -26,12 +32,16 @@ export function WeekView() {
   const handleDateSelect = (date: Date) => {
     // Create a new date with the selected date but preserve the current time
     const updatedDate = new Date(selectedDate);
-    updatedDate.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
+    updatedDate.setFullYear(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate()
+    );
     setSelectedDate(new Date(updatedDate));
   };
 
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-1 lg:gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 lg:mx-0 lg:px-0 scrollbar-hide">
       {weekDays.map((day, index) => {
         const isSelected = isSameDay(day, selectedDate);
         const isToday = isSameDay(day, today);
@@ -43,7 +53,7 @@ export function WeekView() {
             key={index}
             onClick={() => handleDateSelect(day)}
             className={cn(
-              "flex flex-col items-center justify-center min-w-[44px] h-9 px-2 rounded-md transition-colors cursor-pointer",
+              "flex flex-col items-center justify-center min-w-[40px] lg:min-w-[44px] h-9 px-1.5 lg:px-2 rounded-md transition-colors cursor-pointer shrink-0",
               "text-xs font-medium",
               isSelected
                 ? "bg-slate-900 text-white hover:bg-slate-800"
@@ -66,4 +76,3 @@ export function WeekView() {
     </div>
   );
 }
-

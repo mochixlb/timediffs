@@ -22,15 +22,20 @@ export function TimeFormatToggle() {
       variant="outline"
       onClick={toggleFormat}
       className={cn(
-        "h-9 min-w-[120px] gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50",
+        "h-11 min-w-[90px] lg:h-9 lg:min-w-[120px] gap-1.5 lg:gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 px-2.5 lg:px-4",
         "transition-colors"
       )}
-      aria-label={`Switch to ${timeFormat === "12h" ? "24-hour" : "12-hour"} time format`}
-      title={`Current format: ${timeFormat === "12h" ? "12-hour (AM/PM)" : "24-hour"}. Click to switch.`}
+      aria-label={`Switch to ${
+        timeFormat === "12h" ? "24-hour" : "12-hour"
+      } time format`}
+      title={`Current format: ${
+        timeFormat === "12h" ? "12-hour (AM/PM)" : "24-hour"
+      }. Click to switch.`}
     >
-      <Clock className="h-4 w-4" />
-      <span>{timeFormat === "12h" ? "12h" : "24h"}</span>
+      <Clock className="h-4 w-4 shrink-0" />
+      <span className="text-xs lg:text-sm">
+        {timeFormat === "12h" ? "12h" : "24h"}
+      </span>
     </Button>
   );
 }
-

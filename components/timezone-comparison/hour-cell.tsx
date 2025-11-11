@@ -54,7 +54,7 @@ export function HourCell({
   return (
     <div
       className={cn(
-        "relative flex-1 flex flex-col items-center justify-center min-h-[38px]",
+        "relative flex flex-col items-center justify-center min-h-[44px] lg:min-h-[38px] w-[50px] lg:w-[50px] xl:flex-1 shrink-0",
         config.bg,
         !isLastHour && "border-r border-slate-200",
         isFirstHour && "rounded-l-md",

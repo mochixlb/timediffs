@@ -58,40 +58,39 @@ export function TimezonePicker() {
 
   // Create a map for quick lookups
   const timezoneDataMap = useMemo(() => {
-    return new Map<string, TimeZone>(
-      timezoneData.map((tz) => [tz.name, tz])
-    );
+    return new Map<string, TimeZone>(timezoneData.map((tz) => [tz.name, tz]));
   }, [timezoneData]);
 
   // Get all timezone IDs and group them by continent/region
   const timezonesByRegion = useMemo(() => {
     const allIds = getAllTimezoneIds();
     const existingIds = new Set(timezoneDisplays.map((d) => d.timezone.id));
-    
+
     // Filter out already added timezones
     const availableIds = allIds.filter((id) => !existingIds.has(id));
-    
+
     // Group by continent/region using @vvo/tzdb data
     const grouped: Record<string, string[]> = {};
-    
+
     availableIds.forEach((id) => {
       const tzData = timezoneDataMap.get(id);
-      const region = tzData?.continentName || parseTimezoneId(id).region || "Other";
-      
+      const region =
+        tzData?.continentName || parseTimezoneId(id).region || "Other";
+
       if (!grouped[region]) {
         grouped[region] = [];
       }
       grouped[region].push(id);
     });
-    
+
     // Sort regions and timezones within each region
     const sortedRegions = Object.keys(grouped).sort();
     const sorted: Record<string, string[]> = {};
-    
+
     sortedRegions.forEach((region) => {
       sorted[region] = grouped[region].sort();
     });
-    
+
     return sorted;
   }, [timezoneDisplays, timezoneDataMap]);
 
@@ -100,27 +99,33 @@ export function TimezonePicker() {
     if (!search.trim()) {
       return timezonesByRegion;
     }
-    
+
     const query = search.toLowerCase();
     const filtered: Record<string, string[]> = {};
-    
+
     Object.entries(timezonesByRegion).forEach(([region, ids]) => {
       const matchingIds = ids.filter((id) => {
         const tzData = timezoneDataMap.get(id);
-        
+
         // Search in multiple fields for better results
         if (tzData) {
           const cityMatch = tzData.mainCities?.some((city) =>
             city.toLowerCase().includes(query)
           );
-          const countryMatch = tzData.countryName?.toLowerCase().includes(query);
-          const altNameMatch = tzData.alternativeName?.toLowerCase().includes(query);
+          const countryMatch = tzData.countryName
+            ?.toLowerCase()
+            .includes(query);
+          const altNameMatch = tzData.alternativeName
+            ?.toLowerCase()
+            .includes(query);
           const idMatch = id.toLowerCase().includes(query);
           const regionMatch = region.toLowerCase().includes(query);
-          
-          return cityMatch || countryMatch || altNameMatch || idMatch || regionMatch;
+
+          return (
+            cityMatch || countryMatch || altNameMatch || idMatch || regionMatch
+          );
         }
-        
+
         // Fallback to basic parsing if @vvo/tzdb data not available
         const { city } = parseTimezoneId(id);
         return (
@@ -129,12 +134,12 @@ export function TimezonePicker() {
           id.toLowerCase().includes(query)
         );
       });
-      
+
       if (matchingIds.length > 0) {
         filtered[region] = matchingIds;
       }
     });
-    
+
     return filtered;
   }, [timezonesByRegion, search, timezoneDataMap]);
 
@@ -149,17 +154,21 @@ export function TimezonePicker() {
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className="h-9 min-w-[140px] gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50"
+          className="h-11 min-w-[90px] lg:h-9 lg:min-w-[140px] lg:w-auto gap-1.5 lg:gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 px-2.5 lg:px-4"
         >
-          <Plus className="h-4 w-4" />
-          Add Timezone
+          <Plus className="h-4 w-4 shrink-0" />
+          <span className="hidden lg:inline">Add Timezone</span>
+          <span className="lg:hidden text-xs">Add</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent 
-        className="w-[400px] p-0 bg-white border border-slate-200 shadow-sm" 
+      <PopoverContent
+        className="w-[calc(100vw-2rem)] lg:w-[400px] p-0 bg-white border border-slate-200 shadow-sm"
         align="start"
       >
-        <Command shouldFilter={false} className="bg-white [&_[cmdk-input-wrapper]]:border-slate-200">
+        <Command
+          shouldFilter={false}
+          className="bg-white [&_[cmdk-input-wrapper]]:border-slate-200"
+        >
           <CommandInput
             placeholder="Search timezones..."
             value={search}
@@ -173,17 +182,18 @@ export function TimezonePicker() {
                 : "No timezones available."}
             </CommandEmpty>
             {Object.entries(filteredTimezonesByRegion).map(([region, ids]) => (
-              <CommandGroup 
-                key={region} 
+              <CommandGroup
+                key={region}
                 heading={region}
                 className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-slate-600 [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider"
               >
                 {ids.map((timezoneId) => {
                   const tzData = timezoneDataMap.get(timezoneId);
-                  const displayCity = tzData?.mainCities?.[0] || parseTimezoneId(timezoneId).city;
+                  const displayCity =
+                    tzData?.mainCities?.[0] || parseTimezoneId(timezoneId).city;
                   const countryName = tzData?.countryName;
                   const timeInTimezone = formatTime(currentTime, timezoneId);
-                  
+
                   return (
                     <CommandItem
                       key={timezoneId}
@@ -220,4 +230,3 @@ export function TimezonePicker() {
     </Popover>
   );
 }
-
