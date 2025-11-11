@@ -29,7 +29,6 @@ import { TimezoneRow } from "./timezone-row";
 
 interface TimelineVisualizationProps {
   onRemoveTimezone: (timezoneId: string) => void;
-  isEditMode?: boolean;
 }
 
 /**
@@ -38,10 +37,8 @@ interface TimelineVisualizationProps {
  */
 export function TimelineVisualization({
   onRemoveTimezone,
-  isEditMode = false,
 }: TimelineVisualizationProps) {
-  const { timezoneDisplays, setHomeTimezone, reorderTimezones, moveTimezone } =
-    useTimezone();
+  const { timezoneDisplays, setHomeTimezone, reorderTimezones } = useTimezone();
   const now = new Date();
   const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -101,71 +98,33 @@ export function TimelineVisualization({
           columnIndex={highlightedColumnIndex}
           totalColumns={referenceHours.length}
           isHovered={hoveredColumnIndex !== null}
-          isEditMode={isEditMode}
         />
 
-        {isEditMode ? (
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            modifiers={[restrictToVerticalAxis]}
-            onDragStart={(event: DragStartEvent) => {
-              const id = String(event.active.id);
-              setActiveId(id);
-            }}
-            onDragEnd={(event: DragEndEvent) => {
-              const { active, over } = event;
-              setActiveId(null);
-              if (!over) return;
-              const activeIndex = items.indexOf(String(active.id));
-              const overIndex = items.indexOf(String(over.id));
-              if (activeIndex !== overIndex) {
-                const newOrder = arrayMove(items, activeIndex, overIndex);
-                reorderTimezones(newOrder);
-              }
-            }}
-            onDragCancel={() => setActiveId(null)}
-          >
-            <SortableContext
-              items={items}
-              strategy={verticalListSortingStrategy}
-            >
-              {timezoneDisplays.map((display, idx) => (
-                <div key={display.timezone.id} className="mb-4 last:mb-0">
-                  <SortableTimezoneRow
-                    display={display}
-                    referenceHours={referenceHours}
-                    onRemove={onRemoveTimezone}
-                    onSetHome={setHomeTimezone}
-                    onMoveUp={(id) => moveTimezone(id, "up")}
-                    onMoveDown={(id) => moveTimezone(id, "down")}
-                    index={idx}
-                    total={timezoneDisplays.length}
-                    isEditMode
-                  />
-                </div>
-              ))}
-            </SortableContext>
-            <DragOverlay>
-              {activeDisplay ? (
-                <div className="mb-4 last:mb-0 pointer-events-none">
-                  <TimezoneRow
-                    display={activeDisplay}
-                    referenceHours={referenceHours}
-                    onRemove={onRemoveTimezone}
-                    onSetHome={setHomeTimezone}
-                    isDragging
-                    isEditMode
-                  />
-                </div>
-              ) : null}
-            </DragOverlay>
-          </DndContext>
-        ) : (
-          <>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          modifiers={[restrictToVerticalAxis]}
+          onDragStart={(event: DragStartEvent) => {
+            const id = String(event.active.id);
+            setActiveId(id);
+          }}
+          onDragEnd={(event: DragEndEvent) => {
+            const { active, over } = event;
+            setActiveId(null);
+            if (!over) return;
+            const activeIndex = items.indexOf(String(active.id));
+            const overIndex = items.indexOf(String(over.id));
+            if (activeIndex !== overIndex) {
+              const newOrder = arrayMove(items, activeIndex, overIndex);
+              reorderTimezones(newOrder);
+            }
+          }}
+          onDragCancel={() => setActiveId(null)}
+        >
+          <SortableContext items={items} strategy={verticalListSortingStrategy}>
             {timezoneDisplays.map((display) => (
               <div key={display.timezone.id} className="mb-4 last:mb-0">
-                <TimezoneRow
+                <SortableTimezoneRow
                   display={display}
                   referenceHours={referenceHours}
                   onRemove={onRemoveTimezone}
@@ -173,8 +132,21 @@ export function TimelineVisualization({
                 />
               </div>
             ))}
-          </>
-        )}
+          </SortableContext>
+          <DragOverlay>
+            {activeDisplay ? (
+              <div className="mb-4 last:mb-0 pointer-events-none">
+                <TimezoneRow
+                  display={activeDisplay}
+                  referenceHours={referenceHours}
+                  onRemove={onRemoveTimezone}
+                  onSetHome={setHomeTimezone}
+                  isDragging
+                />
+              </div>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
       </div>
     </div>
   );

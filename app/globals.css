@@ -28,6 +28,8 @@
     border-color: hsl(var(--border));
   }
   body {
+    margin: 0;
+    padding: 0;
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
     font-feature-settings: "rlig" 1, "calt" 1;

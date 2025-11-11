@@ -11,11 +11,6 @@ interface SortableTimezoneRowProps {
   referenceHours: Date[];
   onRemove: (timezoneId: string) => void;
   onSetHome: (timezoneId: string) => void;
-  onMoveUp?: (timezoneId: string) => void;
-  onMoveDown?: (timezoneId: string) => void;
-  isEditMode?: boolean;
-  index: number;
-  total: number;
 }
 
 export function SortableTimezoneRow({
@@ -23,11 +18,6 @@ export function SortableTimezoneRow({
   referenceHours,
   onRemove,
   onSetHome,
-  onMoveUp,
-  onMoveDown,
-  isEditMode = false,
-  index,
-  total,
 }: SortableTimezoneRowProps) {
   const {
     attributes,
@@ -56,13 +46,8 @@ export function SortableTimezoneRow({
         referenceHours={referenceHours}
         onRemove={onRemove}
         onSetHome={onSetHome}
-        onMoveUp={onMoveUp}
-        onMoveDown={onMoveDown}
-        isEditMode={isEditMode}
         dragHandleProps={{ ...attributes, ...listeners }}
         isDragging={isDragging}
-        isFirst={index === 0}
-        isLast={index === total - 1}
       />
     </div>
   );
