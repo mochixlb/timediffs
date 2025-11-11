@@ -111,9 +111,39 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
   }, [urlState.tz, urlState.home]);
 
   // Use date from URL or default to today
+  // When viewing today, we need to update the time in real-time
+  const [currentTime, setCurrentTime] = useState(() => new Date());
+
+  // Update current time every minute when viewing today
+  useEffect(() => {
+    // Update immediately on mount
+    setCurrentTime(new Date());
+
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, []);
+
   const selectedDate = useMemo(() => {
-    return urlState.date || new Date();
-  }, [urlState.date]);
+    if (urlState.date) {
+      // If a date is selected from URL, use it (it will be at midnight from parser)
+      // But if it's today, use the current time instead
+      const today = new Date();
+      const isToday =
+        urlState.date.getFullYear() === today.getFullYear() &&
+        urlState.date.getMonth() === today.getMonth() &&
+        urlState.date.getDate() === today.getDate();
+
+      if (isToday) {
+        return currentTime;
+      }
+      return urlState.date;
+    }
+    // No date selected, use current time (updates in real-time)
+    return currentTime;
+  }, [urlState.date, currentTime]);
 
   // Use format from URL or default to 12h
   const timeFormat = useMemo(() => {
