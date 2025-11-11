@@ -17,6 +17,3 @@ export interface TimezoneDisplay {
   formattedDate: string;
   offsetDisplay: string;
 }
-
-
-

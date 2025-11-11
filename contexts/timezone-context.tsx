@@ -32,13 +32,13 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
     }
     return initial;
   });
-  const [selectedDate] = useState<Date>(new Date());
   const [timezoneDisplays, setTimezoneDisplays] = useState<TimezoneDisplay[]>([]);
 
   const updateDisplays = useCallback(() => {
-    const displays = timezones.map((tz) => createTimezoneDisplay(tz, selectedDate));
+    const currentDate = new Date();
+    const displays = timezones.map((tz) => createTimezoneDisplay(tz, currentDate));
     setTimezoneDisplays(displays);
-  }, [timezones, selectedDate]);
+  }, [timezones]);
 
   useEffect(() => {
     updateDisplays();
@@ -93,4 +93,3 @@ export function useTimezone() {
   }
   return context;
 }
-

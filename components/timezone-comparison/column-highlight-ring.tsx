@@ -46,8 +46,8 @@ export function ColumnHighlightRing({
 
       if (!flexContainer) return;
 
-      const parentContainer = flexContainer.closest(
-        ".relative.min-w-\\[800px\\]"
+      const parentContainer = document.querySelector(
+        "[data-timeline-container]"
       ) as HTMLElement;
 
       if (!parentContainer) return;
@@ -71,7 +71,7 @@ export function ColumnHighlightRing({
       window.removeEventListener("resize", measureContainer);
       clearTimeout(timeoutId);
     };
-  }, []);
+  }, [columnIndex, totalColumns]);
 
   if (columnIndex === null || totalColumns === 0 || !measurements) {
     return null;

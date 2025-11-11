@@ -1,6 +1,6 @@
 "use client";
 
-import { TimelineVisualization } from "@/components/features/timeline-visualization";
+import { TimelineVisualization } from "./timeline-visualization";
 import { useTimezone } from "@/contexts/timezone-context";
 import { cn } from "@/lib/utils";
 

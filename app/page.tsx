@@ -1,4 +1,4 @@
-import { TimezoneComparison } from "@/components/features/timezone-comparison";
+import { TimezoneComparison } from "@/components/timezone-comparison";
 
 export default function Home() {
   return <TimezoneComparison />;

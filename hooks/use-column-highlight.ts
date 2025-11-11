@@ -1,25 +1,23 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { formatInTimeZone } from "date-fns-tz";
 
 interface UseColumnHighlightParams {
   referenceTimezone: { timezone: { id: string } } | undefined;
   referenceHours: Date[];
   now: Date;
+  hoveredColumnIndex: number | null;
 }
 
 /**
- * Custom hook to manage column highlighting logic.
- * Handles hover state and calculates the current time column index.
+ * Custom hook to calculate the current time column and determine
+ * which column should be highlighted (hover takes priority over current time).
  */
 export function useColumnHighlight({
   referenceTimezone,
   referenceHours,
   now,
+  hoveredColumnIndex,
 }: UseColumnHighlightParams) {
-  const [hoveredColumnIndex, setHoveredColumnIndex] = useState<number | null>(
-    null
-  );
-
   // Calculate the current time column index
   const currentTimeColumnIndex = useMemo((): number | null => {
     if (!referenceTimezone || referenceHours.length === 0) {
@@ -56,10 +54,6 @@ export function useColumnHighlight({
     hoveredColumnIndex !== null ? hoveredColumnIndex : currentTimeColumnIndex;
 
   return {
-    hoveredColumnIndex,
-    setHoveredColumnIndex,
     highlightedColumnIndex,
-    currentTimeColumnIndex,
   };
 }
-
