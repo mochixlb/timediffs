@@ -1,4 +1,4 @@
-import { createSearchParamsCache, parseAsArrayOf, parseAsString, parseAsStringEnum } from "nuqs";
+import { parseAsArrayOf, parseAsString, parseAsStringEnum } from "nuqs";
 
 /**
  * URL parsers for timezone comparison state.
