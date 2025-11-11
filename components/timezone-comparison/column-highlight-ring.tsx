@@ -7,6 +7,7 @@ interface ColumnHighlightRingProps {
   columnIndex: number | null;
   totalColumns: number;
   isHovered: boolean;
+  isEditMode?: boolean;
 }
 
 interface FlexContainerMeasurements {
@@ -33,6 +34,7 @@ export function ColumnHighlightRing({
   columnIndex,
   totalColumns,
   isHovered,
+  isEditMode = false,
 }: ColumnHighlightRingProps) {
   const [measurements, setMeasurements] =
     useState<FlexContainerMeasurements | null>(null);
@@ -71,7 +73,7 @@ export function ColumnHighlightRing({
       window.removeEventListener("resize", measureContainer);
       clearTimeout(timeoutId);
     };
-  }, [columnIndex, totalColumns]);
+  }, [columnIndex, totalColumns, isEditMode]);
 
   if (columnIndex === null || totalColumns === 0 || !measurements) {
     return null;

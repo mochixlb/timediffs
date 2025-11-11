@@ -5,11 +5,31 @@ import { getTimelineHours } from "@/lib/timezone";
 import { useColumnHighlight } from "@/hooks/use-column-highlight";
 import { useTimelineHover } from "@/hooks/use-timeline-hover";
 import { ColumnHighlightRing } from "./column-highlight-ring";
+import { useState, useMemo } from "react";
+import {
+  DndContext,
+  DragOverlay,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragStartEvent,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  arrayMove,
+  sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
+import { SortableTimezoneRow } from "./sortable-timezone-row";
 import { TimezoneRow } from "./timezone-row";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 interface TimelineVisualizationProps {
   onRemoveTimezone: (timezoneId: string) => void;
+  isEditMode?: boolean;
 }
 
 /**
@@ -18,10 +38,12 @@ interface TimelineVisualizationProps {
  */
 export function TimelineVisualization({
   onRemoveTimezone,
+  isEditMode = false,
 }: TimelineVisualizationProps) {
-  const { timezoneDisplays, setHomeTimezone } = useTimezone();
+  const { timezoneDisplays, setHomeTimezone, reorderTimezones, moveTimezone } =
+    useTimezone();
   const now = new Date();
-  const prefersReducedMotion = useReducedMotion();
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   // Use home timezone as reference, or fallback to first timezone
   const referenceTimezone =
@@ -50,6 +72,21 @@ export function TimelineVisualization({
     return null;
   }
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const items = useMemo(
+    () => timezoneDisplays.map((d) => d.timezone.id),
+    [timezoneDisplays]
+  );
+
+  const activeDisplay = useMemo(
+    () => timezoneDisplays.find((d) => d.timezone.id === activeId) || null,
+    [activeId, timezoneDisplays]
+  );
+
   return (
     <div className="w-full overflow-x-auto">
       <div
@@ -64,46 +101,80 @@ export function TimelineVisualization({
           columnIndex={highlightedColumnIndex}
           totalColumns={referenceHours.length}
           isHovered={hoveredColumnIndex !== null}
+          isEditMode={isEditMode}
         />
 
-        {/* Render each timezone row */}
-        <AnimatePresence initial={false}>
-          {timezoneDisplays.map((display) => (
-            <motion.div
-              key={display.timezone.id}
-              layout
-              className="mb-4 last:mb-0"
-              initial={
-                prefersReducedMotion
-                  ? false
-                  : { opacity: 0, height: 0, scale: 0.98 }
+        {isEditMode ? (
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            modifiers={[restrictToVerticalAxis]}
+            onDragStart={(event: DragStartEvent) => {
+              const id = String(event.active.id);
+              setActiveId(id);
+            }}
+            onDragEnd={(event: DragEndEvent) => {
+              const { active, over } = event;
+              setActiveId(null);
+              if (!over) return;
+              const activeIndex = items.indexOf(String(active.id));
+              const overIndex = items.indexOf(String(over.id));
+              if (activeIndex !== overIndex) {
+                const newOrder = arrayMove(items, activeIndex, overIndex);
+                reorderTimezones(newOrder);
               }
-              animate={
-                prefersReducedMotion
-                  ? { opacity: 1 }
-                  : { opacity: 1, height: "auto", scale: 1 }
-              }
-              exit={
-                prefersReducedMotion
-                  ? { opacity: 0 }
-                  : { opacity: 0, height: 0, scale: 0.98, marginBottom: 0 }
-              }
-              transition={
-                prefersReducedMotion
-                  ? { duration: 0 }
-                  : { duration: 0.18, ease: "easeOut" }
-              }
-              style={{ overflow: "hidden" }}
+            }}
+            onDragCancel={() => setActiveId(null)}
+          >
+            <SortableContext
+              items={items}
+              strategy={verticalListSortingStrategy}
             >
-              <TimezoneRow
-                display={display}
-                referenceHours={referenceHours}
-                onRemove={onRemoveTimezone}
-                onSetHome={setHomeTimezone}
-              />
-            </motion.div>
-          ))}
-        </AnimatePresence>
+              {timezoneDisplays.map((display, idx) => (
+                <div key={display.timezone.id} className="mb-4 last:mb-0">
+                  <SortableTimezoneRow
+                    display={display}
+                    referenceHours={referenceHours}
+                    onRemove={onRemoveTimezone}
+                    onSetHome={setHomeTimezone}
+                    onMoveUp={(id) => moveTimezone(id, "up")}
+                    onMoveDown={(id) => moveTimezone(id, "down")}
+                    index={idx}
+                    total={timezoneDisplays.length}
+                    isEditMode
+                  />
+                </div>
+              ))}
+            </SortableContext>
+            <DragOverlay>
+              {activeDisplay ? (
+                <div className="mb-4 last:mb-0 pointer-events-none">
+                  <TimezoneRow
+                    display={activeDisplay}
+                    referenceHours={referenceHours}
+                    onRemove={onRemoveTimezone}
+                    onSetHome={setHomeTimezone}
+                    isDragging
+                    isEditMode
+                  />
+                </div>
+              ) : null}
+            </DragOverlay>
+          </DndContext>
+        ) : (
+          <>
+            {timezoneDisplays.map((display) => (
+              <div key={display.timezone.id} className="mb-4 last:mb-0">
+                <TimezoneRow
+                  display={display}
+                  referenceHours={referenceHours}
+                  onRemove={onRemoveTimezone}
+                  onSetHome={setHomeTimezone}
+                />
+              </div>
+            ))}
+          </>
+        )}
       </div>
     </div>
   );

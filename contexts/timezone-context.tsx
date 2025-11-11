@@ -9,12 +9,15 @@ import {
 } from "react";
 import type { Timezone, TimezoneDisplay } from "@/types";
 import { createTimezoneDisplay, createTimezoneFromId } from "@/lib/timezone";
+import { arrayMove } from "@dnd-kit/sortable";
 
 interface TimezoneContextType {
   timezoneDisplays: TimezoneDisplay[];
   addTimezone: (timezoneId: string) => void;
   removeTimezone: (timezoneId: string) => void;
   setHomeTimezone: (timezoneId: string) => void;
+  reorderTimezones: (newOrderIds: string[]) => void;
+  moveTimezone: (timezoneId: string, direction: "up" | "down") => void;
 }
 
 const TimezoneContext = createContext<TimezoneContextType | undefined>(
@@ -93,6 +96,33 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
     );
   }, []);
 
+  const reorderTimezones = useCallback((newOrderIds: string[]) => {
+    setTimezones((prev) => {
+      if (newOrderIds.length !== prev.length) return prev;
+      const idToTz = new Map(prev.map((tz) => [tz.id, tz]));
+      const next: Timezone[] = [];
+      for (const id of newOrderIds) {
+        const tz = idToTz.get(id);
+        if (!tz) return prev;
+        next.push(tz);
+      }
+      return next;
+    });
+  }, []);
+
+  const moveTimezone = useCallback(
+    (timezoneId: string, direction: "up" | "down") => {
+      setTimezones((prev) => {
+        const index = prev.findIndex((tz) => tz.id === timezoneId);
+        if (index === -1) return prev;
+        const targetIndex = direction === "up" ? index - 1 : index + 1;
+        if (targetIndex < 0 || targetIndex >= prev.length) return prev;
+        return arrayMove(prev, index, targetIndex);
+      });
+    },
+    []
+  );
+
   return (
     <TimezoneContext.Provider
       value={{
@@ -100,6 +130,8 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
         addTimezone,
         removeTimezone,
         setHomeTimezone,
+        reorderTimezones,
+        moveTimezone,
       }}
     >
       {children}
