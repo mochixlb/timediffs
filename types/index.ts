@@ -1,0 +1,21 @@
+export type TimezoneId = string;
+
+export interface Timezone {
+  id: TimezoneId;
+  city: string;
+  country: string;
+  countryCode: string;
+  offset: string;
+  offsetHours: number;
+}
+
+export interface TimezoneDisplay {
+  timezone: Timezone;
+  currentTime: Date;
+  formattedTime: string;
+  formattedDate: string;
+  offsetDisplay: string;
+}
+
+
+
