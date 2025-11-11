@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Plus } from "lucide-react";
+import { getTimeZones, type TimeZone } from "@vvo/tzdb";
 import { useTimezone } from "@/contexts/timezone-context";
-import { getAllTimezoneIds, parseTimezoneId } from "@/lib/timezone";
+import { getAllTimezoneIds, parseTimezoneId, formatTime } from "@/lib/timezone";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -21,14 +22,48 @@ import {
 
 /**
  * Searchable timezone picker component that allows users to search
- * and select from all available IANA timezones.
+ * and select from all available IANA timezones using @vvo/tzdb data.
+ * Enhanced search supports city names, country names, alternative names, and IANA IDs.
  */
 export function TimezonePicker() {
   const { addTimezone, timezoneDisplays } = useTimezone();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Get all timezone IDs and group them by region
+  // Update current time every minute when dropdown is open
+  useEffect(() => {
+    if (!open) return;
+
+    // Update immediately
+    setCurrentTime(new Date());
+
+    // Then update every minute
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [open]);
+
+  // Get timezone data from @vvo/tzdb for enhanced search capabilities
+  const timezoneData = useMemo(() => {
+    try {
+      return getTimeZones();
+    } catch (error) {
+      console.error("Failed to load timezone data:", error);
+      return [];
+    }
+  }, []);
+
+  // Create a map for quick lookups
+  const timezoneDataMap = useMemo(() => {
+    return new Map<string, TimeZone>(
+      timezoneData.map((tz) => [tz.name, tz])
+    );
+  }, [timezoneData]);
+
+  // Get all timezone IDs and group them by continent/region
   const timezonesByRegion = useMemo(() => {
     const allIds = getAllTimezoneIds();
     const existingIds = new Set(timezoneDisplays.map((d) => d.timezone.id));
@@ -36,11 +71,13 @@ export function TimezonePicker() {
     // Filter out already added timezones
     const availableIds = allIds.filter((id) => !existingIds.has(id));
     
-    // Group by region
+    // Group by continent/region using @vvo/tzdb data
     const grouped: Record<string, string[]> = {};
     
     availableIds.forEach((id) => {
-      const { region } = parseTimezoneId(id);
+      const tzData = timezoneDataMap.get(id);
+      const region = tzData?.continentName || parseTimezoneId(id).region || "Other";
+      
       if (!grouped[region]) {
         grouped[region] = [];
       }
@@ -56,9 +93,9 @@ export function TimezonePicker() {
     });
     
     return sorted;
-  }, [timezoneDisplays]);
+  }, [timezoneDisplays, timezoneDataMap]);
 
-  // Filter timezones based on search query
+  // Enhanced filter: searches city, country, alternative name, and IANA ID
   const filteredTimezonesByRegion = useMemo(() => {
     if (!search.trim()) {
       return timezonesByRegion;
@@ -69,6 +106,22 @@ export function TimezonePicker() {
     
     Object.entries(timezonesByRegion).forEach(([region, ids]) => {
       const matchingIds = ids.filter((id) => {
+        const tzData = timezoneDataMap.get(id);
+        
+        // Search in multiple fields for better results
+        if (tzData) {
+          const cityMatch = tzData.mainCities?.some((city) =>
+            city.toLowerCase().includes(query)
+          );
+          const countryMatch = tzData.countryName?.toLowerCase().includes(query);
+          const altNameMatch = tzData.alternativeName?.toLowerCase().includes(query);
+          const idMatch = id.toLowerCase().includes(query);
+          const regionMatch = region.toLowerCase().includes(query);
+          
+          return cityMatch || countryMatch || altNameMatch || idMatch || regionMatch;
+        }
+        
+        // Fallback to basic parsing if @vvo/tzdb data not available
         const { city } = parseTimezoneId(id);
         return (
           city.toLowerCase().includes(query) ||
@@ -83,7 +136,7 @@ export function TimezonePicker() {
     });
     
     return filtered;
-  }, [timezonesByRegion, search]);
+  }, [timezonesByRegion, search, timezoneDataMap]);
 
   const handleSelect = (timezoneId: string) => {
     addTimezone(timezoneId);
@@ -114,7 +167,7 @@ export function TimezonePicker() {
             className="h-11"
           />
           <CommandList className="max-h-[400px] p-1">
-            <CommandEmpty className="py-8 text-center text-sm text-slate-500">
+            <CommandEmpty className="py-8 text-center text-sm text-slate-600">
               {search.trim()
                 ? "No timezones found."
                 : "No timezones available."}
@@ -123,10 +176,14 @@ export function TimezonePicker() {
               <CommandGroup 
                 key={region} 
                 heading={region}
-                className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-slate-500 [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider"
+                className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-slate-600 [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider"
               >
                 {ids.map((timezoneId) => {
-                  const { city } = parseTimezoneId(timezoneId);
+                  const tzData = timezoneDataMap.get(timezoneId);
+                  const displayCity = tzData?.mainCities?.[0] || parseTimezoneId(timezoneId).city;
+                  const countryName = tzData?.countryName;
+                  const timeInTimezone = formatTime(currentTime, timezoneId);
+                  
                   return (
                     <CommandItem
                       key={timezoneId}
@@ -134,12 +191,24 @@ export function TimezonePicker() {
                       onSelect={() => handleSelect(timezoneId)}
                       className="cursor-pointer px-3 py-2.5 rounded-md transition-colors data-[selected=true]:bg-slate-50 data-[selected=true]:text-slate-900 hover:bg-slate-50"
                     >
-                      <span className="flex-1 text-sm font-medium text-slate-900">
-                        {city}
-                      </span>
-                      <span className="text-xs text-slate-500 font-mono">
-                        {timezoneId}
-                      </span>
+                      <div className="flex-1 flex flex-col gap-0.5">
+                        <span className="text-sm font-medium text-slate-900">
+                          {displayCity}
+                        </span>
+                        {countryName && (
+                          <span className="text-xs text-slate-600">
+                            {countryName}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex flex-col items-end gap-0.5 ml-3">
+                        <span className="text-sm font-medium text-slate-700 tabular-nums">
+                          {timeInTimezone}
+                        </span>
+                        <span className="text-xs text-slate-600 font-mono">
+                          {timezoneId}
+                        </span>
+                      </div>
                     </CommandItem>
                   );
                 })}

@@ -1,15 +1,51 @@
 import { formatInTimeZone } from "date-fns-tz";
+import { getTimeZones, type TimeZone } from "@vvo/tzdb";
 import type { Timezone, TimezoneDisplay, TimezoneId } from "@/types";
+
+/**
+ * Cache for timezone data from @vvo/tzdb to avoid repeated lookups.
+ * This improves performance when creating multiple timezone objects.
+ */
+let timezoneDataCache: Map<string, TimeZone> | null = null;
+
+/**
+ * Initializes and returns the timezone data cache.
+ * Uses @vvo/tzdb for comprehensive, accurate timezone information.
+ */
+function getTimezoneDataCache(): Map<string, TimeZone> {
+  if (!timezoneDataCache) {
+    const timezones = getTimeZones();
+    timezoneDataCache = new Map(timezones.map((tz) => [tz.name, tz]));
+  }
+  return timezoneDataCache;
+}
 
 /**
  * Parses an IANA timezone ID (e.g., "America/New_York") and extracts
  * the city name and region for display purposes.
+ * Falls back to parsing the ID if not found in @vvo/tzdb.
  */
 export function parseTimezoneId(timezoneId: string): {
   region: string;
   city: string;
   displayName: string;
 } {
+  const cache = getTimezoneDataCache();
+  const tzData = cache.get(timezoneId);
+
+  if (tzData) {
+    // Use the first main city as the display name, or alternative name
+    const city = tzData.mainCities?.[0] || tzData.alternativeName || "";
+    const region = tzData.continentName || "";
+
+    return {
+      region,
+      city,
+      displayName: city || tzData.alternativeName || timezoneId,
+    };
+  }
+
+  // Fallback: parse from IANA ID format
   const parts = timezoneId.split("/");
   const region = parts[0] || "";
   const city = parts.slice(1).join("/").replace(/_/g, " ") || "";
@@ -23,13 +59,15 @@ export function parseTimezoneId(timezoneId: string): {
 
 /**
  * Creates a Timezone object from an IANA timezone ID.
- * Uses Intl API to get current offset information.
+ * Uses @vvo/tzdb for accurate country and city information,
+ * and Intl API for current offset calculations.
  */
 export function createTimezoneFromId(timezoneId: TimezoneId): Timezone {
-  const { region, displayName } = parseTimezoneId(timezoneId);
+  const cache = getTimezoneDataCache();
+  const tzData = cache.get(timezoneId);
   const now = new Date();
 
-  // Get offset using Intl API - more accurate method
+  // Get current offset using Intl API (accounts for DST)
   const formatter = new Intl.DateTimeFormat("en-US", {
     timeZone: timezoneId,
     timeZoneName: "short",
@@ -39,7 +77,7 @@ export function createTimezoneFromId(timezoneId: TimezoneId): Timezone {
   const timeZoneName =
     parts.find((part) => part.type === "timeZoneName")?.value || "";
 
-  // Calculate offset hours - matches the approach used in getOffsetDisplay
+  // Calculate current offset hours (accounts for DST)
   const tzTimeStr = now.toLocaleString("en-US", { timeZone: timezoneId });
   const utcTimeStr = now.toLocaleString("en-US", { timeZone: "UTC" });
   const tzTime = new Date(tzTimeStr).getTime();
@@ -47,14 +85,35 @@ export function createTimezoneFromId(timezoneId: TimezoneId): Timezone {
   const offsetMs = tzTime - utcTime;
   const offsetHours = Math.round(offsetMs / (1000 * 60 * 60));
 
-  // Try to infer country code from region (basic mapping)
-  const countryCode = getCountryCodeFromRegion(region);
+  // Use @vvo/tzdb data if available, otherwise fallback to parsing
+  if (tzData) {
+    const city = tzData.mainCities?.[0] || tzData.alternativeName || timezoneId;
+    const country = tzData.countryName || "";
+    const countryCode = tzData.countryCode || "";
+
+    return {
+      id: timezoneId,
+      city,
+      country,
+      countryCode,
+      offset:
+        timeZoneName.length <= 4 && /^[A-Z]+$/.test(timeZoneName)
+          ? timeZoneName
+          : `UTC${offsetHours >= 0 ? "+" : ""}${offsetHours}`,
+      offsetHours,
+    };
+  }
+
+  // Fallback: parse from IANA ID if not in @vvo/tzdb
+  const { displayName } = parseTimezoneId(timezoneId);
+  const partsFromId = timezoneId.split("/");
+  const region = partsFromId[0] || "";
 
   return {
     id: timezoneId,
     city: displayName,
-    country: getCountryNameFromRegion(region),
-    countryCode,
+    country: region,
+    countryCode: "XX",
     offset:
       timeZoneName.length <= 4 && /^[A-Z]+$/.test(timeZoneName)
         ? timeZoneName
@@ -64,56 +123,29 @@ export function createTimezoneFromId(timezoneId: TimezoneId): Timezone {
 }
 
 /**
- * Gets all available timezone IDs from the browser's Intl API.
+ * Gets all available timezone IDs from @vvo/tzdb.
+ * Returns a comprehensive list of IANA timezone identifiers.
  */
 export function getAllTimezoneIds(): string[] {
-  if (typeof Intl !== "undefined" && "supportedValuesOf" in Intl) {
-    try {
-      return Intl.supportedValuesOf("timeZone");
-    } catch {
-      // Fallback if not supported
-    }
+  try {
+    const timezones = getTimeZones();
+    return timezones.map((tz) => tz.name);
+  } catch (error) {
+    console.error("Failed to load timezones from @vvo/tzdb:", error);
+    // Fallback to a minimal list of common timezones
+    return [
+      "America/New_York",
+      "America/Los_Angeles",
+      "America/Chicago",
+      "America/Denver",
+      "Europe/London",
+      "Europe/Paris",
+      "Europe/Berlin",
+      "Asia/Tokyo",
+      "Asia/Shanghai",
+      "Australia/Sydney",
+    ];
   }
-  return [];
-}
-
-/**
- * Basic mapping of region to country code (simplified).
- * For a more comprehensive solution, consider using @vvo/tzdb.
- */
-function getCountryCodeFromRegion(region: string): string {
-  const regionMap: Record<string, string> = {
-    America: "US",
-    Europe: "GB",
-    Asia: "CN",
-    Africa: "ZA",
-    Australia: "AU",
-    Pacific: "NZ",
-    Atlantic: "GB",
-    Indian: "IN",
-    Arctic: "NO",
-    Antarctica: "AQ",
-  };
-  return regionMap[region] || "XX";
-}
-
-/**
- * Basic mapping of region to country name (simplified).
- */
-function getCountryNameFromRegion(region: string): string {
-  const regionMap: Record<string, string> = {
-    America: "United States",
-    Europe: "Europe",
-    Asia: "Asia",
-    Africa: "Africa",
-    Australia: "Australia",
-    Pacific: "Pacific",
-    Atlantic: "Atlantic",
-    Indian: "Indian Ocean",
-    Arctic: "Arctic",
-    Antarctica: "Antarctica",
-  };
-  return regionMap[region] || region;
 }
 
 export function formatTime(date: Date, timezoneId: TimezoneId): string {
