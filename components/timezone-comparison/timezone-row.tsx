@@ -11,6 +11,8 @@ interface TimezoneRowProps {
   dragHandleProps?: React.ButtonHTMLAttributes<HTMLButtonElement>;
   isDragging?: boolean;
   isEditMode?: boolean;
+  isFirst?: boolean;
+  isLast?: boolean;
 }
 
 /**
@@ -24,12 +26,14 @@ export function TimezoneRow({
   dragHandleProps,
   isDragging = false,
   isEditMode = false,
+  isFirst = false,
+  isLast = false,
 }: TimezoneRowProps) {
   return (
     <div>
       <div
         className={cn(
-          "group relative flex items-center pt-0.5 overflow-visible min-h-[44px] lg:min-h-[38px] rounded-md",
+          "group relative flex items-center overflow-visible h-[56px] lg:h-auto lg:min-h-[38px] lg:pt-0.5 lg:rounded-md",
           isDragging && "bg-white shadow-lg shadow-slate-900/10"
         )}
       >
@@ -86,39 +90,46 @@ export function TimezoneRow({
         </div>
 
         {/* City and Country Info */}
-        <div className="sticky left-0 z-20 w-32 shrink-0 px-3 py-1 lg:w-40 lg:px-2 lg:py-0 lg:static lg:z-auto bg-slate-50 lg:bg-transparent">
-          <div className="flex flex-col gap-0.5">
-            <div className="flex items-baseline gap-1.5 flex-wrap">
-              <span className="text-xs font-semibold text-slate-900 leading-tight tracking-tight">
+        <div
+          className={cn(
+            "sticky left-0 z-20 w-32 shrink-0 px-4 py-3 lg:w-40 lg:px-2 lg:py-0 lg:static lg:z-auto bg-white lg:bg-transparent shadow-[2px_0_4px_-2px_rgba(0,0,0,0.05)] lg:shadow-none flex items-center h-[56px] lg:h-auto",
+            "border-l border-r border-slate-200 lg:border-l-0 lg:border-r-0",
+            isFirst && "border-t border-slate-200 lg:border-t-0",
+            "border-b border-slate-200 lg:border-b-0"
+          )}
+        >
+          <div className="flex flex-col gap-1 w-full min-w-0">
+            <div className="flex items-baseline gap-1.5 min-w-0">
+              <span className="text-sm font-semibold text-slate-900 leading-tight tracking-tight truncate">
                 {display.timezone.city}
               </span>
-              <span className="text-[10px] text-slate-600 leading-tight tracking-tight font-medium">
+              <span className="text-[11px] text-slate-600 leading-tight tracking-tight font-medium shrink-0">
                 {display.offsetDisplay}
               </span>
             </div>
-            <span className="text-[10px] text-slate-500 leading-tight tracking-tight">
+            <span className="text-[11px] text-slate-500 leading-tight tracking-tight truncate">
               {display.timezone.country}
             </span>
           </div>
         </div>
 
         {/* Current Time Display */}
-        <div className="w-24 shrink-0 px-2 lg:w-28">
-          <div className="flex flex-col items-start gap-[2px]">
+        <div className="w-24 shrink-0 px-3 py-3 lg:w-28 lg:px-2 lg:py-0 flex items-center h-[56px] lg:h-auto">
+          <div className="flex flex-col items-start gap-1">
             <span className="text-base font-semibold tracking-tight text-foreground leading-tight">
               {display.formattedTime}
             </span>
-            <span className="text-[10px] text-muted-foreground leading-tight tracking-tight">
+            <span className="text-[11px] text-muted-foreground leading-tight tracking-tight">
               {display.formattedDate}
             </span>
           </div>
         </div>
 
         {/* Timeline */}
-        <div className="relative flex pl-3 lg:pl-4 flex-1 xl:min-w-0">
+        <div className="relative flex pl-3 lg:pl-4 flex-1 xl:min-w-0 items-center h-[56px] lg:h-auto">
           <div
             data-timeline-flex-container
-            className="relative flex items-start rounded-md border border-slate-400 overflow-hidden w-[1200px] lg:w-[1200px] xl:w-full xl:flex-1 shrink-0"
+            className="relative flex items-center rounded-md border border-slate-400 overflow-hidden w-[1200px] lg:w-[1200px] xl:w-full xl:flex-1 shrink-0 h-[44px] lg:h-auto"
           >
             {referenceHours.map((referenceHourDate, hourIndex) => (
               <HourCell

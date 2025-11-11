@@ -5,6 +5,7 @@ import { getTimelineHours } from "@/lib/timezone";
 import { useColumnHighlight } from "@/hooks/use-column-highlight";
 import { useTimelineHover } from "@/hooks/use-timeline-hover";
 import { ColumnHighlightRing } from "./column-highlight-ring";
+import { cn } from "@/lib/utils";
 import { useState, useMemo } from "react";
 import {
   DndContext,
@@ -140,14 +141,19 @@ export function TimelineVisualization({
           onDragCancel={() => setActiveId(null)}
         >
           <SortableContext items={items} strategy={verticalListSortingStrategy}>
-            {timezoneDisplays.map((display) => (
-              <div key={display.timezone.id} className="mb-4 last:mb-0">
+            {timezoneDisplays.map((display, index) => (
+              <div
+                key={display.timezone.id}
+                className="mb-0 lg:mb-4 lg:last:mb-0"
+              >
                 <SortableTimezoneRow
                   display={display}
                   referenceHours={referenceHours}
                   onRemove={onRemoveTimezone}
                   onSetHome={setHomeTimezone}
                   isEditMode={isEditMode}
+                  isFirst={index === 0}
+                  isLast={index === timezoneDisplays.length - 1}
                 />
               </div>
             ))}
@@ -162,6 +168,17 @@ export function TimelineVisualization({
                   onSetHome={setHomeTimezone}
                   isDragging
                   isEditMode={isEditMode}
+                  isFirst={
+                    timezoneDisplays.findIndex(
+                      (d) => d.timezone.id === activeId
+                    ) === 0
+                  }
+                  isLast={
+                    timezoneDisplays.findIndex(
+                      (d) => d.timezone.id === activeId
+                    ) ===
+                    timezoneDisplays.length - 1
+                  }
                 />
               </div>
             ) : null}

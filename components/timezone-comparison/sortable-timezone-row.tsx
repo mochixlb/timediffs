@@ -12,6 +12,8 @@ interface SortableTimezoneRowProps {
   onRemove: (timezoneId: string) => void;
   onSetHome: (timezoneId: string) => void;
   isEditMode?: boolean;
+  isFirst?: boolean;
+  isLast?: boolean;
 }
 
 export function SortableTimezoneRow({
@@ -20,6 +22,8 @@ export function SortableTimezoneRow({
   onRemove,
   onSetHome,
   isEditMode = false,
+  isFirst = false,
+  isLast = false,
 }: SortableTimezoneRowProps) {
   const {
     attributes,
@@ -51,6 +55,8 @@ export function SortableTimezoneRow({
         dragHandleProps={{ ...attributes, ...listeners }}
         isDragging={isDragging}
         isEditMode={isEditMode}
+        isFirst={isFirst}
+        isLast={isLast}
       />
     </div>
   );
