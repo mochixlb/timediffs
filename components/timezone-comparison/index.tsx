@@ -11,6 +11,7 @@ import { CopyLinkButton } from "./share-button";
 import { useTimezone } from "@/contexts/timezone-context";
 import { LogoIcon } from "@/components/logo-icon";
 import { Button } from "@/components/ui/button";
+import { Footer } from "@/components/footer";
 import { cn } from "@/lib/utils";
 
 export function TimezoneComparison() {
@@ -18,8 +19,8 @@ export function TimezoneComparison() {
   const [isEditMode, setIsEditMode] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="w-full max-w-[1920px] mx-auto px-3 py-4 lg:px-6 lg:py-8 xl:px-8">
+    <div className="min-h-screen bg-background flex flex-col">
+      <div className="w-full max-w-[1920px] mx-auto px-3 py-4 lg:px-6 lg:py-8 xl:px-8 flex-1">
         {/* Header */}
         <header className="mb-6 lg:mb-8">
           {/* Mobile Layout: Stacked (< 1024px) */}
@@ -121,6 +122,7 @@ export function TimezoneComparison() {
           )}
         </main>
       </div>
+      <Footer />
     </div>
   );
 }
