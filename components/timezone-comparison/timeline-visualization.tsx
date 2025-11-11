@@ -38,15 +38,15 @@ interface TimelineVisualizationProps {
 export function TimelineVisualization({
   onRemoveTimezone,
 }: TimelineVisualizationProps) {
-  const { timezoneDisplays, setHomeTimezone, reorderTimezones } = useTimezone();
-  const now = new Date();
+  const { timezoneDisplays, setHomeTimezone, reorderTimezones, selectedDate } =
+    useTimezone();
   const [activeId, setActiveId] = useState<string | null>(null);
 
   // Use home timezone as reference, or fallback to first timezone
   const referenceTimezone =
     timezoneDisplays.find((d) => d.timezone.isHome) || timezoneDisplays[0];
   const referenceHours = referenceTimezone
-    ? getTimelineHours(referenceTimezone.timezone.id, now)
+    ? getTimelineHours(referenceTimezone.timezone.id, selectedDate)
     : [];
 
   // Track mouse hover position
@@ -58,11 +58,22 @@ export function TimelineVisualization({
   } = useTimelineHover(referenceHours.length);
 
   // Calculate which column to highlight (hover or current time)
+  // Only highlight current time if viewing today's date
+  const isToday = useMemo(() => {
+    const today = new Date();
+    return (
+      selectedDate.getFullYear() === today.getFullYear() &&
+      selectedDate.getMonth() === today.getMonth() &&
+      selectedDate.getDate() === today.getDate()
+    );
+  }, [selectedDate]);
+
   const { highlightedColumnIndex } = useColumnHighlight({
     referenceTimezone,
     referenceHours,
-    now,
+    now: isToday ? new Date() : selectedDate,
     hoveredColumnIndex,
+    shouldHighlightCurrentTime: isToday,
   });
 
   if (timezoneDisplays.length === 0) {

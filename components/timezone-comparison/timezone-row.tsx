@@ -31,8 +31,9 @@ export function TimezoneRow({
           isDragging && "bg-white shadow-lg shadow-slate-900/10"
         )}
       >
-        {/* Drag Handle */}
-        <div className="w-7 shrink-0 flex items-center justify-center mr-1">
+        {/* Control Buttons Group */}
+        <div className="flex items-center gap-1 shrink-0 mr-3">
+          {/* Drag Handle */}
           <button
             className={cn(
               "flex items-center justify-center h-7 w-7 rounded-md text-slate-400 transition-colors hover:text-slate-600 hover:bg-slate-50 cursor-grab active:cursor-grabbing focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
@@ -42,25 +43,21 @@ export function TimezoneRow({
           >
             <GripVertical className="h-3.5 w-3.5" />
           </button>
-        </div>
 
-        {/* Remove Button */}
-        <div className="w-7 shrink-0 flex items-center justify-center mr-1">
+          {/* Remove Button */}
           <button
             onClick={() => onRemove(display.timezone.id)}
-            className="flex items-center justify-center h-7 w-7 rounded-md text-slate-500 transition-colors hover:text-red-600 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+            className="flex items-center justify-center h-7 w-7 rounded-md text-slate-500 transition-colors hover:text-red-600 hover:bg-red-50 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
             aria-label={`Remove ${display.timezone.city}`}
           >
             <X className="h-3.5 w-3.5" />
           </button>
-        </div>
 
-        {/* Home Button */}
-        <div className="w-7 shrink-0 flex items-center justify-center mr-1">
+          {/* Home Button */}
           <button
             onClick={() => onSetHome(display.timezone.id)}
             className={cn(
-              "flex items-center justify-center h-7 w-7 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400",
+              "flex items-center justify-center h-7 w-7 rounded-md transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400",
               display.timezone.isHome
                 ? "text-slate-700"
                 : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"
@@ -110,7 +107,7 @@ export function TimezoneRow({
         </div>
 
         {/* Timeline */}
-        <div className="relative flex flex-1 pl-2 sm:pl-3">
+        <div className="relative flex flex-1 pl-3 sm:pl-4">
           <div
             data-timeline-flex-container
             className="relative flex flex-1 items-start rounded-md border border-slate-400 overflow-hidden"

@@ -12,6 +12,8 @@ import { createTimezoneDisplay, createTimezoneFromId } from "@/lib/timezone";
 
 interface TimezoneContextType {
   timezoneDisplays: TimezoneDisplay[];
+  selectedDate: Date;
+  setSelectedDate: (date: Date) => void;
   addTimezone: (timezoneId: string) => void;
   removeTimezone: (timezoneId: string) => void;
   setHomeTimezone: (timezoneId: string) => void;
@@ -37,28 +39,20 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
     }
     return initial;
   });
+  const [selectedDate, setSelectedDate] = useState<Date>(() => new Date());
   const [timezoneDisplays, setTimezoneDisplays] = useState<TimezoneDisplay[]>(
     []
   );
 
   const updateDisplays = useCallback(() => {
-    const currentDate = new Date();
     const displays = timezones.map((tz) =>
-      createTimezoneDisplay(tz, currentDate)
+      createTimezoneDisplay(tz, selectedDate)
     );
     setTimezoneDisplays(displays);
-  }, [timezones]);
+  }, [timezones, selectedDate]);
 
   useEffect(() => {
     updateDisplays();
-  }, [updateDisplays]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      updateDisplays();
-    }, 60000);
-
-    return () => clearInterval(interval);
   }, [updateDisplays]);
 
   const addTimezone = useCallback((timezoneId: string) => {
@@ -108,10 +102,16 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const handleSetSelectedDate = useCallback((date: Date) => {
+    setSelectedDate(date);
+  }, []);
+
   return (
     <TimezoneContext.Provider
       value={{
         timezoneDisplays,
+        selectedDate,
+        setSelectedDate: handleSetSelectedDate,
         addTimezone,
         removeTimezone,
         setHomeTimezone,

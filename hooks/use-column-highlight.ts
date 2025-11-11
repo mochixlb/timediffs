@@ -6,21 +6,28 @@ interface UseColumnHighlightParams {
   referenceHours: Date[];
   now: Date;
   hoveredColumnIndex: number | null;
+  shouldHighlightCurrentTime?: boolean;
 }
 
 /**
  * Custom hook to calculate the current time column and determine
  * which column should be highlighted (hover takes priority over current time).
+ * Only highlights current time if shouldHighlightCurrentTime is true.
  */
 export function useColumnHighlight({
   referenceTimezone,
   referenceHours,
   now,
   hoveredColumnIndex,
+  shouldHighlightCurrentTime = true,
 }: UseColumnHighlightParams) {
   // Calculate the current time column index
   const currentTimeColumnIndex = useMemo((): number | null => {
-    if (!referenceTimezone || referenceHours.length === 0) {
+    if (
+      !referenceTimezone ||
+      referenceHours.length === 0 ||
+      !shouldHighlightCurrentTime
+    ) {
       return null;
     }
 
@@ -47,7 +54,7 @@ export function useColumnHighlight({
     });
 
     return currentHourIndex === -1 ? null : currentHourIndex;
-  }, [referenceTimezone, referenceHours, now]);
+  }, [referenceTimezone, referenceHours, now, shouldHighlightCurrentTime]);
 
   // Determine which column to highlight (hovered or current time)
   const highlightedColumnIndex =

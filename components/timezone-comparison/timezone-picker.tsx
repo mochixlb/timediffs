@@ -149,7 +149,7 @@ export function TimezonePicker() {
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className="h-9 gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50"
+          className="h-9 min-w-[140px] gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50"
         >
           <Plus className="h-4 w-4" />
           Add Timezone
