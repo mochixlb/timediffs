@@ -6,6 +6,7 @@ import { useColumnHighlight } from "@/hooks/use-column-highlight";
 import { useTimelineHover } from "@/hooks/use-timeline-hover";
 import { ColumnHighlightRing } from "./column-highlight-ring";
 import { TimezoneRow } from "./timezone-row";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 interface TimelineVisualizationProps {
   onRemoveTimezone: (timezoneId: string) => void;
@@ -20,6 +21,7 @@ export function TimelineVisualization({
 }: TimelineVisualizationProps) {
   const { timezoneDisplays, setHomeTimezone } = useTimezone();
   const now = new Date();
+  const prefersReducedMotion = useReducedMotion();
 
   // Use home timezone as reference, or fallback to first timezone
   const referenceTimezone =
@@ -65,15 +67,43 @@ export function TimelineVisualization({
         />
 
         {/* Render each timezone row */}
-        {timezoneDisplays.map((display) => (
-          <TimezoneRow
-            key={display.timezone.id}
-            display={display}
-            referenceHours={referenceHours}
-            onRemove={onRemoveTimezone}
-            onSetHome={setHomeTimezone}
-          />
-        ))}
+        <AnimatePresence initial={false}>
+          {timezoneDisplays.map((display) => (
+            <motion.div
+              key={display.timezone.id}
+              layout
+              className="mb-4 last:mb-0"
+              initial={
+                prefersReducedMotion
+                  ? false
+                  : { opacity: 0, height: 0, scale: 0.98 }
+              }
+              animate={
+                prefersReducedMotion
+                  ? { opacity: 1 }
+                  : { opacity: 1, height: "auto", scale: 1 }
+              }
+              exit={
+                prefersReducedMotion
+                  ? { opacity: 0 }
+                  : { opacity: 0, height: 0, scale: 0.98, marginBottom: 0 }
+              }
+              transition={
+                prefersReducedMotion
+                  ? { duration: 0 }
+                  : { duration: 0.18, ease: "easeOut" }
+              }
+              style={{ overflow: "hidden" }}
+            >
+              <TimezoneRow
+                display={display}
+                referenceHours={referenceHours}
+                onRemove={onRemoveTimezone}
+                onSetHome={setHomeTimezone}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   );

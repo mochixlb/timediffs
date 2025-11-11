@@ -20,7 +20,7 @@ export function TimezoneRow({
   onSetHome,
 }: TimezoneRowProps) {
   return (
-    <div className="mb-3 last:mb-0">
+    <div>
       <div className="group relative flex items-center pt-0.5 overflow-visible min-h-[38px]">
         {/* Remove Button */}
         <div className="w-7 shrink-0 flex items-center justify-center mr-1">
