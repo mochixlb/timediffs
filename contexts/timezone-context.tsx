@@ -1,16 +1,25 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+} from "react";
 import type { Timezone, TimezoneDisplay } from "@/types";
-import { createTimezoneDisplay, getTimezoneById } from "@/lib/timezone";
+import { createTimezoneDisplay, createTimezoneFromId } from "@/lib/timezone";
 
 interface TimezoneContextType {
   timezoneDisplays: TimezoneDisplay[];
+  addTimezone: (timezoneId: string) => void;
   removeTimezone: (timezoneId: string) => void;
   setHomeTimezone: (timezoneId: string) => void;
 }
 
-const TimezoneContext = createContext<TimezoneContextType | undefined>(undefined);
+const TimezoneContext = createContext<TimezoneContextType | undefined>(
+  undefined
+);
 
 const DEFAULT_TIMEZONES = [
   "America/New_York",
@@ -20,23 +29,22 @@ const DEFAULT_TIMEZONES = [
 
 export function TimezoneProvider({ children }: { children: React.ReactNode }) {
   const [timezones, setTimezones] = useState<Timezone[]>(() => {
-    const initial = DEFAULT_TIMEZONES
-      .map((id) => {
-        const tz = getTimezoneById(id);
-        return tz ? { ...tz } : undefined;
-      })
-      .filter((tz): tz is Timezone => tz !== undefined);
+    const initial = DEFAULT_TIMEZONES.map((id) => createTimezoneFromId(id));
     // Set first timezone as home by default
     if (initial.length > 0) {
       initial[0].isHome = true;
     }
     return initial;
   });
-  const [timezoneDisplays, setTimezoneDisplays] = useState<TimezoneDisplay[]>([]);
+  const [timezoneDisplays, setTimezoneDisplays] = useState<TimezoneDisplay[]>(
+    []
+  );
 
   const updateDisplays = useCallback(() => {
     const currentDate = new Date();
-    const displays = timezones.map((tz) => createTimezoneDisplay(tz, currentDate));
+    const displays = timezones.map((tz) =>
+      createTimezoneDisplay(tz, currentDate)
+    );
     setTimezoneDisplays(displays);
   }, [timezones]);
 
@@ -51,6 +59,18 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
 
     return () => clearInterval(interval);
   }, [updateDisplays]);
+
+  const addTimezone = useCallback((timezoneId: string) => {
+    setTimezones((prev) => {
+      // Check if timezone already exists
+      if (prev.some((tz) => tz.id === timezoneId)) {
+        return prev;
+      }
+
+      const newTimezone = createTimezoneFromId(timezoneId);
+      return [...prev, newTimezone];
+    });
+  }, []);
 
   const removeTimezone = useCallback((timezoneId: string) => {
     setTimezones((prev) => {
@@ -77,6 +97,7 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
     <TimezoneContext.Provider
       value={{
         timezoneDisplays,
+        addTimezone,
         removeTimezone,
         setHomeTimezone,
       }}

@@ -1,35 +1,119 @@
 import { formatInTimeZone } from "date-fns-tz";
 import type { Timezone, TimezoneDisplay, TimezoneId } from "@/types";
 
-export const POPULAR_TIMEZONES: Timezone[] = [
-  {
-    id: "America/New_York",
-    city: "New York",
-    country: "United States",
-    countryCode: "US",
-    offset: "EST",
-    offsetHours: -5,
-  },
-  {
-    id: "America/Los_Angeles",
-    city: "Los Angeles",
-    country: "United States",
-    countryCode: "US",
-    offset: "PST",
-    offsetHours: -8,
-  },
-  {
-    id: "Europe/London",
-    city: "London",
-    country: "United Kingdom",
-    countryCode: "GB",
-    offset: "GMT",
-    offsetHours: 0,
-  },
-];
+/**
+ * Parses an IANA timezone ID (e.g., "America/New_York") and extracts
+ * the city name and region for display purposes.
+ */
+export function parseTimezoneId(timezoneId: string): {
+  region: string;
+  city: string;
+  displayName: string;
+} {
+  const parts = timezoneId.split("/");
+  const region = parts[0] || "";
+  const city = parts.slice(1).join("/").replace(/_/g, " ") || "";
 
-export function getTimezoneById(id: TimezoneId): Timezone | undefined {
-  return POPULAR_TIMEZONES.find((tz) => tz.id === id);
+  return {
+    region,
+    city,
+    displayName: city || timezoneId,
+  };
+}
+
+/**
+ * Creates a Timezone object from an IANA timezone ID.
+ * Uses Intl API to get current offset information.
+ */
+export function createTimezoneFromId(timezoneId: TimezoneId): Timezone {
+  const { region, displayName } = parseTimezoneId(timezoneId);
+  const now = new Date();
+
+  // Get offset using Intl API - more accurate method
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: timezoneId,
+    timeZoneName: "short",
+  });
+
+  const parts = formatter.formatToParts(now);
+  const timeZoneName =
+    parts.find((part) => part.type === "timeZoneName")?.value || "";
+
+  // Calculate offset hours - matches the approach used in getOffsetDisplay
+  const tzTimeStr = now.toLocaleString("en-US", { timeZone: timezoneId });
+  const utcTimeStr = now.toLocaleString("en-US", { timeZone: "UTC" });
+  const tzTime = new Date(tzTimeStr).getTime();
+  const utcTime = new Date(utcTimeStr).getTime();
+  const offsetMs = tzTime - utcTime;
+  const offsetHours = Math.round(offsetMs / (1000 * 60 * 60));
+
+  // Try to infer country code from region (basic mapping)
+  const countryCode = getCountryCodeFromRegion(region);
+
+  return {
+    id: timezoneId,
+    city: displayName,
+    country: getCountryNameFromRegion(region),
+    countryCode,
+    offset:
+      timeZoneName.length <= 4 && /^[A-Z]+$/.test(timeZoneName)
+        ? timeZoneName
+        : `UTC${offsetHours >= 0 ? "+" : ""}${offsetHours}`,
+    offsetHours,
+  };
+}
+
+/**
+ * Gets all available timezone IDs from the browser's Intl API.
+ */
+export function getAllTimezoneIds(): string[] {
+  if (typeof Intl !== "undefined" && "supportedValuesOf" in Intl) {
+    try {
+      return Intl.supportedValuesOf("timeZone");
+    } catch {
+      // Fallback if not supported
+    }
+  }
+  return [];
+}
+
+/**
+ * Basic mapping of region to country code (simplified).
+ * For a more comprehensive solution, consider using @vvo/tzdb.
+ */
+function getCountryCodeFromRegion(region: string): string {
+  const regionMap: Record<string, string> = {
+    America: "US",
+    Europe: "GB",
+    Asia: "CN",
+    Africa: "ZA",
+    Australia: "AU",
+    Pacific: "NZ",
+    Atlantic: "GB",
+    Indian: "IN",
+    Arctic: "NO",
+    Antarctica: "AQ",
+  };
+  return regionMap[region] || "XX";
+}
+
+/**
+ * Basic mapping of region to country name (simplified).
+ */
+function getCountryNameFromRegion(region: string): string {
+  const regionMap: Record<string, string> = {
+    America: "United States",
+    Europe: "Europe",
+    Asia: "Asia",
+    Africa: "Africa",
+    Australia: "Australia",
+    Pacific: "Pacific",
+    Atlantic: "Atlantic",
+    Indian: "Indian Ocean",
+    Arctic: "Arctic",
+    Antarctica: "Antarctica",
+  };
+  return regionMap[region] || region;
 }
 
 export function formatTime(date: Date, timezoneId: TimezoneId): string {
@@ -61,14 +145,13 @@ export function getOffsetDisplay(
     return timeZoneName;
   }
 
-  const utcTime = date.getTime();
   const tzTime = new Date(
     date.toLocaleString("en-US", { timeZone: timezone.id })
   ).getTime();
-  const utcTime2 = new Date(
+  const utcTime = new Date(
     date.toLocaleString("en-US", { timeZone: "UTC" })
   ).getTime();
-  const offsetMs = tzTime - utcTime2;
+  const offsetMs = tzTime - utcTime;
   const offsetHours = offsetMs / (1000 * 60 * 60);
 
   const sign = offsetHours >= 0 ? "+" : "";
