@@ -62,7 +62,7 @@ export function CopyLinkButton() {
     <Button
       variant="outline"
       onClick={handleCopyLink}
-      className="h-11 min-w-[90px] lg:h-9 lg:min-w-[110px] lg:w-auto gap-1.5 lg:gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 px-2.5 lg:px-4"
+      className="h-11 min-w-[90px] lg:h-9 lg:w-[110px] gap-1.5 lg:gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 px-2.5 lg:px-4"
       aria-label={copied ? "Link copied to clipboard" : "Copy link to share this view"}
       title={copied ? "Link copied!" : "Copy link to share this view"}
     >

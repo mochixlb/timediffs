@@ -33,7 +33,7 @@ export function Footer() {
               A simple tool for comparing timezones
             </p>
             <Link
-              href="https://github.com"
+              href="https://github.com/mochixlb/timediffs"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors p-1.5 -m-1.5 rounded-sm hover:bg-accent/50"
