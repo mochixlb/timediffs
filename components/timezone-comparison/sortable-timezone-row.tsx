@@ -37,7 +37,7 @@ export function SortableTimezoneRow({
       // Hide the original item while dragging to avoid duplicate under the overlay
       opacity: isDragging ? 0 : undefined,
     };
-  }, [transform, transition]);
+  }, [transform, transition, isDragging]);
 
   return (
     <div ref={setNodeRef} style={style}>
@@ -52,5 +52,3 @@ export function SortableTimezoneRow({
     </div>
   );
 }
-
-

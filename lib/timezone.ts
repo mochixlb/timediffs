@@ -148,7 +148,14 @@ export function getAllTimezoneIds(): string[] {
   }
 }
 
-export function formatTime(date: Date, timezoneId: TimezoneId): string {
+export function formatTime(
+  date: Date,
+  timezoneId: TimezoneId,
+  format: "12h" | "24h" = "12h"
+): string {
+  if (format === "24h") {
+    return formatInTimeZone(date, timezoneId, "HH:mm");
+  }
   return formatInTimeZone(date, timezoneId, "h:mma").toLowerCase();
 }
 
@@ -192,9 +199,10 @@ export function getOffsetDisplay(
 
 export function createTimezoneDisplay(
   timezone: Timezone,
-  selectedDate: Date = new Date()
+  selectedDate: Date = new Date(),
+  timeFormat: "12h" | "24h" = "12h"
 ): TimezoneDisplay {
-  const formattedTime = formatTime(selectedDate, timezone.id);
+  const formattedTime = formatTime(selectedDate, timezone.id, timeFormat);
   const formattedDate = formatDateDisplay(selectedDate, timezone.id);
   const offsetDisplay = getOffsetDisplay(timezone, selectedDate);
 

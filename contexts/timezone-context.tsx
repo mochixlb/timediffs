@@ -10,10 +10,14 @@ import {
 import type { Timezone, TimezoneDisplay } from "@/types";
 import { createTimezoneDisplay, createTimezoneFromId } from "@/lib/timezone";
 
+export type TimeFormat = "12h" | "24h";
+
 interface TimezoneContextType {
   timezoneDisplays: TimezoneDisplay[];
   selectedDate: Date;
   setSelectedDate: (date: Date) => void;
+  timeFormat: TimeFormat;
+  setTimeFormat: (format: TimeFormat) => void;
   addTimezone: (timezoneId: string) => void;
   removeTimezone: (timezoneId: string) => void;
   setHomeTimezone: (timezoneId: string) => void;
@@ -40,16 +44,17 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
     return initial;
   });
   const [selectedDate, setSelectedDate] = useState<Date>(() => new Date());
+  const [timeFormat, setTimeFormat] = useState<TimeFormat>("12h");
   const [timezoneDisplays, setTimezoneDisplays] = useState<TimezoneDisplay[]>(
     []
   );
 
   const updateDisplays = useCallback(() => {
     const displays = timezones.map((tz) =>
-      createTimezoneDisplay(tz, selectedDate)
+      createTimezoneDisplay(tz, selectedDate, timeFormat)
     );
     setTimezoneDisplays(displays);
-  }, [timezones, selectedDate]);
+  }, [timezones, selectedDate, timeFormat]);
 
   useEffect(() => {
     updateDisplays();
@@ -112,6 +117,8 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
         timezoneDisplays,
         selectedDate,
         setSelectedDate: handleSetSelectedDate,
+        timeFormat,
+        setTimeFormat,
         addTimezone,
         removeTimezone,
         setHomeTimezone,

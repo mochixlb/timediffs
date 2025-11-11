@@ -2,6 +2,7 @@ import { formatInTimeZone } from "date-fns-tz";
 import { cn } from "@/lib/utils";
 import { getTimeOfDay } from "@/lib/timezone";
 import { TIME_OF_DAY_CONFIG, NEW_DAY_CONFIG } from "@/lib/timeline-constants";
+import { useTimezone } from "@/contexts/timezone-context";
 
 interface HourCellProps {
   referenceHourDate: Date;
@@ -12,7 +13,8 @@ interface HourCellProps {
 
 /**
  * Renders a single hour cell in the timeline visualization.
- * Displays hour in 12-hour format or date for new day markers.
+ * Displays hour in 12-hour (AM/PM) or 24-hour format based on user preference,
+ * or date for new day markers.
  */
 export function HourCell({
   referenceHourDate,
@@ -20,6 +22,7 @@ export function HourCell({
   hourIndex,
   totalHours,
 }: HourCellProps) {
+  const { timeFormat } = useTimezone();
   const hourInTz = parseInt(
     formatInTimeZone(referenceHourDate, timezoneId, "H"),
     10
@@ -76,6 +79,17 @@ export function HourCell({
             )}
           >
             {dayLabel}
+          </span>
+        </div>
+      ) : timeFormat === "24h" ? (
+        <div className="flex flex-col items-center justify-center z-10">
+          <span
+            className={cn(
+              "text-xs font-semibold leading-tight tracking-tight",
+              config.text
+            )}
+          >
+            {hourInTz.toString().padStart(2, "0")}
           </span>
         </div>
       ) : (
