@@ -7,6 +7,7 @@ export interface Timezone {
   countryCode: string;
   offset: string;
   offsetHours: number;
+  isHome?: boolean;
 }
 
 export interface TimezoneDisplay {

@@ -1,6 +1,6 @@
 "use client";
 
-import { X } from "lucide-react";
+import { X, Home } from "lucide-react";
 import { formatInTimeZone } from "date-fns-tz";
 import { useTimezone } from "@/contexts/timezone-context";
 import { getTimelineHours, getTimeOfDay } from "@/lib/timezone";
@@ -13,10 +13,12 @@ interface TimelineVisualizationProps {
 export function TimelineVisualization({
   onRemoveTimezone,
 }: TimelineVisualizationProps) {
-  const { timezoneDisplays } = useTimezone();
+  const { timezoneDisplays, setHomeTimezone } = useTimezone();
   const selectedDate = new Date();
 
-  const referenceTimezone = timezoneDisplays[0];
+  // Use home timezone as reference, or fallback to first timezone
+  const referenceTimezone =
+    timezoneDisplays.find((d) => d.timezone.isHome) || timezoneDisplays[0];
   const referenceHours = referenceTimezone
     ? getTimelineHours(referenceTimezone.timezone.id, selectedDate)
     : [];
@@ -27,19 +29,57 @@ export function TimelineVisualization({
     return null;
   }
 
+  // Calculate the position percentage of the "now" line within the timeline
+  // Returns a value between 0-100 representing the position within the timeline container
+  const getNowLinePosition = (): number | null => {
+    if (!referenceTimezone || referenceHours.length === 0) {
+      return null;
+    }
+
+    const refCurrentHour = parseInt(
+      formatInTimeZone(now, referenceTimezone.timezone.id, "H"),
+      10
+    );
+    const refCurrentMinute = parseInt(
+      formatInTimeZone(now, referenceTimezone.timezone.id, "m"),
+      10
+    );
+    const refCurrentDay = parseInt(
+      formatInTimeZone(now, referenceTimezone.timezone.id, "d"),
+      10
+    );
+
+    // Find which hour block contains the current time
+    const currentHourIndex = referenceHours.findIndex((hourDate) => {
+      const hourInRef = parseInt(
+        formatInTimeZone(hourDate, referenceTimezone.timezone.id, "H"),
+        10
+      );
+      const dayInRef = parseInt(
+        formatInTimeZone(hourDate, referenceTimezone.timezone.id, "d"),
+        10
+      );
+      return hourInRef === refCurrentHour && dayInRef === refCurrentDay;
+    });
+
+    if (currentHourIndex === -1) {
+      return null;
+    }
+
+    // Calculate position: hour block position + minute offset within that block
+    const hourBlockWidth = 100 / referenceHours.length;
+    const hourBlockStart = (currentHourIndex / referenceHours.length) * 100;
+    const minuteOffset = (refCurrentMinute / 60) * hourBlockWidth;
+
+    return hourBlockStart + minuteOffset;
+  };
+
+  const nowLinePosition = getNowLinePosition();
+
   return (
     <div className="w-full overflow-x-auto">
       <div className="relative min-w-[800px] sm:min-w-[1200px]">
         {timezoneDisplays.map((display) => {
-          const tzCurrentHour = parseInt(
-            formatInTimeZone(now, display.timezone.id, "H"),
-            10
-          );
-          const tzCurrentMinute = parseInt(
-            formatInTimeZone(now, display.timezone.id, "m"),
-            10
-          );
-
           return (
             <div key={display.timezone.id} className="mb-3 last:mb-0">
               <div className="group relative flex items-center pb-2 pt-0.5 overflow-visible min-h-[38px]">
@@ -50,6 +90,30 @@ export function TimelineVisualization({
                     aria-label={`Remove ${display.timezone.city}`}
                   >
                     <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+
+                <div className="w-6 shrink-0 flex items-center justify-center -ml-1 mr-3">
+                  <button
+                    onClick={() => setHomeTimezone(display.timezone.id)}
+                    className={cn(
+                      "flex items-center justify-center h-7 w-7 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400",
+                      display.timezone.isHome
+                        ? "text-slate-700"
+                        : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"
+                    )}
+                    aria-label={
+                      display.timezone.isHome
+                        ? `${display.timezone.city} is the home timezone`
+                        : `Set ${display.timezone.city} as home timezone`
+                    }
+                  >
+                    <Home
+                      className={cn(
+                        "h-3.5 w-3.5",
+                        display.timezone.isHome && "fill-current"
+                      )}
+                    />
                   </button>
                 </div>
 
@@ -81,6 +145,15 @@ export function TimelineVisualization({
                 </div>
 
                 <div className="relative flex flex-1 pl-2 sm:pl-3">
+                  {/* Vertical "now" line - positioned consistently across all rows */}
+                  {nowLinePosition !== null && (
+                    <div
+                      className="absolute -top-3 -bottom-3 w-0.5 bg-orange-600 pointer-events-none z-30"
+                      style={{
+                        left: `calc(0.5rem + ${nowLinePosition}%)`,
+                      }}
+                    />
+                  )}
                   <div className="relative flex flex-1 items-start rounded-md border border-slate-400 overflow-hidden">
                     {referenceHours.map((referenceHourDate, hourIndex) => {
                       const hourInTz = parseInt(
@@ -123,6 +196,7 @@ export function TimelineVisualization({
 
                       const timeOfDay = getTimeOfDay(hourInTz);
 
+                      // Check if this hour block represents the current hour in this timezone
                       const currentHourInTz = parseInt(
                         formatInTimeZone(now, display.timezone.id, "H"),
                         10
@@ -163,8 +237,8 @@ export function TimelineVisualization({
 
                       const currentConfig = {
                         bg: "bg-orange-200",
-                        text: "text-orange-900",
-                        textMuted: "text-orange-700",
+                        text: "text-slate-900",
+                        textMuted: "text-slate-800",
                       };
 
                       const newDayConfig = {
@@ -233,15 +307,6 @@ export function TimelineVisualization({
                                 {amPm}
                               </span>
                             </div>
-                          )}
-
-                          {isCurrent && (
-                            <div
-                              className="absolute top-0 bottom-0 w-0.5 bg-orange-500 pointer-events-none z-20"
-                              style={{
-                                left: `${(tzCurrentMinute / 60) * 100}%`,
-                              }}
-                            />
                           )}
                         </div>
                       );

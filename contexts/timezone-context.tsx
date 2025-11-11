@@ -7,6 +7,7 @@ import { createTimezoneDisplay, getTimezoneById } from "@/lib/timezone";
 interface TimezoneContextType {
   timezoneDisplays: TimezoneDisplay[];
   removeTimezone: (timezoneId: string) => void;
+  setHomeTimezone: (timezoneId: string) => void;
 }
 
 const TimezoneContext = createContext<TimezoneContextType | undefined>(undefined);
@@ -19,9 +20,17 @@ const DEFAULT_TIMEZONES = [
 
 export function TimezoneProvider({ children }: { children: React.ReactNode }) {
   const [timezones, setTimezones] = useState<Timezone[]>(() => {
-    return DEFAULT_TIMEZONES
-      .map((id) => getTimezoneById(id))
+    const initial = DEFAULT_TIMEZONES
+      .map((id) => {
+        const tz = getTimezoneById(id);
+        return tz ? { ...tz } : undefined;
+      })
       .filter((tz): tz is Timezone => tz !== undefined);
+    // Set first timezone as home by default
+    if (initial.length > 0) {
+      initial[0].isHome = true;
+    }
+    return initial;
   });
   const [selectedDate] = useState<Date>(new Date());
   const [timezoneDisplays, setTimezoneDisplays] = useState<TimezoneDisplay[]>([]);
@@ -44,7 +53,24 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
   }, [updateDisplays]);
 
   const removeTimezone = useCallback((timezoneId: string) => {
-    setTimezones((prev) => prev.filter((tz) => tz.id !== timezoneId));
+    setTimezones((prev) => {
+      const filtered = prev.filter((tz) => tz.id !== timezoneId);
+      // If removed timezone was home, set first remaining as home
+      const wasHome = prev.find((tz) => tz.id === timezoneId)?.isHome;
+      if (wasHome && filtered.length > 0) {
+        filtered[0].isHome = true;
+      }
+      return filtered;
+    });
+  }, []);
+
+  const setHomeTimezone = useCallback((timezoneId: string) => {
+    setTimezones((prev) =>
+      prev.map((tz) => ({
+        ...tz,
+        isHome: tz.id === timezoneId,
+      }))
+    );
   }, []);
 
   return (
@@ -52,6 +78,7 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
       value={{
         timezoneDisplays,
         removeTimezone,
+        setHomeTimezone,
       }}
     >
       {children}
