@@ -137,7 +137,7 @@ export default function PrivacyPage() {
               <section>
                 <h2 className="text-xl font-semibold mb-3">Open Source Transparency</h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  timediffs.app is free and open-source software. The complete source code is publicly available, which means you can review exactly how the app works and verify our privacy claims yourself. This transparency is one of the best ways to ensure your privacy is protected.
+                  timediffs.app is a free, open-source personal project. The complete source code is publicly available, which means you can review exactly how the app works and verify our privacy claims yourself. This transparency is one of the best ways to ensure your privacy is protected.
                 </p>
               </section>
 

@@ -61,7 +61,7 @@ export default function TermsPage() {
               <section>
                 <h2 className="text-xl font-semibold mb-3">Description of Service</h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  timediffs.app is a free, open-source web application that helps you compare multiple timezones side-by-side. The service is provided "as is" and "as available" at no cost. We reserve the right to modify, suspend, or discontinue the service at any time without notice.
+                  timediffs.app is a free, open-source personal project that helps you compare multiple timezones side-by-side. The service is provided "as is" and "as available" at no cost. We reserve the right to modify, suspend, or discontinue the service at any time without notice.
                 </p>
               </section>
 
