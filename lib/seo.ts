@@ -2,13 +2,70 @@
  * SEO configuration and utilities
  */
 
-// Get site URL from environment variable with fallback
-// During build, we allow the fallback. In production runtime, the env var should be set.
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL;
+/**
+ * Validates and normalizes the site URL from environment variable.
+ * Ensures the URL is properly formatted, uses HTTPS in production, and has no trailing slash.
+ *
+ * @param url - The URL string to validate
+ * @param isProduction - Whether we're in production environment
+ * @returns The validated and normalized URL, or null if invalid
+ */
+function validateSiteUrl(
+  url: string | undefined,
+  isProduction: boolean
+): string | null {
+  if (!url) {
+    return null;
+  }
+
+  // Remove trailing slash if present
+  const normalizedUrl = url.trim().replace(/\/$/, "");
+
+  // Basic URL format validation
+  let parsedUrl: URL;
+  try {
+    parsedUrl = new URL(normalizedUrl);
+  } catch {
+    return null;
+  }
+
+  // Validate protocol - must be https in production
+  if (isProduction && parsedUrl.protocol !== "https:") {
+    return null;
+  }
+
+  // Validate protocol - must be http or https
+  if (parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:") {
+    return null;
+  }
+
+  // Ensure we have a valid hostname
+  if (!parsedUrl.hostname || parsedUrl.hostname.length === 0) {
+    return null;
+  }
+
+  return normalizedUrl;
+}
+
+// Get site URL from environment variable with validation
+const isProduction = process.env.NODE_ENV === "production";
+const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+const validatedSiteUrl = validateSiteUrl(rawSiteUrl, isProduction);
+
+// In production, fail fast if URL is invalid or missing
+if (isProduction && !validatedSiteUrl) {
+  const errorMessage = rawSiteUrl
+    ? `Invalid NEXT_PUBLIC_SITE_URL: "${rawSiteUrl}". Must be a valid HTTPS URL without trailing slash.`
+    : `NEXT_PUBLIC_SITE_URL is required in production. Please set this environment variable.`;
+  throw new Error(errorMessage);
+}
+
+// Fallback URL for development (should not be used in production)
+const FALLBACK_URL = "https://timediffs.vercel.app";
 
 export const siteConfig = {
   name: "timediffs.app",
-  url: SITE_URL || "https://timediffs.vercel.app",
+  url: validatedSiteUrl || FALLBACK_URL,
   description:
     "Compare multiple timezones side-by-side with a clean, peaceful design",
 } as const;
