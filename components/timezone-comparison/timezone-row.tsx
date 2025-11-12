@@ -1,10 +1,11 @@
 "use client";
 
+import { useRef } from "react";
 import { X, Home, GripVertical, GripHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { TimezoneDisplay } from "@/types";
 import { HourCell } from "./hour-cell";
-import { useHorizontalSticky } from "@/hooks/use-scroll-sync";
+import { useScrollFollow } from "@/hooks/use-scroll-follow";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 
 interface TimezoneRowProps {
@@ -36,10 +37,8 @@ export function TimezoneRow({
   scrollContainerRef,
 }: TimezoneRowProps) {
   const isMobile = useIsMobile();
-  const stickyRef = useHorizontalSticky<HTMLDivElement>(
-    scrollContainerRef,
-    isMobile && !isDragging
-  );
+  const infoRef = useRef<HTMLDivElement | null>(null);
+  useScrollFollow(scrollContainerRef || { current: null }, infoRef, isMobile && !isDragging);
   return (
     <div>
       <div
@@ -100,7 +99,7 @@ export function TimezoneRow({
 
         {/* City/Country + Current Time (sticky on desktop, scrolls on mobile) */}
         <div
-          ref={stickyRef}
+          ref={infoRef}
           className={cn(
             "w-full lg:w-64 shrink-0 px-0 py-3 lg:px-2 lg:py-0 lg:sticky lg:left-0 lg:z-20 bg-white lg:bg-transparent shadow-[2px_0_4px_-2px_rgba(0,0,0,0.05)] lg:shadow-none flex items-center mb-1 lg:mb-0 lg:mr-3"
           )}
