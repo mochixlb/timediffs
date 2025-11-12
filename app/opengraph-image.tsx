@@ -12,14 +12,16 @@ export const contentType = "image/png";
 export default async function Image() {
   // Match app's color scheme: foreground is hsl(240 5.3% 26.1%) ≈ #3f3f46
   // muted-foreground is hsl(240 3.8% 46.1%) ≈ #6b6b6b
+  // muted background is hsl(240 4.8% 95.9%) ≈ #f4f4f5
   const foreground = "#3f3f46";
   const mutedForeground = "#6b6b6b";
+  const mutedBackground = "#f4f4f5";
 
   return new ImageResponse(
     (
       <div
         style={{
-          background: "#ffffff",
+          background: mutedBackground,
           width: "100%",
           height: "100%",
           display: "flex",
