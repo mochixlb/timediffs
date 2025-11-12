@@ -40,55 +40,26 @@ export function TimezoneComparison() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <div className="w-full max-w-[1920px] mx-auto px-3 py-4 lg:px-6 lg:py-8 xl:px-8 flex-1">
+      <div className="w-full max-w-[1920px] mx-auto px-3 py-4 lg:px-6 lg:py-8 xl:px-8 flex-1 pb-24 lg:pb-0 mb-16 lg:mb-0">
         {/* Header */}
         <header className="mb-6 lg:mb-8">
-          {/* Mobile Layout: Stacked (< 1024px) */}
-          <div className="flex flex-col lg:hidden gap-4">
-            {/* Logo/Title - Responsive scaling */}
-            <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
-              <LogoIcon className="h-5 w-5 sm:h-[22px] sm:w-[22px] md:h-6 md:w-6 text-foreground shrink-0 transition-all duration-200" />
-              <h1 className="text-lg sm:text-xl md:text-xl font-medium tracking-tight text-foreground transition-all duration-200">
+          {/* Mobile Layout: Top Controls (< 1024px) */}
+          <div className="flex flex-col lg:hidden gap-5">
+            {/* Logo/Title - Enhanced mobile styling */}
+            <div className="flex items-center gap-3.5 sm:gap-4">
+              <LogoIcon className="h-7 w-7 sm:h-8 sm:w-8 text-foreground shrink-0 transition-all duration-200" />
+              <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground transition-all duration-200">
                 timediffs.app
               </h1>
             </div>
 
-            {/* Controls - Two-row layout for better mobile UX */}
-            <div className="flex flex-col gap-2">
-              {/* Primary Actions Row: Add and Date */}
-              <div className="flex flex-row items-center gap-2">
-                <div className="flex-1 min-w-0">
-                  <TimezonePicker />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <DatePicker />
-                </div>
+            {/* Top Controls: Date, Time Format, Share */}
+            <div className="flex flex-row items-center gap-2">
+              <div className="flex-1 min-w-0">
+                <DatePicker />
               </div>
-              
-              {/* Secondary Actions Row: Time format, Share, Edit */}
-              <div className="flex flex-row items-center gap-2">
-                <TimeFormatToggle />
-                <CopyLinkButton />
-                {/* Edit Mode Toggle - Icon-only on mobile */}
-                {timezoneDisplays.length > 0 && (
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsEditMode(!isEditMode)}
-                    className={cn(
-                      "h-11 w-11 p-0 border-slate-300 bg-white text-slate-700 hover:bg-slate-50",
-                      isEditMode && "bg-slate-100"
-                    )}
-                    aria-label={isEditMode ? "Exit edit mode" : "Enter edit mode"}
-                    title={isEditMode ? "Exit edit mode" : "Enter edit mode"}
-                  >
-                    {isEditMode ? (
-                      <Check className="h-4 w-4" />
-                    ) : (
-                      <Edit2 className="h-4 w-4" />
-                    )}
-                  </Button>
-                )}
-              </div>
+              <TimeFormatToggle />
+              <CopyLinkButton />
             </div>
           </div>
 
@@ -132,9 +103,9 @@ export function TimezoneComparison() {
             </div>
           </div>
         </header>
-        <main>
+        <main className="min-h-[60vh] lg:min-h-0">
           {timezoneDisplays.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="flex flex-col items-center justify-center py-20 lg:py-20 text-center">
               <p className="text-muted-foreground text-sm lg:text-base">
                 No timezones added yet. Add one to get started.
               </p>
@@ -147,6 +118,36 @@ export function TimezoneComparison() {
           )}
         </main>
       </div>
+      
+      {/* Mobile Bottom Action Bar - Primary Actions */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] safe-area-inset-bottom">
+        <div className="w-full max-w-[1920px] mx-auto px-4 py-4">
+          <div className="flex flex-row items-center gap-3">
+            <div className="flex-1 min-w-0">
+              <TimezonePicker />
+            </div>
+            {timezoneDisplays.length > 0 && (
+              <Button
+                variant="outline"
+                onClick={() => setIsEditMode(!isEditMode)}
+                className={cn(
+                  "h-12 w-12 p-0 border-slate-300 bg-white text-slate-700 hover:bg-slate-50 shrink-0 touch-manipulation",
+                  isEditMode && "bg-slate-100"
+                )}
+                aria-label={isEditMode ? "Exit edit mode" : "Enter edit mode"}
+                title={isEditMode ? "Exit edit mode" : "Enter edit mode"}
+              >
+                {isEditMode ? (
+                  <Check className="h-5 w-5" />
+                ) : (
+                  <Edit2 className="h-5 w-5" />
+                )}
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+      
       <Footer />
       {showToast && detectedTimezone && (
         <Toast

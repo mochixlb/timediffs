@@ -144,16 +144,16 @@ export function TimezoneRow({
                   </button>
                 </div>
               )}
-              <div className="flex flex-col gap-1 min-w-0">
-                <div className="flex items-baseline gap-1.5 min-w-0">
-                  <span className="text-lg lg:text-sm font-semibold text-slate-900 leading-tight tracking-tight truncate">
+              <div className="flex flex-col gap-1.5 min-w-0">
+                <div className="flex items-baseline gap-2 min-w-0">
+                  <span className="text-xl lg:text-base font-semibold text-slate-900 leading-tight tracking-tight truncate">
                     {display.timezone.city}
                   </span>
-                  <span className="text-xs lg:text-[11px] text-slate-600 leading-tight tracking-tight font-medium shrink-0">
+                  <span className="text-sm lg:text-xs text-slate-600 leading-tight tracking-tight font-medium shrink-0">
                     {display.offsetDisplay}
                   </span>
                 </div>
-                <span className="text-xs lg:text-[11px] text-slate-500 leading-tight tracking-tight truncate">
+                <span className="text-sm lg:text-xs text-slate-500 leading-tight tracking-tight truncate">
                   {display.timezone.country}
                 </span>
               </div>
@@ -170,11 +170,11 @@ export function TimezoneRow({
                   <GripHorizontal className="h-4 w-4" />
                 </button>
               ) : (
-                <div className="flex flex-col items-end gap-1">
-                  <span className="text-2xl font-semibold tracking-tight text-foreground leading-tight lg:text-base">
+                <div className="flex flex-col items-end gap-1.5">
+                  <span className="text-2xl lg:text-lg font-semibold tracking-tight text-foreground leading-tight tabular-nums">
                     {display.formattedTime}
                   </span>
-                  <span className="text-xs lg:text-[11px] text-muted-foreground leading-tight tracking-tight">
+                  <span className="text-sm lg:text-xs text-muted-foreground leading-tight tracking-tight">
                     {display.formattedDate}
                   </span>
                 </div>
