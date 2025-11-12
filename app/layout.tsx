@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
-import { TimezoneProvider } from "@/contexts/timezone-context";
+import { TimezoneProviderWrapper } from "@/components/timezone-provider-wrapper";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -29,7 +29,7 @@ export default function RootLayout({
       <body className={GeistSans.className}>
         <NuqsAdapter>
           <Suspense fallback={<LoadingSpinner />}>
-            <TimezoneProvider>{children}</TimezoneProvider>
+            <TimezoneProviderWrapper>{children}</TimezoneProviderWrapper>
           </Suspense>
         </NuqsAdapter>
       </body>
