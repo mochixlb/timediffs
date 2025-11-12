@@ -1,7 +1,7 @@
 {
   "name": "Timediffs - Timezone Comparison Tool",
   "short_name": "Timediffs",
-  "description": "Compare multiple timezones side-by-side with a clean, peaceful design",
+  "description": "Compare multiple timezones side-by-side",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -14,4 +14,3 @@
     }
   ]
 }
-

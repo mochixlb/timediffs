@@ -17,7 +17,6 @@ interface ErrorBoundaryState {
 
 /**
  * Error boundary component that catches React errors in its children.
- * Provides a clean, minimal error UI that matches the app's design.
  */
 export class ErrorBoundary extends Component<
   ErrorBoundaryProps,
@@ -51,7 +50,10 @@ export class ErrorBoundary extends Component<
         <div className="flex items-center justify-center min-h-[400px] bg-background">
           <div className="flex flex-col items-center gap-4 max-w-md mx-auto px-4 text-center">
             <div className="flex items-center justify-center w-12 h-12 rounded-full bg-slate-50">
-              <AlertTriangle className="h-6 w-6 text-slate-500" strokeWidth={1.5} />
+              <AlertTriangle
+                className="h-6 w-6 text-slate-500"
+                strokeWidth={1.5}
+              />
             </div>
             <div className="space-y-2">
               <h2 className="text-lg font-semibold text-foreground">
@@ -78,4 +80,3 @@ export class ErrorBoundary extends Component<
     return this.props.children;
   }
 }
-

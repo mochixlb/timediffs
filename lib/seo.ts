@@ -66,8 +66,7 @@ const FALLBACK_URL = "https://timediffs.vercel.app";
 export const siteConfig = {
   name: "timediffs.app",
   url: validatedSiteUrl || FALLBACK_URL,
-  description:
-    "Compare multiple timezones side-by-side with a clean, peaceful design",
+  description: "A simple tool for comparing timezones",
 } as const;
 
 /**

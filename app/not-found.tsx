@@ -7,7 +7,6 @@ import { Footer } from "@/components/footer";
 /**
  * 404 Not Found page.
  * Displays when a user navigates to a page that doesn't exist.
- * Clean, tasteful design with a slightly whimsical but professional message.
  */
 export default function NotFound() {
   return (
@@ -20,7 +19,9 @@ export default function NotFound() {
             className="inline-flex items-center gap-2 text-foreground hover:opacity-80 transition-opacity"
           >
             <LogoIcon className="h-5 w-5 text-foreground shrink-0" />
-            <h1 className="text-xl font-medium tracking-tight">timediffs.app</h1>
+            <h1 className="text-xl font-medium tracking-tight">
+              timediffs.app
+            </h1>
           </Link>
         </header>
 
@@ -40,9 +41,8 @@ export default function NotFound() {
                 Page not found
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Looks like this page is in a different timezone—one that
-                doesn't exist. Don't worry, you can always find your way back
-                home.
+                Looks like this page is in a different timezone—one that doesn't
+                exist. Don't worry, you can always find your way back home.
               </p>
             </div>
 
@@ -60,4 +60,3 @@ export default function NotFound() {
     </div>
   );
 }
-

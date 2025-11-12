@@ -44,7 +44,7 @@ export default async function Image() {
             maxWidth: 800,
           }}
         >
-          Compare multiple timezones side-by-side with a clean, peaceful design
+          A simple tool for comparing timezones
         </div>
       </div>
     ),
@@ -53,4 +53,3 @@ export default async function Image() {
     }
   );
 }
-
