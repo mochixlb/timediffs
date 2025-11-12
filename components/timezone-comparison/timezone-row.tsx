@@ -4,7 +4,7 @@ import { X, Home, GripVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { TimezoneDisplay } from "@/types";
 import { HourCell } from "./hour-cell";
-import { useScrollSync } from "@/hooks/use-scroll-sync";
+import { useHorizontalSticky } from "@/hooks/use-scroll-sync";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 
 interface TimezoneRowProps {
@@ -36,7 +36,10 @@ export function TimezoneRow({
   scrollContainerRef,
 }: TimezoneRowProps) {
   const isMobile = useIsMobile();
-  const scrollLeft = useScrollSync(scrollContainerRef, isMobile && !isDragging);
+  const stickyRef = useHorizontalSticky<HTMLDivElement>(
+    scrollContainerRef,
+    isMobile && !isDragging
+  );
   return (
     <div>
       <div
@@ -99,13 +102,10 @@ export function TimezoneRow({
 
         {/* City/Country + Current Time (sticky on desktop, scrolls on mobile) */}
         <div
+          ref={stickyRef}
           className={cn(
-            "w-full lg:w-64 shrink-0 px-0 py-3 lg:px-2 lg:py-0 lg:sticky lg:left-0 lg:z-20 bg-white lg:bg-transparent shadow-[2px_0_4px_-2px_rgba(0,0,0,0.05)] lg:shadow-none flex items-center mb-1 lg:mb-0 lg:mr-3",
-            isMobile && !isDragging && "will-change-transform"
+            "w-full lg:w-64 shrink-0 px-0 py-3 lg:px-2 lg:py-0 lg:sticky lg:left-0 lg:z-20 bg-white lg:bg-transparent shadow-[2px_0_4px_-2px_rgba(0,0,0,0.05)] lg:shadow-none flex items-center mb-1 lg:mb-0 lg:mr-3"
           )}
-          style={{
-            transform: isMobile && !isDragging ? `translate3d(${scrollLeft}px, 0, 0)` : undefined,
-          }}
         >
           <div className="flex w-full items-center justify-between gap-3 min-w-0">
             <div className="flex flex-col gap-1 min-w-0">
