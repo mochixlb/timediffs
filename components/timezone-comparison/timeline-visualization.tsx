@@ -144,7 +144,7 @@ export function TimelineVisualization({
             {timezoneDisplays.map((display, index) => (
               <div
                 key={display.timezone.id}
-                className="mb-0 lg:mb-4 lg:last:mb-0"
+                className="mb-3 lg:mb-4 lg:last:mb-0 last:mb-0"
               >
                 <SortableTimezoneRow
                   display={display}

@@ -92,10 +92,7 @@ export function TimezoneRow({
         {/* City and Country Info */}
         <div
           className={cn(
-            "sticky left-0 z-20 w-32 shrink-0 px-4 py-3 lg:w-40 lg:px-2 lg:py-0 lg:static lg:z-auto bg-white lg:bg-transparent shadow-[2px_0_4px_-2px_rgba(0,0,0,0.05)] lg:shadow-none flex items-center h-[56px] lg:h-auto",
-            "border-l border-r border-slate-200 lg:border-l-0 lg:border-r-0",
-            isFirst && "border-t border-slate-200 lg:border-t-0",
-            "border-b border-slate-200 lg:border-b-0"
+            "sticky left-0 z-20 w-32 shrink-0 px-4 py-3 lg:w-40 lg:px-2 lg:py-0 lg:static lg:z-auto bg-white lg:bg-transparent shadow-[2px_0_4px_-2px_rgba(0,0,0,0.05)] lg:shadow-none flex items-center h-[56px] lg:h-auto mr-4 lg:mr-3"
           )}
         >
           <div className="flex flex-col gap-1 w-full min-w-0">
@@ -116,7 +113,7 @@ export function TimezoneRow({
         {/* Current Time Display */}
         <div className="w-24 shrink-0 px-3 py-3 lg:w-28 lg:px-2 lg:py-0 flex items-center h-[56px] lg:h-auto">
           <div className="flex flex-col items-start gap-1">
-            <span className="text-base font-semibold tracking-tight text-foreground leading-tight">
+            <span className="text-xl font-semibold tracking-tight text-foreground leading-tight lg:text-base">
               {display.formattedTime}
             </span>
             <span className="text-[11px] text-muted-foreground leading-tight tracking-tight">
