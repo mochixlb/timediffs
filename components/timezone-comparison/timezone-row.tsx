@@ -16,6 +16,7 @@ interface TimezoneRowProps {
   dragHandleProps?: React.ButtonHTMLAttributes<HTMLButtonElement>;
   isDragging?: boolean;
   isEditMode?: boolean;
+  highlightedColumnIndex?: number | null;
   isFirst?: boolean;
   isLast?: boolean;
   scrollContainerRef?: React.RefObject<HTMLElement | null>;
@@ -32,6 +33,7 @@ export function TimezoneRow({
   dragHandleProps,
   isDragging = false,
   isEditMode = false,
+  highlightedColumnIndex = null,
   isFirst = false,
   isLast = false,
   scrollContainerRef,
@@ -185,7 +187,7 @@ export function TimezoneRow({
           <div className="relative flex w-full pl-0 lg:pl-4 flex-1 xl:min-w-0 items-center">
             <div
               data-timeline-flex-container
-              className="relative flex items-center rounded-md border border-slate-400 overflow-hidden w-[1344px] lg:w-[1200px] xl:w-full xl:flex-1 shrink-0 h-[52px] lg:h-auto"
+              className="relative flex items-center rounded-md border border-slate-400 overflow-hidden w-[calc(100%*(24/7))] lg:w-[1200px] xl:w-full xl:flex-1 shrink-0 h-[52px] lg:h-auto"
             >
               {referenceHours.map((referenceHourDate, hourIndex) => (
                 <HourCell
@@ -194,6 +196,11 @@ export function TimezoneRow({
                   timezoneId={display.timezone.id}
                   hourIndex={hourIndex}
                   totalHours={referenceHours.length}
+                  isHighlightedMobile={
+                    isMobile &&
+                    highlightedColumnIndex !== null &&
+                    hourIndex === highlightedColumnIndex
+                  }
                 />
               ))}
             </div>

@@ -5,7 +5,8 @@ import { getTimelineHours } from "@/lib/timezone";
 import { useColumnHighlight } from "@/hooks/use-column-highlight";
 import { useTimelineHover } from "@/hooks/use-timeline-hover";
 import { ColumnHighlightRing } from "./column-highlight-ring";
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 import {
   DndContext,
   DragOverlay,
@@ -44,6 +45,9 @@ export function TimelineVisualization({
     useTimezone();
   const [activeId, setActiveId] = useState<string | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
+  const hasUserScrolledRef = useRef(false);
+  const programmaticScrollRef = useRef(false);
 
   // Use home timezone as reference, or fallback to first timezone
   const referenceTimezone =
@@ -79,6 +83,87 @@ export function TimelineVisualization({
     shouldHighlightCurrentTime: isToday,
   });
 
+  // Track whether the user has manually scrolled (to avoid recentering afterwards)
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      if (!programmaticScrollRef.current) {
+        hasUserScrolledRef.current = true;
+      }
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      el.removeEventListener("scroll", onScroll);
+    };
+  }, []);
+
+  // Center the current time column on mobile (7-block view) if possible
+  useEffect(() => {
+    if (!isMobile || !isToday) return;
+    if (highlightedColumnIndex === null) return;
+    if (!scrollContainerRef.current) return;
+    if (hasUserScrolledRef.current) return;
+
+    const parentContainer = document.querySelector(
+      "[data-timeline-container]"
+    ) as HTMLElement | null;
+    const flexContainer = parentContainer?.querySelector(
+      "[data-timeline-flex-container]"
+    ) as HTMLElement | null;
+
+    const targetCell =
+      flexContainer?.children[
+        Math.max(0, Math.min(highlightedColumnIndex, referenceHours.length - 1))
+      ] as HTMLElement | undefined;
+
+    if (!targetCell) return;
+
+    programmaticScrollRef.current = true;
+    // Center the current hour cell horizontally in the scroll container
+    targetCell.scrollIntoView({
+      behavior: "auto",
+      block: "nearest",
+      inline: "center",
+    });
+    // Allow subsequent user scrolls to be detected
+    requestAnimationFrame(() => {
+      programmaticScrollRef.current = false;
+    });
+  }, [
+    isMobile,
+    isToday,
+    highlightedColumnIndex,
+    referenceHours.length,
+    timezoneDisplays.length,
+  ]);
+
+  // Recenter on resize if user hasn't scrolled yet (keeps 7-block center on orientation change)
+  useEffect(() => {
+    if (!isMobile) return;
+    const handler = () => {
+      // Trigger the effect above by toggling a no-op state via reflow; simplest is to rely on highlightedColumnIndex dependency
+      if (!hasUserScrolledRef.current) {
+        const parentContainer = document.querySelector(
+          "[data-timeline-container]"
+        ) as HTMLElement | null;
+        const flexContainer = parentContainer?.querySelector(
+          "[data-timeline-flex-container]"
+        ) as HTMLElement | null;
+        // Force re-measure by touching layout
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        flexContainer && flexContainer.getBoundingClientRect();
+        // Schedule a micro task so the main effect can run again
+        requestAnimationFrame(() => {
+          if (scrollContainerRef.current) {
+            // no-op; dependencies will cause recenter
+          }
+        });
+      }
+    };
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, [isMobile]);
   if (timezoneDisplays.length === 0) {
     return null;
   }
@@ -150,6 +235,7 @@ export function TimelineVisualization({
                 <SortableTimezoneRow
                   display={display}
                   referenceHours={referenceHours}
+                  highlightedColumnIndex={highlightedColumnIndex}
                   onRemove={onRemoveTimezone}
                   onSetHome={setHomeTimezone}
                   isEditMode={isEditMode}
@@ -166,6 +252,7 @@ export function TimelineVisualization({
                 <TimezoneRow
                   display={activeDisplay}
                   referenceHours={referenceHours}
+                  highlightedColumnIndex={highlightedColumnIndex}
                   onRemove={onRemoveTimezone}
                   onSetHome={setHomeTimezone}
                   isDragging

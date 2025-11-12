@@ -9,6 +9,7 @@ interface HourCellProps {
   timezoneId: string;
   hourIndex: number;
   totalHours: number;
+  isHighlightedMobile?: boolean;
 }
 
 /**
@@ -21,6 +22,7 @@ export function HourCell({
   timezoneId,
   hourIndex,
   totalHours,
+  isHighlightedMobile = false,
 }: HourCellProps) {
   const { timeFormat } = useTimezone();
   const hourInTz = parseInt(
@@ -47,6 +49,8 @@ export function HourCell({
 
   const timeOfDay = getTimeOfDay(hourInTz);
   const config = isNewDay ? NEW_DAY_CONFIG : TIME_OF_DAY_CONFIG[timeOfDay];
+  const textPrimaryClass = isHighlightedMobile ? "text-slate-950" : config.text;
+  const textMutedClass = isHighlightedMobile ? "text-slate-900" : config.textMuted;
 
   const isFirstHour = hourIndex === 0;
   const isLastHour = hourIndex === totalHours - 1;
@@ -54,7 +58,7 @@ export function HourCell({
   return (
     <div
       className={cn(
-        "relative flex flex-col items-center justify-center h-[52px] lg:h-auto lg:min-h-[38px] w-[56px] lg:w-[50px] xl:flex-1 shrink-0",
+        "relative flex flex-col items-center justify-center h-[52px] lg:h-auto lg:min-h-[38px] w-[calc(100%/24)] lg:w-[50px] xl:flex-1 shrink-0",
         config.bg,
         !isLastHour && "border-r border-slate-200",
         isFirstHour && "rounded-l-md",
@@ -62,12 +66,15 @@ export function HourCell({
       )}
       title={`${hourInTz}:00`}
     >
+      {isHighlightedMobile ? (
+        <div className="absolute inset-0 bg-slate-400/20 pointer-events-none" />
+      ) : null}
       {isNewDay && monthLabel && dayLabel ? (
         <div className="flex flex-col items-center gap-[2px] z-10">
           <span
             className={cn(
               "text-sm lg:text-xs font-semibold leading-tight tracking-tight",
-              config.text
+              textPrimaryClass
             )}
           >
             {monthLabel}
@@ -75,7 +82,7 @@ export function HourCell({
           <span
             className={cn(
               "text-[10px] leading-tight tracking-tight",
-              config.textMuted
+              textMutedClass
             )}
           >
             {dayLabel}
@@ -86,7 +93,7 @@ export function HourCell({
           <span
             className={cn(
               "text-sm lg:text-xs font-semibold leading-tight tracking-tight",
-              config.text
+              textPrimaryClass
             )}
           >
             {hourInTz.toString().padStart(2, "0")}
@@ -97,7 +104,7 @@ export function HourCell({
           <span
             className={cn(
               "text-sm lg:text-xs font-semibold leading-tight tracking-tight",
-              config.text
+              textPrimaryClass
             )}
           >
             {hour12}
@@ -105,7 +112,7 @@ export function HourCell({
           <span
             className={cn(
               "text-[10px] leading-tight tracking-tight",
-              config.textMuted
+              textMutedClass
             )}
           >
             {amPm}
