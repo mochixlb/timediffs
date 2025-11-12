@@ -182,22 +182,24 @@ export function TimezoneRow({
         </div>
 
         {/* Timeline */}
-        <div className="relative flex w-full pl-0 lg:pl-4 flex-1 xl:min-w-0 items-center">
-          <div
-            data-timeline-flex-container
-            className="relative flex items-center rounded-md border border-slate-400 overflow-hidden w-[1344px] lg:w-[1200px] xl:w-full xl:flex-1 shrink-0 h-[52px] lg:h-auto"
-          >
-            {referenceHours.map((referenceHourDate, hourIndex) => (
-              <HourCell
-                key={hourIndex}
-                referenceHourDate={referenceHourDate}
-                timezoneId={display.timezone.id}
-                hourIndex={hourIndex}
-                totalHours={referenceHours.length}
-              />
-            ))}
+        {!(isMobile && isEditMode) && (
+          <div className="relative flex w-full pl-0 lg:pl-4 flex-1 xl:min-w-0 items-center">
+            <div
+              data-timeline-flex-container
+              className="relative flex items-center rounded-md border border-slate-400 overflow-hidden w-[1344px] lg:w-[1200px] xl:w-full xl:flex-1 shrink-0 h-[52px] lg:h-auto"
+            >
+              {referenceHours.map((referenceHourDate, hourIndex) => (
+                <HourCell
+                  key={hourIndex}
+                  referenceHourDate={referenceHourDate}
+                  timezoneId={display.timezone.id}
+                  hourIndex={hourIndex}
+                  totalHours={referenceHours.length}
+                />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
