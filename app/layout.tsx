@@ -41,14 +41,7 @@ export const metadata: Metadata = {
     shortcut: "/icon.svg",
     apple: "/icon.svg",
   },
-  manifest: "/manifest.json",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: siteConfig.name,
-  },
   other: {
-    "theme-color": "#ffffff",
     ...(baseMetadata.other || {}),
   },
 };
