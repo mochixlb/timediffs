@@ -101,8 +101,21 @@ export function TimezoneRow({
         <div
           ref={infoRef}
           className={cn(
-            "w-full lg:w-64 shrink-0 px-0 py-3 lg:px-2 lg:py-0 lg:sticky lg:left-0 lg:z-20 bg-white lg:bg-transparent shadow-[2px_0_4px_-2px_rgba(0,0,0,0.05)] lg:shadow-none flex items-center mb-1 lg:mb-0 lg:mr-3"
+            "w-full lg:w-64 shrink-0 px-0 py-3 lg:px-2 lg:py-0 lg:sticky lg:left-0 lg:z-20 bg-white lg:bg-transparent shadow-[2px_0_4px_-2px_rgba(0,0,0,0.05)] lg:shadow-none flex items-center mb-1 lg:mb-0 lg:mr-3",
+            // Prevent flickering on iOS by creating a compositing layer
+            isMobile && "transform-gpu"
           )}
+          style={
+            isMobile
+              ? {
+                  // Force hardware acceleration to prevent flickering
+                  transform: "translateZ(0)",
+                  WebkitTransform: "translateZ(0)",
+                  backfaceVisibility: "hidden" as const,
+                  WebkitBackfaceVisibility: "hidden" as const,
+                }
+              : undefined
+          }
         >
           <div className="flex w-full items-center justify-between gap-3 min-w-0">
             <div className="flex items-center gap-2 min-w-0">
