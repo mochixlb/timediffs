@@ -24,7 +24,10 @@
 }
 
 @layer base {
-  * {
+  /* Exclude Next.js dev portal from ultra-global rules to avoid clobbering DevTools UI */
+  *:where(:not(nextjs-portal):not(nextjs-portal *)),
+  *:where(:not(nextjs-portal):not(nextjs-portal *))::before,
+  *:where(:not(nextjs-portal):not(nextjs-portal *))::after {
     border-color: hsl(var(--border));
   }
   body {
@@ -56,14 +59,4 @@
   }
 }
 
-@layer base {
-  /* Prevent Radix Dialog from hiding content during Framer Motion exit animation */
-  /* When forceMount is used, keep content visible during exit animation */
-  [data-radix-dialog-content][data-state="closed"] {
-    pointer-events: none;
-  }
-  
-  [data-radix-dialog-overlay][data-state="closed"] {
-    pointer-events: none;
-  }
-}
+/* Removed unused Radix Dialog closed-state pointer rules (no forceMount-closed state kept in DOM) */

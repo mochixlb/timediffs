@@ -12,8 +12,6 @@ const DrawerTrigger = DialogPrimitive.Trigger
 
 const DrawerClose = DialogPrimitive.Close
 
-const DrawerPortal = DialogPrimitive.Portal
-
 // Animation configuration - consistent with codebase style
 const DRAWER_TRANSITION: Transition = {
   type: "spring",
@@ -26,32 +24,6 @@ const OVERLAY_TRANSITION: Transition = {
   duration: 0.2,
   ease: "easeOut",
 }
-
-interface DrawerOverlayProps
-  extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay> {}
-
-const DrawerOverlay = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Overlay>,
-  DrawerOverlayProps
->(({ className, ...props }, ref) => (
-  <DialogPrimitive.Overlay
-    ref={ref}
-    asChild
-    {...props}
-  >
-    <motion.div
-      className={cn(
-        "fixed inset-0 z-50 bg-black/50",
-        className
-      )}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={OVERLAY_TRANSITION}
-    />
-  </DialogPrimitive.Overlay>
-))
-DrawerOverlay.displayName = DialogPrimitive.Overlay.displayName
 
 interface DrawerContentProps
   extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
@@ -74,7 +46,7 @@ const DrawerContent = React.forwardRef<
   }, [open])
 
   return (
-    <DrawerPortal>
+    <DialogPrimitive.Portal>
       <AnimatePresence>
         {open && (
           <>
@@ -125,7 +97,7 @@ const DrawerContent = React.forwardRef<
           </>
         )}
       </AnimatePresence>
-    </DrawerPortal>
+    </DialogPrimitive.Portal>
   )
 })
 DrawerContent.displayName = DialogPrimitive.Content.displayName
@@ -158,43 +130,12 @@ const DrawerFooter = ({
 )
 DrawerFooter.displayName = "DrawerFooter"
 
-const DrawerTitle = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Title>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
->(({ className, ...props }, ref) => (
-  <DialogPrimitive.Title
-    ref={ref}
-    className={cn(
-      "text-lg font-semibold text-foreground",
-      className
-    )}
-    {...props}
-  />
-))
-DrawerTitle.displayName = DialogPrimitive.Title.displayName
-
-const DrawerDescription = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Description>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
->(({ className, ...props }, ref) => (
-  <DialogPrimitive.Description
-    ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
-    {...props}
-  />
-))
-DrawerDescription.displayName = DialogPrimitive.Description.displayName
-
 export {
   Drawer,
-  DrawerPortal,
-  DrawerOverlay,
   DrawerTrigger,
   DrawerClose,
   DrawerContent,
   DrawerHeader,
   DrawerFooter,
-  DrawerTitle,
-  DrawerDescription,
 }
 
