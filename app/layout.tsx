@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { TimezoneProviderWrapper } from "@/components/timezone-provider-wrapper";
@@ -53,13 +54,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Get the nonce from the request headers (set by middleware)
+  const headersList = await headers();
+  const nonce = headersList.get("x-nonce") || undefined;
+
   return (
-    <html lang="en">
+    <html lang="en" nonce={nonce}>
       <body className={GeistSans.className}>
         <NuqsAdapter>
           <Suspense fallback={<LoadingSpinner />}>

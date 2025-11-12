@@ -5,7 +5,6 @@ import { getTimelineHours } from "@/lib/timezone";
 import { useColumnHighlight } from "@/hooks/use-column-highlight";
 import { useTimelineHover } from "@/hooks/use-timeline-hover";
 import { ColumnHighlightRing } from "./column-highlight-ring";
-import { cn } from "@/lib/utils";
 import { useState, useMemo } from "react";
 import {
   DndContext,

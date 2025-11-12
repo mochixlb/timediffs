@@ -2,9 +2,13 @@
  * SEO configuration and utilities
  */
 
+// Get site URL from environment variable with fallback
+// During build, we allow the fallback. In production runtime, the env var should be set.
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL;
+
 export const siteConfig = {
   name: "timediffs.app",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://timediffs.app",
+  url: SITE_URL || "https://timediffs.vercel.app",
   description:
     "Compare multiple timezones side-by-side with a clean, peaceful design",
 } as const;
