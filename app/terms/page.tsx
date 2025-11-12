@@ -1,11 +1,20 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { LogoIcon } from "@/components/logo-icon";
+import { createMetadata, getWebPageStructuredData } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createMetadata({
   title: "Terms of Use - timediffs.app",
-  description: "Terms of use for timediffs.app",
-};
+  description:
+    "Terms of use for timediffs.app - A free, open-source timezone comparison tool provided as-is.",
+  path: "/terms",
+  structuredData: getWebPageStructuredData({
+    title: "Terms of Use - timediffs.app",
+    description:
+      "Terms of use for timediffs.app - A free, open-source timezone comparison tool provided as-is.",
+    path: "/terms",
+  }),
+});
 
 export default function TermsPage() {
   return (

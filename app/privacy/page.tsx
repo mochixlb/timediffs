@@ -1,11 +1,20 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { LogoIcon } from "@/components/logo-icon";
+import { createMetadata, getWebPageStructuredData } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createMetadata({
   title: "Privacy Policy - timediffs.app",
-  description: "Privacy policy for timediffs.app - We don't collect your data.",
-};
+  description:
+    "Privacy policy for timediffs.app - We don't collect your data. Everything runs in your browser, and your preferences stay with you.",
+  path: "/privacy",
+  structuredData: getWebPageStructuredData({
+    title: "Privacy Policy - timediffs.app",
+    description:
+      "Privacy policy for timediffs.app - We don't collect your data. Everything runs in your browser, and your preferences stay with you.",
+    path: "/privacy",
+  }),
+});
 
 export default function PrivacyPage() {
   return (
