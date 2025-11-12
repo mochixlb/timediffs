@@ -102,9 +102,6 @@ export function TimelineVisualization({
     <div
       ref={scrollContainerRef}
       className="w-full overflow-x-auto lg:overflow-x-auto xl:overflow-x-visible"
-      style={{
-        WebkitOverflowScrolling: "touch", // Enable smooth momentum scrolling on iOS
-      }}
       tabIndex={0}
       role="region"
       aria-label="Timezone comparison timeline"

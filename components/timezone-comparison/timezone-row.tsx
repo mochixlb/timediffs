@@ -7,7 +7,6 @@ import type { TimezoneDisplay } from "@/types";
 import { HourCell } from "./hour-cell";
 import { useScrollFollow } from "@/hooks/use-scroll-follow";
 import { useIsMobile } from "@/hooks/use-is-mobile";
-import { useIsIOS } from "@/hooks/use-is-ios";
 
 interface TimezoneRowProps {
   display: TimezoneDisplay;
@@ -38,10 +37,8 @@ export function TimezoneRow({
   scrollContainerRef,
 }: TimezoneRowProps) {
   const isMobile = useIsMobile();
-  const isIOS = useIsIOS();
   const infoRef = useRef<HTMLDivElement | null>(null);
-  const shouldScrollFollow = isMobile && !isDragging && !isIOS;
-  useScrollFollow(scrollContainerRef || { current: null }, infoRef, shouldScrollFollow);
+  useScrollFollow(scrollContainerRef || { current: null }, infoRef, isMobile && !isDragging);
   return (
     <div>
       <div
@@ -100,11 +97,11 @@ export function TimezoneRow({
           </button>
         </div>
 
-        {/* City/Country + Current Time (sticky to the left across sizes) */}
+        {/* City/Country + Current Time (sticky on desktop, scrolls on mobile) */}
         <div
           ref={infoRef}
           className={cn(
-            "w-full lg:w-64 shrink-0 px-0 py-3 lg:px-2 lg:py-0 sticky left-0 z-20 bg-white lg:bg-transparent shadow-[2px_0_4px_-2px_rgba(0,0,0,0.05)] lg:shadow-none flex items-center mb-1 lg:mb-0 lg:mr-3"
+            "w-full lg:w-64 shrink-0 px-0 py-3 lg:px-2 lg:py-0 lg:sticky lg:left-0 lg:z-20 bg-white lg:bg-transparent shadow-[2px_0_4px_-2px_rgba(0,0,0,0.05)] lg:shadow-none flex items-center mb-1 lg:mb-0 lg:mr-3"
           )}
         >
           <div className="flex w-full items-center justify-between gap-3 min-w-0">

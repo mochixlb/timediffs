@@ -22,28 +22,18 @@ export function useScrollFollow(
         targetEl.style.transform = "";
         targetEl.style.willChange = "";
         (targetEl.style as any).backfaceVisibility = "";
-        (targetEl.style as any).webkitTransform = "";
-        targetEl.style.isolation = "";
-        targetEl.style.contain = "";
       }
       return;
     }
 
     // Hint the browser for GPU acceleration and reduce painting artifacts on iOS
-    // Create a compositing layer to prevent flickering during momentum scroll
     targetEl.style.willChange = "transform";
-    targetEl.style.transform = "translateZ(0)"; // Force hardware acceleration
     (targetEl.style as any).backfaceVisibility = "hidden";
-    (targetEl.style as any).webkitTransform = "translateZ(0)";
-    targetEl.style.isolation = "isolate"; // Create new stacking context
-    targetEl.style.contain = "layout style paint"; // Isolate rendering
 
     const applyTransform = () => {
       // Round to whole pixels to minimize subpixel jitter on iOS Safari
       const x = Math.round(scrollEl.scrollLeft);
-      // Use translate3d with z=0 to maintain hardware acceleration
       targetEl.style.transform = `translate3d(${x}px, 0, 0)`;
-      (targetEl.style as any).webkitTransform = `translate3d(${x}px, 0, 0)`;
       tickingRef.current = false;
     };
 
