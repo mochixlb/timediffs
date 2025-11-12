@@ -1,7 +1,11 @@
+"use client";
+
 import { X, Home, GripVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { TimezoneDisplay } from "@/types";
 import { HourCell } from "./hour-cell";
+import { useScrollSync } from "@/hooks/use-scroll-sync";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 
 interface TimezoneRowProps {
   display: TimezoneDisplay;
@@ -13,6 +17,7 @@ interface TimezoneRowProps {
   isEditMode?: boolean;
   isFirst?: boolean;
   isLast?: boolean;
+  scrollContainerRef?: React.RefObject<HTMLElement | null>;
 }
 
 /**
@@ -28,19 +33,22 @@ export function TimezoneRow({
   isEditMode = false,
   isFirst = false,
   isLast = false,
+  scrollContainerRef,
 }: TimezoneRowProps) {
+  const isMobile = useIsMobile();
+  const scrollLeft = useScrollSync(scrollContainerRef, isMobile && !isDragging);
   return (
     <div>
       <div
         className={cn(
-          "group relative flex items-center overflow-visible h-[56px] lg:h-auto lg:min-h-[38px] lg:pt-0.5 lg:rounded-md",
+          "group relative flex flex-col lg:flex-row items-stretch overflow-visible lg:min-h-[38px] lg:pt-0.5 lg:rounded-md gap-2",
           isDragging && "bg-white shadow-lg shadow-slate-900/10"
         )}
       >
         {/* Control Buttons Group */}
         <div
           className={cn(
-            "items-center gap-2 lg:gap-1 shrink-0 mr-2 lg:mr-3",
+            "items-center gap-2 lg:gap-1 shrink-0 mb-2 mr-0 lg:mb-0 lg:mr-3",
             "lg:flex", // Always show on larger screens
             isEditMode ? "flex" : "hidden" // Show/hide on mobile based on edit mode
           )}
@@ -89,44 +97,46 @@ export function TimezoneRow({
           </button>
         </div>
 
-        {/* City and Country Info */}
+        {/* City/Country + Current Time (sticky on desktop, scrolls on mobile) */}
         <div
           className={cn(
-            "sticky left-0 z-20 w-32 shrink-0 px-4 py-3 lg:w-40 lg:px-2 lg:py-0 lg:static lg:z-auto bg-white lg:bg-transparent shadow-[2px_0_4px_-2px_rgba(0,0,0,0.05)] lg:shadow-none flex items-center h-[56px] lg:h-auto mr-4 lg:mr-3"
+            "w-full lg:w-64 shrink-0 px-0 py-3 lg:px-2 lg:py-0 lg:sticky lg:left-0 lg:z-20 bg-white lg:bg-transparent shadow-[2px_0_4px_-2px_rgba(0,0,0,0.05)] lg:shadow-none flex items-center mb-1 lg:mb-0 lg:mr-3",
+            isMobile && !isDragging && "will-change-transform"
           )}
+          style={{
+            transform: isMobile && !isDragging ? `translate3d(${scrollLeft}px, 0, 0)` : undefined,
+          }}
         >
-          <div className="flex flex-col gap-1 w-full min-w-0">
-            <div className="flex items-baseline gap-1.5 min-w-0">
-              <span className="text-sm font-semibold text-slate-900 leading-tight tracking-tight truncate">
-                {display.timezone.city}
-              </span>
-              <span className="text-[11px] text-slate-600 leading-tight tracking-tight font-medium shrink-0">
-                {display.offsetDisplay}
+          <div className="flex w-full items-center justify-between gap-3 min-w-0">
+            <div className="flex flex-col gap-1 min-w-0">
+              <div className="flex items-baseline gap-1.5 min-w-0">
+                <span className="text-lg lg:text-sm font-semibold text-slate-900 leading-tight tracking-tight truncate">
+                  {display.timezone.city}
+                </span>
+                <span className="text-xs lg:text-[11px] text-slate-600 leading-tight tracking-tight font-medium shrink-0">
+                  {display.offsetDisplay}
+                </span>
+              </div>
+              <span className="text-xs lg:text-[11px] text-slate-500 leading-tight tracking-tight truncate">
+                {display.timezone.country}
               </span>
             </div>
-            <span className="text-[11px] text-slate-500 leading-tight tracking-tight truncate">
-              {display.timezone.country}
-            </span>
-          </div>
-        </div>
-
-        {/* Current Time Display */}
-        <div className="w-24 shrink-0 px-3 py-3 lg:w-28 lg:px-2 lg:py-0 flex items-center h-[56px] lg:h-auto">
-          <div className="flex flex-col items-start gap-1">
-            <span className="text-xl font-semibold tracking-tight text-foreground leading-tight lg:text-base">
-              {display.formattedTime}
-            </span>
-            <span className="text-[11px] text-muted-foreground leading-tight tracking-tight">
-              {display.formattedDate}
-            </span>
+            <div className="flex flex-col items-end gap-1 shrink-0">
+              <span className="text-2xl font-semibold tracking-tight text-foreground leading-tight lg:text-base">
+                {display.formattedTime}
+              </span>
+              <span className="text-xs lg:text-[11px] text-muted-foreground leading-tight tracking-tight">
+                {display.formattedDate}
+              </span>
+            </div>
           </div>
         </div>
 
         {/* Timeline */}
-        <div className="relative flex pl-3 lg:pl-4 flex-1 xl:min-w-0 items-center h-[56px] lg:h-auto">
+        <div className="relative flex w-full pl-0 lg:pl-4 flex-1 xl:min-w-0 items-center">
           <div
             data-timeline-flex-container
-            className="relative flex items-center rounded-md border border-slate-400 overflow-hidden w-[1200px] lg:w-[1200px] xl:w-full xl:flex-1 shrink-0 h-[44px] lg:h-auto"
+            className="relative flex items-center rounded-md border border-slate-400 overflow-hidden w-[1344px] lg:w-[1200px] xl:w-full xl:flex-1 shrink-0 h-[52px] lg:h-auto"
           >
             {referenceHours.map((referenceHourDate, hourIndex) => (
               <HourCell

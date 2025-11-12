@@ -14,6 +14,7 @@ interface SortableTimezoneRowProps {
   isEditMode?: boolean;
   isFirst?: boolean;
   isLast?: boolean;
+  scrollContainerRef?: React.RefObject<HTMLElement | null>;
 }
 
 export function SortableTimezoneRow({
@@ -24,6 +25,7 @@ export function SortableTimezoneRow({
   isEditMode = false,
   isFirst = false,
   isLast = false,
+  scrollContainerRef,
 }: SortableTimezoneRowProps) {
   const {
     attributes,
@@ -57,6 +59,7 @@ export function SortableTimezoneRow({
         isEditMode={isEditMode}
         isFirst={isFirst}
         isLast={isLast}
+        scrollContainerRef={scrollContainerRef}
       />
     </div>
   );

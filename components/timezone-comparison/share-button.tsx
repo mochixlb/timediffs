@@ -17,11 +17,14 @@ export function CopyLinkButton() {
     const url = window.location.href;
 
     // Try Web Share API first on mobile devices (bonus feature)
-    if (navigator.share && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+    if (
+      navigator.share &&
+      /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+    ) {
       try {
         await navigator.share({
-          title: "Timezone Comparison",
-          text: "Check out this timezone comparison",
+          title: "TimeDiffs - Timezone Comparison",
+          text: "A simple tool for comparing timezones",
           url: url,
         });
         return;
@@ -62,24 +65,23 @@ export function CopyLinkButton() {
     <Button
       variant="outline"
       onClick={handleCopyLink}
-      className="h-11 min-w-[90px] lg:h-9 lg:w-[110px] gap-1.5 lg:gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 px-2.5 lg:px-4"
-      aria-label={copied ? "Link copied to clipboard" : "Copy link to share this view"}
+      className="h-11 w-11 lg:h-9 lg:w-[110px] p-0 lg:px-4 lg:gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50"
+      aria-label={
+        copied ? "Link copied to clipboard" : "Copy link to share this view"
+      }
       title={copied ? "Link copied!" : "Copy link to share this view"}
     >
       {copied ? (
         <>
           <Check className="h-4 w-4 shrink-0" />
           <span className="hidden lg:inline">Copied!</span>
-          <span className="lg:hidden text-xs">Copied</span>
         </>
       ) : (
         <>
           <Link2 className="h-4 w-4 shrink-0" />
           <span className="hidden lg:inline">Copy link</span>
-          <span className="lg:hidden text-xs">Share</span>
         </>
       )}
     </Button>
   );
 }
-

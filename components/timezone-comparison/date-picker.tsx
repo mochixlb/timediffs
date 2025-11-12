@@ -127,10 +127,10 @@ export function DatePicker() {
   const triggerButton = (
     <Button
       variant="outline"
-      className="h-11 min-w-[90px] lg:h-9 lg:min-w-[140px] gap-1.5 lg:gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 px-2.5 lg:px-4"
+      className="h-11 w-full lg:h-9 lg:min-w-[140px] lg:w-auto gap-1.5 lg:gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 px-2.5 lg:px-4"
     >
       <Calendar className="h-4 w-4 shrink-0" />
-      <span className="hidden lg:inline">{formattedDate}</span>
+      <span className="hidden lg:inline">{format(selectedDate, "MMM d")}</span>
       <span className="lg:hidden text-xs">{format(selectedDate, "MMM d")}</span>
     </Button>
   );

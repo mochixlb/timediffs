@@ -49,11 +49,13 @@ function validateSiteUrl(
 
 // Get site URL from environment variable with validation
 const isProduction = process.env.NODE_ENV === "production";
+// Only enforce URL validation in actual production deployments (e.g., Vercel), not during local builds
+const isProductionDeployment = isProduction && (process.env.VERCEL || process.env.VERCEL_ENV);
 const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 const validatedSiteUrl = validateSiteUrl(rawSiteUrl, isProduction);
 
-// In production, fail fast if URL is invalid or missing
-if (isProduction && !validatedSiteUrl) {
+// In production deployments, fail fast if URL is invalid or missing
+if (isProductionDeployment && !validatedSiteUrl) {
   const errorMessage = rawSiteUrl
     ? `Invalid NEXT_PUBLIC_SITE_URL: "${rawSiteUrl}". Must be a valid HTTPS URL without trailing slash.`
     : `NEXT_PUBLIC_SITE_URL is required in production. Please set this environment variable.`;

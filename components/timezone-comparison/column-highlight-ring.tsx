@@ -2,6 +2,7 @@
 
 import { motion, type Transition } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 
 interface ColumnHighlightRingProps {
   columnIndex: number | null;
@@ -34,6 +35,7 @@ export function ColumnHighlightRing({
   totalColumns,
   isHovered,
 }: ColumnHighlightRingProps) {
+  const isMobile = useIsMobile();
   const [measurements, setMeasurements] =
     useState<FlexContainerMeasurements | null>(null);
 
@@ -73,7 +75,8 @@ export function ColumnHighlightRing({
     };
   }, [columnIndex, totalColumns]);
 
-  if (columnIndex === null || totalColumns === 0 || !measurements) {
+  // Hide on mobile screens
+  if (isMobile || columnIndex === null || totalColumns === 0 || !measurements) {
     return null;
   }
 

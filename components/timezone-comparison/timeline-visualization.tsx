@@ -5,7 +5,7 @@ import { getTimelineHours } from "@/lib/timezone";
 import { useColumnHighlight } from "@/hooks/use-column-highlight";
 import { useTimelineHover } from "@/hooks/use-timeline-hover";
 import { ColumnHighlightRing } from "./column-highlight-ring";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import {
   DndContext,
   DragOverlay,
@@ -43,6 +43,7 @@ export function TimelineVisualization({
   const { timezoneDisplays, setHomeTimezone, reorderTimezones, selectedDate } =
     useTimezone();
   const [activeId, setActiveId] = useState<string | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Use home timezone as reference, or fallback to first timezone
   const referenceTimezone =
@@ -99,6 +100,7 @@ export function TimelineVisualization({
 
   return (
     <div
+      ref={scrollContainerRef}
       className="w-full overflow-x-auto lg:overflow-x-auto xl:overflow-x-visible"
       tabIndex={0}
       role="region"
@@ -107,7 +109,7 @@ export function TimelineVisualization({
       <div
         ref={timelineContainerRef}
         data-timeline-container
-        className="relative min-w-[1650px] lg:min-w-[1650px] xl:min-w-0"
+        className="relative min-w-0 lg:min-w-[1650px] xl:min-w-0"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
@@ -153,6 +155,7 @@ export function TimelineVisualization({
                   isEditMode={isEditMode}
                   isFirst={index === 0}
                   isLast={index === timezoneDisplays.length - 1}
+                  scrollContainerRef={scrollContainerRef}
                 />
               </div>
             ))}

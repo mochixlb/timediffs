@@ -54,7 +54,7 @@ export function HourCell({
   return (
     <div
       className={cn(
-        "relative flex flex-col items-center justify-center h-[44px] lg:h-auto lg:min-h-[38px] w-[50px] lg:w-[50px] xl:flex-1 shrink-0",
+        "relative flex flex-col items-center justify-center h-[52px] lg:h-auto lg:min-h-[38px] w-[56px] lg:w-[50px] xl:flex-1 shrink-0",
         config.bg,
         !isLastHour && "border-r border-slate-200",
         isFirstHour && "rounded-l-md",
@@ -66,7 +66,7 @@ export function HourCell({
         <div className="flex flex-col items-center gap-[2px] z-10">
           <span
             className={cn(
-              "text-xs font-semibold leading-tight tracking-tight",
+              "text-sm lg:text-xs font-semibold leading-tight tracking-tight",
               config.text
             )}
           >
@@ -85,7 +85,7 @@ export function HourCell({
         <div className="flex flex-col items-center justify-center z-10">
           <span
             className={cn(
-              "text-xs font-semibold leading-tight tracking-tight",
+              "text-sm lg:text-xs font-semibold leading-tight tracking-tight",
               config.text
             )}
           >
@@ -96,7 +96,7 @@ export function HourCell({
         <div className="flex flex-col items-center gap-[2px] z-10">
           <span
             className={cn(
-              "text-xs font-semibold leading-tight tracking-tight",
+              "text-sm lg:text-xs font-semibold leading-tight tracking-tight",
               config.text
             )}
           >

@@ -22,7 +22,7 @@ export function TimeFormatToggle() {
       variant="outline"
       onClick={toggleFormat}
       className={cn(
-        "h-11 min-w-[90px] lg:h-9 lg:min-w-[120px] gap-1.5 lg:gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 px-2.5 lg:px-4",
+        "h-11 lg:h-9 lg:min-w-[120px] lg:w-auto gap-1.5 lg:gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 px-2.5 lg:px-4",
         "transition-colors"
       )}
       aria-label={`Switch to ${
