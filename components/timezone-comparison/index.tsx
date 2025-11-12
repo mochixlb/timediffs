@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Edit2, Check } from "lucide-react";
 import { TimelineVisualization } from "./timeline-visualization";
 import { TimezonePicker } from "./timezone-picker";
@@ -11,12 +11,32 @@ import { CopyLinkButton } from "./share-button";
 import { useTimezone } from "@/contexts/timezone-context";
 import { LogoIcon } from "@/components/logo-icon";
 import { Button } from "@/components/ui/button";
+import { Toast } from "@/components/ui/toast";
 import { Footer } from "@/components/footer";
+import { parseTimezoneId } from "@/lib/timezone";
 import { cn } from "@/lib/utils";
 
 export function TimezoneComparison() {
-  const { timezoneDisplays, removeTimezone } = useTimezone();
+  const {
+    timezoneDisplays,
+    removeTimezone,
+    detectedTimezone,
+    clearDetectedTimezone,
+  } = useTimezone();
   const [isEditMode, setIsEditMode] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+
+  useEffect(() => {
+    if (detectedTimezone) {
+      setShowToast(true);
+      // Clear detected timezone after showing toast to prevent re-showing
+      const timer = setTimeout(() => {
+        setShowToast(false);
+        clearDetectedTimezone();
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [detectedTimezone, clearDetectedTimezone]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -123,6 +143,17 @@ export function TimezoneComparison() {
         </main>
       </div>
       <Footer />
+      {showToast && detectedTimezone && (
+        <Toast
+          message={`Detected your timezone: ${
+            parseTimezoneId(detectedTimezone).displayName
+          }`}
+          onClose={() => {
+            setShowToast(false);
+            clearDetectedTimezone();
+          }}
+        />
+      )}
     </div>
   );
 }

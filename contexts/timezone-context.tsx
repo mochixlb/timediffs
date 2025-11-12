@@ -35,20 +35,19 @@ interface TimezoneContextType {
   removeTimezone: (timezoneId: string) => void;
   setHomeTimezone: (timezoneId: string) => void;
   reorderTimezones: (newOrderIds: string[]) => void;
+  detectedTimezone: string | null;
+  clearDetectedTimezone: () => void;
 }
 
 const TimezoneContext = createContext<TimezoneContextType | undefined>(
   undefined
 );
 
-const DEFAULT_TIMEZONES = [
-  "America/New_York",
-  "America/Los_Angeles",
-  "Europe/London",
-  "Asia/Tokyo",
-  "Australia/Sydney",
-  "Europe/Paris",
-];
+// Backup default timezones (used if browser timezone detection fails)
+const BACKUP_TIMEZONES = ["America/New_York", "Europe/London", "Asia/Tokyo"];
+
+// Additional timezones to show alongside browser timezone (2 total)
+const ADDITIONAL_TIMEZONES = ["America/New_York", "Europe/London"];
 
 /**
  * Validates that a timezone ID exists in the available timezones.
@@ -73,16 +72,20 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
 
   // Track if we've initialized from URL to prevent overwriting user changes
   const initializedFromUrlRef = useRef(false);
+  const [detectedTimezone, setDetectedTimezone] = useState<string | null>(null);
+
+  // Detect browser timezone
+  const getBrowserTimezone = useCallback((): string | null => {
+    try {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      return isValidTimezoneId(tz) ? tz : null;
+    } catch {
+      return null;
+    }
+  }, []);
 
   // Initialize timezones from URL or defaults
-  const [timezones, setTimezones] = useState<Timezone[]>(() => {
-    // Start with defaults - will be updated from URL in useEffect if present
-    const initial = DEFAULT_TIMEZONES.map((id) => createTimezoneFromId(id));
-    if (initial.length > 0) {
-      initial[0].isHome = true;
-    }
-    return initial;
-  });
+  const [timezones, setTimezones] = useState<Timezone[]>([]);
 
   // Initialize from URL on mount (only once)
   useEffect(() => {
@@ -106,9 +109,30 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
         return;
       }
     }
-    // Mark as initialized even if no URL params (use defaults)
+
+    // No URL timezones - set up defaults (browser timezone + 2 others, or 3 backups)
+    const browserTz = getBrowserTimezone();
+    let defaultIds: string[];
+
+    if (browserTz) {
+      // Browser timezone detected: use it + 2 additional timezones (filter out duplicates)
+      defaultIds = [
+        browserTz,
+        ...ADDITIONAL_TIMEZONES.filter((tz) => tz !== browserTz).slice(0, 2),
+      ];
+      setDetectedTimezone(browserTz);
+    } else {
+      // Browser timezone not detected: use 3 backup timezones
+      defaultIds = BACKUP_TIMEZONES;
+    }
+
+    const initial = defaultIds.map((id) => createTimezoneFromId(id));
+    initial[0].isHome = true;
+    setTimezones(initial);
+
+    // Mark as initialized
     initializedFromUrlRef.current = true;
-  }, [urlState.tz, urlState.home]);
+  }, [urlState.tz, urlState.home, getBrowserTimezone]);
 
   // Use date from URL or default to today
   // When viewing today, we need to update the time in real-time
@@ -255,6 +279,10 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
     [setUrlState]
   );
 
+  const clearDetectedTimezone = useCallback(() => {
+    setDetectedTimezone(null);
+  }, []);
+
   return (
     <TimezoneContext.Provider
       value={{
@@ -267,6 +295,8 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
         removeTimezone,
         setHomeTimezone,
         reorderTimezones,
+        detectedTimezone,
+        clearDetectedTimezone,
       }}
     >
       {children}
