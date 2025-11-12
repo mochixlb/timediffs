@@ -6,11 +6,42 @@ import { parseAsArrayOf, parseAsString, parseAsStringEnum } from "nuqs";
  */
 
 /**
+ * Maximum number of timezones allowed to prevent DoS attacks and performance issues.
+ * This limit protects against:
+ * - Browser performance degradation
+ * - Memory exhaustion
+ * - UI rendering problems
+ */
+const MAX_TIMEZONES = 20;
+
+/**
  * Parser for timezone IDs array.
  * Serializes as comma-separated string: "America/New_York,Europe/London"
- * Parses back to array, filtering out empty strings.
+ * Parses back to array, filtering out empty strings and enforcing maximum limit.
  */
-export const parseAsTimezoneArray = parseAsArrayOf(parseAsString).withDefault([]);
+export const parseAsTimezoneArray = {
+  parse: (value: string): string[] => {
+    const baseParser = parseAsArrayOf(parseAsString).withDefault([]);
+    const parsed = baseParser.parse(value);
+    // Enforce maximum limit by truncating excess timezones
+    // Handle null case (shouldn't happen with withDefault, but TypeScript requires it)
+    return (parsed || []).slice(0, MAX_TIMEZONES);
+  },
+  serialize: (value: string[]): string => {
+    const baseParser = parseAsArrayOf(parseAsString).withDefault([]);
+    // Ensure we only serialize up to the maximum limit
+    const limited = value.slice(0, MAX_TIMEZONES);
+    return baseParser.serialize(limited);
+  },
+  withDefault: (defaultValue: string[]) => ({
+    parse: parseAsTimezoneArray.parse,
+    serialize: parseAsTimezoneArray.serialize,
+    defaultValue: defaultValue.slice(0, MAX_TIMEZONES),
+  }),
+};
+
+// Export the constant for use in other modules
+export { MAX_TIMEZONES };
 
 /**
  * Parser for date selection.

@@ -21,6 +21,7 @@ import {
   parseAsDate,
   parseAsTimeFormat,
   parseAsHomeTimezone,
+  MAX_TIMEZONES,
 } from "@/lib/url-parsers";
 
 export type TimeFormat = "12h" | "24h";
@@ -92,7 +93,7 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
     if (initializedFromUrlRef.current) return;
 
     // If URL has timezones, use them (validate first)
-    if (urlState.tz.length > 0) {
+    if (urlState.tz && urlState.tz.length > 0) {
       const validIds = urlState.tz.filter(isValidTimezoneId);
       if (validIds.length > 0) {
         const initial = validIds.map((id) => createTimezoneFromId(id));
@@ -220,6 +221,14 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
     setTimezones((prev) => {
       // Check if timezone already exists
       if (prev.some((tz) => tz.id === timezoneId)) {
+        return prev;
+      }
+
+      // Enforce maximum limit to prevent DoS and performance issues
+      if (prev.length >= MAX_TIMEZONES) {
+        console.warn(
+          `Maximum timezone limit (${MAX_TIMEZONES}) reached. Cannot add more timezones.`
+        );
         return prev;
       }
 
