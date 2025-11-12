@@ -4,6 +4,7 @@ import "./globals.css";
 import { TimezoneProvider } from "@/contexts/timezone-context";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense } from "react";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export const metadata: Metadata = {
   title: "Timediffs - Timezone Comparison Tool",
@@ -27,7 +28,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={GeistSans.className}>
         <NuqsAdapter>
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<LoadingSpinner />}>
             <TimezoneProvider>{children}</TimezoneProvider>
           </Suspense>
         </NuqsAdapter>
