@@ -3,9 +3,10 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+import { useTouchRipple } from "@/hooks/use-touch-ripple";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 touch-manipulation no-tap-highlight touch-active",
   {
     variants: {
       variant: {
@@ -42,12 +43,32 @@ export interface ButtonProps
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const { rippleProps } = useTouchRipple({
+      color: variant === "default" || variant === "destructive" ? "light" : "dark",
+      disabled: props.disabled,
+    });
+    
     const Comp = asChild ? Slot : "button";
+    
+    // Merge refs
+    const mergedRef = React.useCallback(
+      (node: HTMLButtonElement | null) => {
+        if (typeof ref === "function") {
+          ref(node);
+        } else if (ref) {
+          ref.current = node;
+        }
+        rippleProps.ref(node);
+      },
+      [ref, rippleProps]
+    );
+    
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
+        ref={mergedRef}
         {...props}
+        {...(asChild ? {} : rippleProps)}
       />
     );
   }

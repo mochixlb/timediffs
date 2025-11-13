@@ -7,6 +7,7 @@ import { Suspense } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { siteConfig, createMetadata, getWebApplicationStructuredData } from "@/lib/seo";
 import { Footer } from "@/components/footer";
+import { viewport } from "./viewport";
 
 const baseMetadata = createMetadata({
   title: "Timediffs - Timezone Comparison Tool",
@@ -46,6 +47,8 @@ export const metadata: Metadata = {
     ...(baseMetadata.other || {}),
   },
 };
+
+export { viewport };
 
 export default async function RootLayout({
   children,

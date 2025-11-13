@@ -36,6 +36,11 @@
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
     font-feature-settings: "rlig" 1, "calt" 1;
+    /* Prevent iOS bounce and improve touch responsiveness */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior: none;
   }
 }
 
@@ -56,6 +61,68 @@
   /* Touch manipulation for better mobile responsiveness */
   .touch-manipulation {
     touch-action: manipulation;
+  }
+  
+  /* iOS-specific touch optimizations */
+  .touch-none {
+    touch-action: none;
+    -webkit-user-drag: none;
+  }
+  
+  .touch-pan-x {
+    touch-action: pan-x;
+  }
+  
+  .touch-pan-y {
+    touch-action: pan-y;
+  }
+  
+  /* Prevent iOS tap highlight and callout menus */
+  .no-tap-highlight {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+  }
+  
+  /* Smooth momentum scrolling on iOS */
+  .scroll-touch {
+    -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
+  }
+  
+  /* Enhanced active states for touch */
+  .touch-active {
+    transition: transform 100ms ease-out, opacity 100ms ease-out;
+  }
+  
+  .touch-active:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+  
+  /* Touch ripple effect container */
+  .ripple-container {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  @keyframes ripple {
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+  
+  .ripple-effect {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(0);
+    animation: ripple 600ms ease-out;
+    pointer-events: none;
+  }
+  
+  .ripple-effect-light {
+    background: rgba(255, 255, 255, 0.3);
   }
 }
 

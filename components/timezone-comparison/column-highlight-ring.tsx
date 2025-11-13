@@ -75,8 +75,8 @@ export function ColumnHighlightRing({
     };
   }, [columnIndex, totalColumns]);
 
-  // Hide on mobile screens
-  if (isMobile || columnIndex === null || totalColumns === 0 || !measurements) {
+  // Don't render if no measurements or invalid column
+  if (columnIndex === null || totalColumns === 0 || !measurements) {
     return null;
   }
 
@@ -84,9 +84,36 @@ export function ColumnHighlightRing({
   const columnWidth = measurements.width / totalColumns;
   const columnLeft = measurements.left + columnIndex * columnWidth;
 
+  // Mobile: Show a simpler touch-optimized highlight
+  if (isMobile) {
+    return (
+      <motion.div
+        className="absolute pointer-events-none z-30 lg:hidden"
+        initial={false}
+        animate={{
+          left: columnLeft,
+          width: columnWidth,
+          opacity: 1,
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 600,
+          damping: 30,
+        }}
+        style={{
+          top: 0,
+          bottom: 0,
+        }}
+      >
+        <div className="h-full bg-blue-500/10 border-x-2 border-blue-500/30" />
+      </motion.div>
+    );
+  }
+
+  // Desktop: Full ring highlight
   return (
     <motion.div
-      className="absolute pointer-events-none z-30"
+      className="absolute pointer-events-none z-30 hidden lg:block"
       initial={false}
       animate={{
         left: columnLeft,
