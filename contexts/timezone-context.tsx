@@ -38,6 +38,7 @@ interface TimezoneContextType {
   reorderTimezones: (newOrderIds: string[]) => void;
   detectedTimezone: string | null;
   clearDetectedTimezone: () => void;
+  currentTime: Date;
 }
 
 const TimezoneContext = createContext<TimezoneContextType | undefined>(
@@ -139,14 +140,14 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
   // When viewing today, we need to update the time in real-time
   const [currentTime, setCurrentTime] = useState(() => new Date());
 
-  // Update current time every minute when viewing today
+  // Update current time every 10 seconds for smoother exact time indicator movement
   useEffect(() => {
     // Update immediately on mount
     setCurrentTime(new Date());
 
     const interval = setInterval(() => {
       setCurrentTime(new Date());
-    }, 60000); // Update every minute
+    }, 10000); // Update every 10 seconds for smoother movement
 
     return () => clearInterval(interval);
   }, []);
@@ -306,6 +307,7 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
         reorderTimezones,
         detectedTimezone,
         clearDetectedTimezone,
+        currentTime,
       }}
     >
       {children}

@@ -4,9 +4,10 @@ import { useTimezone } from "@/contexts/timezone-context";
 import { getTimelineHours } from "@/lib/timezone";
 import { useColumnHighlight } from "@/hooks/use-column-highlight";
 import { useTimelineHover } from "@/hooks/use-timeline-hover";
+import { useExactTimePosition } from "@/hooks/use-exact-time-position";
 import { ColumnHighlightRing } from "./column-highlight-ring";
-import { useState, useMemo, useRef, useEffect } from "react";
-import { useIsMobile } from "@/hooks/use-is-mobile";
+import { ExactTimeIndicator } from "./exact-time-indicator";
+import { useState, useMemo, useRef } from "react";
 import {
   DndContext,
   DragOverlay,
@@ -41,13 +42,15 @@ export function TimelineVisualization({
   onRemoveTimezone,
   isEditMode = false,
 }: TimelineVisualizationProps) {
-  const { timezoneDisplays, setHomeTimezone, reorderTimezones, selectedDate } =
-    useTimezone();
+  const {
+    timezoneDisplays,
+    setHomeTimezone,
+    reorderTimezones,
+    selectedDate,
+    currentTime,
+  } = useTimezone();
   const [activeId, setActiveId] = useState<string | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const isMobile = useIsMobile();
-  const hasUserScrolledRef = useRef(false);
-  const programmaticScrollRef = useRef(false);
 
   // Use home timezone as reference, or fallback to first timezone
   const referenceTimezone =
@@ -64,8 +67,13 @@ export function TimelineVisualization({
     handleMouseLeave,
   } = useTimelineHover(referenceHours.length);
 
-  // Calculate which column to highlight (hover or current time)
-  // Only highlight current time if viewing today's date
+  // Calculate which column to highlight (only on hover)
+  // The exact time indicator handles showing the current time position
+  const { highlightedColumnIndex } = useColumnHighlight({
+    hoveredColumnIndex,
+  });
+
+  // Check if viewing today's date for exact time indicator
   const isToday = useMemo(() => {
     const today = new Date();
     return (
@@ -75,95 +83,16 @@ export function TimelineVisualization({
     );
   }, [selectedDate]);
 
-  const { highlightedColumnIndex } = useColumnHighlight({
+  // Calculate exact time position for precise indicator
+  const exactTimePosition = useExactTimePosition({
     referenceTimezone,
     referenceHours,
-    now: isToday ? new Date() : selectedDate,
-    hoveredColumnIndex,
-    shouldHighlightCurrentTime: isToday,
+    now: isToday ? currentTime : selectedDate,
+    shouldShow: isToday,
   });
 
-  // Track whether the user has manually scrolled (to avoid recentering afterwards)
-  useEffect(() => {
-    const el = scrollContainerRef.current;
-    if (!el) return;
-    const onScroll = () => {
-      if (!programmaticScrollRef.current) {
-        hasUserScrolledRef.current = true;
-      }
-    };
-    el.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      el.removeEventListener("scroll", onScroll);
-    };
-  }, []);
 
-  // Center the current time column on mobile (7-block view) if possible
-  useEffect(() => {
-    if (!isMobile || !isToday) return;
-    if (highlightedColumnIndex === null) return;
-    if (!scrollContainerRef.current) return;
-    if (hasUserScrolledRef.current) return;
 
-    const parentContainer = document.querySelector(
-      "[data-timeline-container]"
-    ) as HTMLElement | null;
-    const flexContainer = parentContainer?.querySelector(
-      "[data-timeline-flex-container]"
-    ) as HTMLElement | null;
-
-    const targetCell =
-      flexContainer?.children[
-        Math.max(0, Math.min(highlightedColumnIndex, referenceHours.length - 1))
-      ] as HTMLElement | undefined;
-
-    if (!targetCell) return;
-
-    programmaticScrollRef.current = true;
-    // Center the current hour cell horizontally in the scroll container
-    targetCell.scrollIntoView({
-      behavior: "auto",
-      block: "nearest",
-      inline: "center",
-    });
-    // Allow subsequent user scrolls to be detected
-    requestAnimationFrame(() => {
-      programmaticScrollRef.current = false;
-    });
-  }, [
-    isMobile,
-    isToday,
-    highlightedColumnIndex,
-    referenceHours.length,
-    timezoneDisplays.length,
-  ]);
-
-  // Recenter on resize if user hasn't scrolled yet (keeps 7-block center on orientation change)
-  useEffect(() => {
-    if (!isMobile) return;
-    const handler = () => {
-      // Trigger the effect above by toggling a no-op state via reflow; simplest is to rely on highlightedColumnIndex dependency
-      if (!hasUserScrolledRef.current) {
-        const parentContainer = document.querySelector(
-          "[data-timeline-container]"
-        ) as HTMLElement | null;
-        const flexContainer = parentContainer?.querySelector(
-          "[data-timeline-flex-container]"
-        ) as HTMLElement | null;
-        // Force re-measure by touching layout
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        flexContainer && flexContainer.getBoundingClientRect();
-        // Schedule a micro task so the main effect can run again
-        requestAnimationFrame(() => {
-          if (scrollContainerRef.current) {
-            // no-op; dependencies will cause recenter
-          }
-        });
-      }
-    };
-    window.addEventListener("resize", handler);
-    return () => window.removeEventListener("resize", handler);
-  }, [isMobile]);
   if (timezoneDisplays.length === 0) {
     return null;
   }
@@ -194,7 +123,7 @@ export function TimelineVisualization({
       <div
         ref={timelineContainerRef}
         data-timeline-container
-        className="relative min-w-0 lg:min-w-[1650px] xl:min-w-0"
+        className="relative min-w-0 lg:min-w-[1650px] xl:min-w-0 mt-10"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
@@ -204,6 +133,15 @@ export function TimelineVisualization({
           totalColumns={referenceHours.length}
           isHovered={hoveredColumnIndex !== null}
         />
+
+        {/* Exact time indicator showing precise current time position */}
+        {referenceTimezone && (
+          <ExactTimeIndicator
+            position={exactTimePosition}
+            totalColumns={referenceHours.length}
+            referenceTimezoneId={referenceTimezone.timezone.id}
+          />
+        )}
 
         <DndContext
           sensors={sensors}
