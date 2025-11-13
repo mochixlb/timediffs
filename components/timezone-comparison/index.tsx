@@ -45,14 +45,6 @@ export function TimezoneComparison() {
         <header className="mb-6 lg:mb-8">
           {/* Mobile Layout: Top Controls (< 1024px) */}
           <div className="flex flex-col lg:hidden gap-5">
-            {/* Logo/Title - Enhanced mobile styling */}
-            <div className="flex items-center gap-3.5 sm:gap-4">
-              <LogoIcon className="h-7 w-7 sm:h-8 sm:w-8 text-foreground shrink-0 transition-all duration-200" />
-              <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground transition-all duration-200">
-                timediffs.app
-              </h1>
-            </div>
-
             {/* Top Controls: Date, Time Format, Share */}
             <div className="flex flex-row items-center gap-2">
               <div className="flex-1 min-w-0">
