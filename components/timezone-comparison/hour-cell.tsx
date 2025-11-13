@@ -10,6 +10,7 @@ interface HourCellProps {
   hourIndex: number;
   totalHours: number;
   isHighlightedMobile?: boolean;
+  isCurrentHour?: boolean;
 }
 
 /**
@@ -23,6 +24,7 @@ export function HourCell({
   hourIndex,
   totalHours,
   isHighlightedMobile = false,
+  isCurrentHour = false,
 }: HourCellProps) {
   const { timeFormat } = useTimezone();
   const hourInTz = parseInt(
@@ -49,8 +51,25 @@ export function HourCell({
 
   const timeOfDay = getTimeOfDay(hourInTz);
   const config = isNewDay ? NEW_DAY_CONFIG : TIME_OF_DAY_CONFIG[timeOfDay];
-  const textPrimaryClass = isHighlightedMobile ? "text-slate-950" : config.text;
-  const textMutedClass = isHighlightedMobile ? "text-slate-900" : config.textMuted;
+  
+  // Current hour gets a slightly darker/more saturated background for subtle emphasis
+  // Day: amber-100 -> amber-200, Evening: indigo-100 -> indigo-200, Night: slate-100 -> slate-200
+  const bgClass = isCurrentHour && !isNewDay
+    ? timeOfDay === "day"
+      ? "bg-amber-200"
+      : timeOfDay === "evening"
+      ? "bg-indigo-200"
+      : "bg-slate-200"
+    : isNewDay
+    ? NEW_DAY_CONFIG.bg
+    : config.bg;
+  
+  const textPrimaryClass = isHighlightedMobile 
+    ? "text-slate-950" 
+    : config.text;
+  const textMutedClass = isHighlightedMobile 
+    ? "text-slate-900" 
+    : config.textMuted;
 
   const isFirstHour = hourIndex === 0;
   const isLastHour = hourIndex === totalHours - 1;
@@ -66,7 +85,7 @@ export function HourCell({
         "lg:w-[50px]",
         // XL: Flexible width to fill available space
         "xl:flex-1",
-        config.bg,
+        bgClass,
         !isLastHour && "border-r border-slate-200",
         isFirstHour && "rounded-l-md",
         isLastHour && "rounded-r-md"

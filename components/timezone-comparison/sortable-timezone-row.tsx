@@ -16,6 +16,8 @@ interface SortableTimezoneRowProps {
   isFirst?: boolean;
   isLast?: boolean;
   scrollContainerRef?: React.RefObject<HTMLElement | null>;
+  currentHourIndex?: number | null;
+  referenceTimezoneId?: string;
 }
 
 export function SortableTimezoneRow({
@@ -28,6 +30,8 @@ export function SortableTimezoneRow({
   isFirst = false,
   isLast = false,
   scrollContainerRef,
+  currentHourIndex = null,
+  referenceTimezoneId,
 }: SortableTimezoneRowProps) {
   const {
     attributes,
@@ -63,6 +67,8 @@ export function SortableTimezoneRow({
         isFirst={isFirst}
         isLast={isLast}
         scrollContainerRef={scrollContainerRef}
+        currentHourIndex={currentHourIndex}
+        referenceTimezoneId={referenceTimezoneId}
       />
     </div>
   );

@@ -1,12 +1,14 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import { X, Home, GripVertical, GripHorizontal } from "lucide-react";
+import { formatInTimeZone } from "date-fns-tz";
 import { cn } from "@/lib/utils";
 import type { TimezoneDisplay } from "@/types";
 import { HourCell } from "./hour-cell";
 import { useScrollFollow } from "@/hooks/use-scroll-follow";
 import { useIsMobile } from "@/hooks/use-is-mobile";
+import { useTimezone } from "@/contexts/timezone-context";
 
 interface TimezoneRowProps {
   display: TimezoneDisplay;
@@ -20,6 +22,8 @@ interface TimezoneRowProps {
   isFirst?: boolean;
   isLast?: boolean;
   scrollContainerRef?: React.RefObject<HTMLElement | null>;
+  currentHourIndex?: number | null;
+  referenceTimezoneId?: string;
 }
 
 /**
@@ -37,14 +41,67 @@ export function TimezoneRow({
   isFirst = false,
   isLast = false,
   scrollContainerRef,
+  currentHourIndex = null,
+  referenceTimezoneId,
 }: TimezoneRowProps) {
   const isMobile = useIsMobile();
+  const { selectedDate, currentTime } = useTimezone();
   const infoRef = useRef<HTMLDivElement | null>(null);
   useScrollFollow(
     scrollContainerRef || { current: null },
     infoRef,
     isMobile && !isDragging
   );
+
+  // Check if viewing today's date
+  const isToday = useMemo(() => {
+    const today = new Date();
+    return (
+      selectedDate.getFullYear() === today.getFullYear() &&
+      selectedDate.getMonth() === today.getMonth() &&
+      selectedDate.getDate() === today.getDate()
+    );
+  }, [selectedDate]);
+
+  // Calculate which hour is current for this timezone row
+  // Only highlight if viewing today and we have a reference timezone
+  const currentHourIndexForRow = useMemo(() => {
+    if (!isToday || currentHourIndex === null || !referenceTimezoneId) {
+      return null;
+    }
+
+    // Get the current hour in the reference timezone
+    const now = currentTime;
+    const refCurrentHour = parseInt(
+      formatInTimeZone(now, referenceTimezoneId, "H"),
+      10
+    );
+    const refCurrentDay = parseInt(
+      formatInTimeZone(now, referenceTimezoneId, "d"),
+      10
+    );
+
+    // Find the hour index that matches the current hour in reference timezone
+    const index = referenceHours.findIndex((hourDate) => {
+      const hourInRef = parseInt(
+        formatInTimeZone(hourDate, referenceTimezoneId, "H"),
+        10
+      );
+      const dayInRef = parseInt(
+        formatInTimeZone(hourDate, referenceTimezoneId, "d"),
+        10
+      );
+      return hourInRef === refCurrentHour && dayInRef === refCurrentDay;
+    });
+
+    return index >= 0 ? index : null;
+  }, [
+    isToday,
+    currentHourIndex,
+    referenceTimezoneId,
+    currentTime,
+    referenceHours,
+  ]);
   return (
     <div>
       <div
@@ -214,6 +271,10 @@ export function TimezoneRow({
                     isMobile &&
                     highlightedColumnIndex !== null &&
                     hourIndex === highlightedColumnIndex
+                  }
+                  isCurrentHour={
+                    currentHourIndexForRow !== null &&
+                    hourIndex === currentHourIndexForRow
                   }
                 />
               ))}

@@ -4,9 +4,11 @@ import { useTimezone } from "@/contexts/timezone-context";
 import { getTimelineHours } from "@/lib/timezone";
 import { useTimelineHover } from "@/hooks/use-timeline-hover";
 import { useExactTimePosition } from "@/hooks/use-exact-time-position";
+import { useScrollToCurrentTime } from "@/hooks/use-scroll-to-current-time";
 import { ColumnHighlightRing } from "./column-highlight-ring";
 import { ExactTimeIndicator } from "./exact-time-indicator";
 import { useState, useMemo, useRef } from "react";
+import { formatInTimeZone } from "date-fns-tz";
 import {
   DndContext,
   DragOverlay,
@@ -51,20 +53,25 @@ export function TimelineVisualization({
   const [activeId, setActiveId] = useState<string | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  // Early return check must happen after basic hooks but before hooks that depend on data
+  // However, we need to ensure all hooks are always called, so we'll handle empty state differently
+  const hasTimezones = timezoneDisplays.length > 0;
+
   // Use home timezone as reference, or fallback to first timezone
-  const referenceTimezone =
-    timezoneDisplays.find((d) => d.timezone.isHome) || timezoneDisplays[0];
+  const referenceTimezone = hasTimezones
+    ? timezoneDisplays.find((d) => d.timezone.isHome) || timezoneDisplays[0]
+    : null;
   const referenceHours = referenceTimezone
     ? getTimelineHours(referenceTimezone.timezone.id, selectedDate)
     : [];
 
-  // Track mouse hover position
+  // Track mouse hover position - always call with a valid number
   const {
     timelineContainerRef,
     hoveredColumnIndex,
     handleMouseMove,
     handleMouseLeave,
-  } = useTimelineHover(referenceHours.length);
+  } = useTimelineHover(referenceHours.length || 24);
 
   // Column to highlight (only on hover - exact time indicator handles current time)
   const highlightedColumnIndex = hoveredColumnIndex;
@@ -87,6 +94,46 @@ export function TimelineVisualization({
     shouldShow: isToday,
   });
 
+  // Calculate current hour index for mobile scrolling and highlighting
+  const currentHourIndex = useMemo(() => {
+    if (!isToday || !referenceTimezone || referenceHours.length === 0) {
+      return null;
+    }
+
+    const now = currentTime;
+    const refCurrentHour = parseInt(
+      formatInTimeZone(now, referenceTimezone.timezone.id, "H"),
+      10
+    );
+    const refCurrentDay = parseInt(
+      formatInTimeZone(now, referenceTimezone.timezone.id, "d"),
+      10
+    );
+
+    const index = referenceHours.findIndex((hourDate) => {
+      const hourInRef = parseInt(
+        formatInTimeZone(hourDate, referenceTimezone.timezone.id, "H"),
+        10
+      );
+      const dayInRef = parseInt(
+        formatInTimeZone(hourDate, referenceTimezone.timezone.id, "d"),
+        10
+      );
+      return hourInRef === refCurrentHour && dayInRef === refCurrentDay;
+    });
+
+    return index >= 0 ? index : null;
+  }, [isToday, referenceTimezone, referenceHours, currentTime]);
+
+  // Scroll to current time on mobile - always call hook, even if disabled
+  useScrollToCurrentTime({
+    scrollContainerRef,
+    currentHourIndex,
+    totalHours: referenceHours.length || 24,
+    enabled: isToday && hasTimezones,
+  });
+
+  // Always call useSensors - hooks must be called unconditionally
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -102,7 +149,8 @@ export function TimelineVisualization({
     [activeId, timezoneDisplays]
   );
 
-  if (timezoneDisplays.length === 0) {
+  // Early return after all hooks have been called
+  if (!hasTimezones) {
     return null;
   }
 
@@ -174,6 +222,8 @@ export function TimelineVisualization({
                   isFirst={index === 0}
                   isLast={index === timezoneDisplays.length - 1}
                   scrollContainerRef={scrollContainerRef}
+                  currentHourIndex={currentHourIndex}
+                  referenceTimezoneId={referenceTimezone?.timezone.id}
                 />
               </div>
             ))}
@@ -200,6 +250,8 @@ export function TimelineVisualization({
                     ) ===
                     timezoneDisplays.length - 1
                   }
+                  currentHourIndex={currentHourIndex}
+                  referenceTimezoneId={referenceTimezone?.timezone.id}
                 />
               </div>
             ) : null}

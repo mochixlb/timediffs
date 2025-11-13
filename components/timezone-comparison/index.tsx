@@ -39,8 +39,8 @@ export function TimezoneComparison() {
   }, [detectedTimezone, clearDetectedTimezone]);
 
   return (
-    <div className="bg-background flex flex-col">
-      <div className="w-full max-w-[1920px] mx-auto px-3 py-4 lg:px-6 lg:py-8 xl:px-8 flex-1 pb-20 lg:pb-48">
+    <div className="bg-background flex flex-col min-h-screen lg:min-h-0">
+      <div className="w-full max-w-[1920px] mx-auto px-3 py-4 lg:px-6 lg:py-8 xl:px-8 flex-1 pb-32 lg:pb-48">
         {/* Header */}
         <header className="mb-6 lg:mb-8">
           {/* Mobile Layout: Top Controls (< 1024px) */}
@@ -103,7 +103,7 @@ export function TimezoneComparison() {
             </div>
           </div>
         </header>
-        <div className="min-h-[60vh] lg:min-h-0">
+        <div className="min-h-[calc(100vh-300px)] lg:min-h-0">
           {timezoneDisplays.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 lg:py-20 text-center">
               <p className="text-muted-foreground text-sm lg:text-base">
