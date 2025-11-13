@@ -164,7 +164,7 @@ export function TimezoneRow({
         <div
           ref={infoRef}
           className={cn(
-            "w-full lg:w-64 shrink-0 px-0 py-3 lg:px-2 lg:py-0",
+            "w-full lg:w-64 shrink-0 px-3 py-3 lg:px-2 lg:py-0",
             "lg:sticky lg:left-0 lg:z-20",
             "bg-white",
             "flex items-center mb-1 lg:mb-0 lg:mr-3"
@@ -259,14 +259,16 @@ export function TimezoneRow({
 
         {/* Timeline - Hidden on mobile when in edit mode */}
         {!(isMobile && isEditMode) && (
-          <div className="relative flex w-full pl-0 lg:pl-4 flex-1 xl:min-w-0 items-center">
+          <div className="relative flex w-full lg:w-full pl-0 lg:pl-4 flex-1 xl:min-w-0 items-center">
             <div
               data-timeline-flex-container
               className={cn(
-                "relative flex items-center rounded-md border border-slate-400 overflow-hidden shrink-0",
+                "relative flex items-center border border-slate-400 overflow-hidden shrink-0",
+                "rounded-none lg:rounded-md",
                 "h-[52px] lg:h-auto",
                 // Mobile: Show 7 hours visible, scrollable to see all 24
-                "w-[calc(100%*(24/7))]",
+                // Extend to screen edges by using viewport width
+                "w-[calc(100vw*(24/7))]",
                 // Desktop (lg): Fixed width for consistency
                 "lg:w-[1200px]",
                 // XL: Full width, flexible

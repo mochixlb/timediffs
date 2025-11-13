@@ -165,7 +165,7 @@ export function TimelineVisualization({
   return (
     <div
       ref={scrollContainerRef}
-      className="w-full overflow-x-auto lg:overflow-x-auto xl:overflow-x-visible scroll-touch"
+      className="w-screen lg:w-full overflow-x-auto lg:overflow-x-auto xl:overflow-x-visible scroll-touch -mx-3 lg:mx-0"
       tabIndex={0}
       role="region"
       aria-label="Timezone comparison timeline"
