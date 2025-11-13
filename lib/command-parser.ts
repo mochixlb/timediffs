@@ -25,21 +25,29 @@ export function preInitializeSearchIndex(): void {
 const COMMAND_PATTERNS = {
   // Add/Show patterns
   add: [
-    /(?:add|show|give me|display|include)\s+(.+?)(?:\s+time(?:zone)?)?$/i,
-    /what(?:'s| is)(?: the)? time in (.+)/i,
-    /(.+?) time(?:zone)?$/i,
+    /(?:add|show|give me|display|include|get|find|look up|search|need|want|show me|can I see)\s+(.+?)(?:\s+time\s*(?:zone)?)?$/i,
+    /what(?:'s| is)(?: the)? time\s*(?:zone)? (?:in|for|at) (.+)/i,
+    /what(?:'s| is) the timezone (?:of|for) (.+)/i,
+    /what timezone is (.+)/i,
+    /time\s*(?:zone)? (?:in|for|at) (.+)/i,
+    /timezone (?:of|for) (.+)/i,
+    /(.+?) time\s*(?:zone)?$/i,
+    /current time (?:in|for|at) (.+)/i,
   ],
 
   // Compare patterns
   compare: [
     /compare\s+(.+?)\s+(?:with|and|vs\.?|versus)\s+(.+)/i,
     /(.+?)\s+vs\.?\s+(.+)/i,
-    /(.+?)\s+and\s+(.+?)(?:\s+time(?:zone)?s?)?$/i,
-    /difference between\s+(.+?)\s+and\s+(.+)/i,
+    /(.+?)\s+and\s+(.+?)(?:\s+time\s*(?:zone)?s?)?$/i,
+    /(?:difference|time difference) (?:between|of)\s+(.+?)\s+(?:and|with)\s+(.+)/i,
+    /time difference\s+(.+?)\s+(?:and|with)\s+(.+)/i,
   ],
 
   // Remove patterns
-  remove: [/(?:remove|delete|clear)\s+(.+?)(?:\s+time(?:zone)?)?$/i],
+  remove: [
+    /(?:remove|delete|clear|hide|take away)\s+(.+?)(?:\s+time\s*(?:zone)?)?$/i,
+  ],
 
   // Clear all
   clear: [/clear\s+all/i, /remove\s+all/i, /reset/i],
@@ -52,14 +60,18 @@ function extractLocations(text: string): string[] {
   const locations: string[] = [];
   const normalizedText = text.toLowerCase().trim();
 
-  // Split by common separators
-  const parts = normalizedText.split(/\s+(?:and|with|vs\.?|versus|,)\s+/);
+  // Split by common separators (commas, and, with, vs, etc.)
+  // Handle commas with optional spaces: "city1, city2" or "city1,city2"
+  const parts = normalizedText
+    .split(/\s*,\s*/) // Split by commas first (with optional spaces)
+    .flatMap((part) => part.split(/\s+(?:and|with|vs\.?|versus)\s+/)); // Then split by other separators
 
   parts.forEach((part) => {
     // Clean up the part
     const cleaned = part
-      .replace(/time(?:zone)?s?$/i, "")
-      .replace(/^(?:in|at|for)\s+/, "")
+      .replace(/time\s*(?:zone)?s?$/i, "") // Matches "time", "timezone", "time zone", "timezones", "time zones"
+      .replace(/^(?:in|at|for|of)\s+/, "") // Remove leading prepositions
+      .replace(/[?!.,;:]+$/, "") // Remove trailing punctuation
       .trim();
 
     if (cleaned) {
@@ -122,7 +134,18 @@ export function parseCommand(input: string): CommandIntent {
     }
   }
 
-  // Check for add patterns (default)
+  // Check for add patterns
+  for (const pattern of COMMAND_PATTERNS.add) {
+    const match = trimmed.match(pattern);
+    if (match && match[1]) {
+      const timezones = extractLocations(match[1]);
+      if (timezones.length > 0) {
+        return { type: "add", timezones };
+      }
+    }
+  }
+
+  // Fallback: try to extract locations from the whole string
   const locations = extractLocations(trimmed);
   if (locations.length > 0) {
     return { type: "add", timezones: locations };

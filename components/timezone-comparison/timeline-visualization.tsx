@@ -87,10 +87,6 @@ export function TimelineVisualization({
     shouldShow: isToday,
   });
 
-  if (timezoneDisplays.length === 0) {
-    return null;
-  }
-
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -105,6 +101,10 @@ export function TimelineVisualization({
     () => timezoneDisplays.find((d) => d.timezone.id === activeId) || null,
     [activeId, timezoneDisplays]
   );
+
+  if (timezoneDisplays.length === 0) {
+    return null;
+  }
 
   return (
     <div
