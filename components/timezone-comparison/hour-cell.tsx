@@ -87,8 +87,6 @@ export function HourCell({
         "lg:w-[50px]",
         // XL: Flexible width to fill available space
         "xl:flex-1",
-        // Snap scrolling on mobile for better column alignment
-        "snap-start lg:snap-none",
         bgClass,
         !isLastHour && "border-r border-slate-200",
         isFirstHour && "rounded-l-md",
