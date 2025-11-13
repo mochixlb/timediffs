@@ -140,14 +140,14 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
   // When viewing today, we need to update the time in real-time
   const [currentTime, setCurrentTime] = useState(() => new Date());
 
-  // Update current time every 10 seconds for smoother exact time indicator movement
+  // Update current time every second for smooth real-time indicator movement
   useEffect(() => {
     // Update immediately on mount
     setCurrentTime(new Date());
 
     const interval = setInterval(() => {
       setCurrentTime(new Date());
-    }, 10000); // Update every 10 seconds for smoother movement
+    }, 1000); // Update every second for smooth real-time movement
 
     return () => clearInterval(interval);
   }, []);
