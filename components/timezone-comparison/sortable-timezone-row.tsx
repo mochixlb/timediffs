@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { motion } from "framer-motion";
 import type { TimezoneDisplay } from "@/types";
 import { TimezoneRow } from "./timezone-row";
 
@@ -56,7 +57,18 @@ export function SortableTimezoneRow({
   }, [transform, transition, isDragging]);
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <motion.div 
+      ref={setNodeRef} 
+      style={style}
+      layout
+      transition={{
+        layout: {
+          type: "spring" as const,
+          stiffness: 350,
+          damping: 35,
+        }
+      }}
+    >
       <TimezoneRow
         display={display}
         referenceHours={referenceHours}
@@ -73,6 +85,6 @@ export function SortableTimezoneRow({
         currentHourIndex={currentHourIndex}
         referenceTimezoneId={referenceTimezoneId}
       />
-    </div>
+    </motion.div>
   );
 }

@@ -10,6 +10,7 @@ import { ColumnHighlightRing } from "./column-highlight-ring";
 import { ExactTimeIndicator } from "./exact-time-indicator";
 import { useState, useMemo, useRef } from "react";
 import { formatInTimeZone } from "date-fns-tz";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   DndContext,
   DragOverlay,
@@ -35,6 +36,36 @@ interface TimelineVisualizationProps {
   onRemoveTimezone: (timezoneId: string) => void;
   isEditMode?: boolean;
 }
+
+// Animation configuration for timeline rows
+const rowAnimationVariants = {
+  initial: { 
+    opacity: 0, 
+    y: -20,
+    scale: 0.95
+  },
+  animate: (index: number) => ({ 
+    opacity: 1, 
+    y: 0,
+    scale: 1,
+    transition: {
+      type: "spring" as const,
+      stiffness: 300,
+      damping: 30,
+      mass: 0.8,
+      delay: index * 0.05, // Stagger effect based on index
+    }
+  }),
+  exit: { 
+    opacity: 0, 
+    y: -10,
+    scale: 0.95,
+    transition: {
+      duration: 0.2,
+      ease: "easeOut" as const
+    }
+  }
+};
 
 /**
  * Main timeline visualization component that displays multiple timezones
@@ -215,27 +246,36 @@ export function TimelineVisualization({
           onDragCancel={() => setActiveId(null)}
         >
           <SortableContext items={items} strategy={verticalListSortingStrategy}>
-            {timezoneDisplays.map((display, index) => (
-              <div
-                key={display.timezone.id}
-                className="mb-3 lg:mb-4 lg:last:mb-0 last:mb-0"
-              >
-                <SortableTimezoneRow
-                  display={display}
-                  referenceHours={referenceHours}
-                  highlightedColumnIndex={highlightedColumnIndex}
-                  centerColumnIndex={centerColumnIndex}
-                  onRemove={onRemoveTimezone}
-                  onSetHome={setHomeTimezone}
-                  isEditMode={isEditMode}
-                  isFirst={index === 0}
-                  isLast={index === timezoneDisplays.length - 1}
-                  scrollContainerRef={scrollContainerRef}
-                  currentHourIndex={currentHourIndex}
-                  referenceTimezoneId={referenceTimezone?.timezone.id}
-                />
-              </div>
-            ))}
+            <AnimatePresence mode="popLayout">
+              {timezoneDisplays.map((display, index) => (
+                <motion.div
+                  key={display.timezone.id}
+                  layout
+                  layoutId={display.timezone.id}
+                  variants={rowAnimationVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  custom={index}
+                  className="mb-3 lg:mb-4 lg:last:mb-0 last:mb-0"
+                >
+                  <SortableTimezoneRow
+                    display={display}
+                    referenceHours={referenceHours}
+                    highlightedColumnIndex={highlightedColumnIndex}
+                    centerColumnIndex={centerColumnIndex}
+                    onRemove={onRemoveTimezone}
+                    onSetHome={setHomeTimezone}
+                    isEditMode={isEditMode}
+                    isFirst={index === 0}
+                    isLast={index === timezoneDisplays.length - 1}
+                    scrollContainerRef={scrollContainerRef}
+                    currentHourIndex={currentHourIndex}
+                    referenceTimezoneId={referenceTimezone?.timezone.id}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </SortableContext>
           <DragOverlay>
             {activeDisplay ? (
