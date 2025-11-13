@@ -12,7 +12,7 @@ import { parseAsArrayOf, parseAsString, parseAsStringEnum } from "nuqs";
  * - Memory exhaustion
  * - UI rendering problems
  */
-const MAX_TIMEZONES = 20;
+const MAX_TIMEZONES = 8;
 
 /**
  * Parser for timezone IDs array.
