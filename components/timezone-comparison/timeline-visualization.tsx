@@ -123,7 +123,7 @@ export function TimelineVisualization({
       <div
         ref={timelineContainerRef}
         data-timeline-container
-        className="relative min-w-0 lg:min-w-[1650px] xl:min-w-0 mt-10"
+        className="relative min-w-0 lg:min-w-[1650px] xl:min-w-0 lg:mt-10"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
