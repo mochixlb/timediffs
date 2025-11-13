@@ -76,13 +76,15 @@ export default function PrivacyPage() {
               <section>
                 <h2 className="text-xl font-semibold mb-3">How the App Works</h2>
                 <p className="text-muted-foreground leading-relaxed mb-3">
-                  timediffs.app runs entirely in your browser. Your timezone selections, date preferences, and other settings are stored only in your browser's URL. This means:
+                  timediffs.app runs entirely in your browser. The app may detect your browser's timezone setting to suggest a default timezone, but this information is used only locally and never sent to our servers. Your timezone selections, date preferences, and other settings are stored only in your browser's URL. This means:
                 </p>
                 <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-                  <li>Your preferences are visible in the URL and can be shared via links</li>
+                  <li>URLs contain your timezone selections and can be shared</li>
+                  <li>URLs may be stored in your browser history</li>
                   <li>Nothing is sent to our servers except standard web requests to load the app</li>
-                  <li>You can clear your data by simply closing the browser tab or clearing your browser history</li>
+                  <li>You can clear your data by closing the browser tab or clearing your browser history</li>
                   <li>The app doesn't load external scripts that could track you</li>
+                  <li>Copying a link writes to your clipboard only—the app never reads clipboard content</li>
                 </ul>
               </section>
 
@@ -101,7 +103,7 @@ export default function PrivacyPage() {
                 <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
                   <li>You have the right to know what data is collected (answer: none)</li>
                   <li>You have the right to access your data (answer: we don't have any)</li>
-                  <li>You have the right to delete your data (answer: it's already in your control via your browser)</li>
+                  <li>You have the right to delete your data (answer: it's already in your control—clear your browser history)</li>
                   <li>You have the right to opt out of data collection (answer: there's nothing to opt out of)</li>
                 </ul>
                 <p className="text-muted-foreground leading-relaxed mt-3">
@@ -119,11 +121,7 @@ export default function PrivacyPage() {
               <section>
                 <h2 className="text-xl font-semibold mb-3">Data Controller</h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  For the purposes of GDPR and other privacy laws, timediffs.app is the data controller. However, since we don't collect or process personal data, there's no data processing to control. If you have questions about this policy, you can review our{" "}
-                  <Link href="/terms" className="text-foreground underline hover:opacity-80">
-                    Terms of Use
-                  </Link>
-                  .
+                  For the purposes of GDPR and other privacy laws, timediffs.app is the data controller. However, since we don't collect or process personal data, there's no data processing to control.
                 </p>
               </section>
 
@@ -137,18 +135,36 @@ export default function PrivacyPage() {
               <section>
                 <h2 className="text-xl font-semibold mb-3">Open Source Transparency</h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  timediffs.app is a free, open-source personal project. The complete source code is publicly available, which means you can review exactly how the app works and verify our privacy claims yourself. This transparency is one of the best ways to ensure your privacy is protected.
+                  timediffs.app is a free, open-source personal project. The complete source code is publicly available on{" "}
+                  <a
+                    href="https://github.com/mochixlb/timediffs"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-foreground underline hover:opacity-80"
+                  >
+                    GitHub
+                  </a>
+                  , which means you can review exactly how the app works and verify our privacy claims yourself. This transparency is one of the best ways to ensure your privacy is protected.
                 </p>
               </section>
 
               <section>
                 <h2 className="text-xl font-semibold mb-3">Questions</h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  If you have questions about this privacy policy, you can review our{" "}
+                  Since timediffs.app is open-source, you can review the{" "}
+                  <a
+                    href="https://github.com/mochixlb/timediffs"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-foreground underline hover:opacity-80"
+                  >
+                    source code
+                  </a>{" "}
+                  to verify our privacy claims firsthand. For questions about service usage, see our{" "}
                   <Link href="/terms" className="text-foreground underline hover:opacity-80">
                     Terms of Use
                   </Link>
-                  . Since timediffs.app is open-source, you can also review the source code to verify our privacy claims firsthand.
+                  .
                 </p>
               </section>
             </div>

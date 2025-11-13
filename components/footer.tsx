@@ -7,7 +7,7 @@ export function Footer() {
 
   return (
     <footer
-      className="w-full border-t bg-background/60 backdrop-blur supports-backdrop-filter:bg-background/60 safe-area-inset-bottom"
+      className="w-full border-t bg-background safe-area-inset-bottom"
       aria-label="Site footer"
     >
       <div className="w-full max-w-[1920px] mx-auto px-4 lg:px-6 xl:px-8">
