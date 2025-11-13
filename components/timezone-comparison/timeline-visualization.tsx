@@ -88,7 +88,7 @@ export function TimelineVisualization({
 
   // Calculate exact time position for precise indicator
   const exactTimePosition = useExactTimePosition({
-    referenceTimezone,
+    referenceTimezone: referenceTimezone ?? undefined,
     referenceHours,
     now: isToday ? currentTime : selectedDate,
     shouldShow: isToday,
