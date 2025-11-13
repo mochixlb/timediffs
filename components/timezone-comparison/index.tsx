@@ -40,7 +40,7 @@ export function TimezoneComparison() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <div className="w-full max-w-[1920px] mx-auto px-3 py-4 lg:px-6 lg:py-8 xl:px-8 flex-1 pb-24 lg:pb-0 mb-16 lg:mb-0">
+      <div className="w-full max-w-[1920px] mx-auto px-3 py-4 lg:px-6 lg:py-8 xl:px-8 flex-1 pb-20 lg:pb-0">
         {/* Header */}
         <header className="mb-6 lg:mb-8">
           {/* Mobile Layout: Top Controls (< 1024px) */}
@@ -63,18 +63,18 @@ export function TimezoneComparison() {
             </div>
           </div>
 
-          {/* iPad Pro Layout: Same Row (1024px - 1279px) */}
-          <div className="hidden lg:flex lg:items-center lg:justify-between xl:hidden gap-4">
-            {/* Logo/Title - Left Aligned */}
-            <div className="flex items-center gap-3">
+          {/* Tablet Layout: Two Rows (1024px - 1279px) */}
+          <div className="hidden lg:block xl:hidden">
+            {/* Logo/Title Row */}
+            <div className="flex items-center gap-3 mb-4">
               <LogoIcon className="h-6 w-6 text-foreground shrink-0" />
               <h1 className="text-2xl font-medium tracking-tight text-foreground">
                 timediffs.app
               </h1>
             </div>
 
-            {/* Controls - Right Aligned */}
-            <div className="flex flex-row items-center gap-4 flex-wrap">
+            {/* Controls Row - No wrapping */}
+            <div className="flex flex-row items-center gap-2.5 flex-nowrap">
               <TimezonePicker />
               <DatePicker />
               <WeekView />
@@ -86,15 +86,15 @@ export function TimezoneComparison() {
           {/* Desktop Layout: Same Row (>= 1280px) */}
           <div className="hidden xl:flex xl:items-center xl:justify-between xl:gap-4">
             {/* Logo/Title - Left Aligned */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 shrink-0">
               <LogoIcon className="h-6 w-6 text-foreground shrink-0" />
               <h1 className="text-2xl font-medium tracking-tight text-foreground">
                 timediffs.app
               </h1>
             </div>
 
-            {/* Controls - Right Aligned */}
-            <div className="flex flex-row items-center gap-4 flex-wrap">
+            {/* Controls - Right Aligned - No wrapping */}
+            <div className="flex flex-row items-center gap-2.5 flex-nowrap">
               <TimezonePicker />
               <DatePicker />
               <WeekView />

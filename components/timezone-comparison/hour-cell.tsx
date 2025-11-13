@@ -58,7 +58,14 @@ export function HourCell({
   return (
     <div
       className={cn(
-        "relative flex flex-col items-center justify-center h-[52px] lg:h-auto lg:min-h-[38px] w-[calc(100%/24)] lg:w-[50px] xl:flex-1 shrink-0",
+        "relative flex flex-col items-center justify-center shrink-0",
+        "h-[52px] lg:h-auto lg:min-h-[38px]",
+        // Mobile: Each hour is 1/24 of timeline width (timeline shows 7 hours visible)
+        "w-[calc(100%/24)]",
+        // Desktop (lg): Fixed width per hour
+        "lg:w-[50px]",
+        // XL: Flexible width to fill available space
+        "xl:flex-1",
         config.bg,
         !isLastHour && "border-r border-slate-200",
         isFirstHour && "rounded-l-md",

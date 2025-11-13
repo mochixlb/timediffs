@@ -224,7 +224,7 @@ export function TimezonePicker() {
   const triggerButton = (
     <Button
       variant="outline"
-      className="h-12 w-full lg:h-9 lg:min-w-[140px] lg:w-auto gap-1.5 lg:gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 px-3 lg:px-4 touch-manipulation"
+      className="h-12 w-full lg:h-9 lg:min-w-[130px] lg:w-auto gap-1.5 lg:gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 px-3 lg:px-4 touch-manipulation shrink-0"
     >
       <Plus className="h-4 w-4 shrink-0" />
       <span className="text-xs lg:text-sm">Add Timezone</span>

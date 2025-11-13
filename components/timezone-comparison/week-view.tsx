@@ -41,7 +41,7 @@ export function WeekView() {
   };
 
   return (
-    <div className="flex items-center gap-1 lg:gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 lg:mx-0 lg:px-0 scrollbar-hide">
+    <div className="flex items-center gap-1 lg:gap-1 overflow-x-auto pb-1 -mx-1 px-1 lg:mx-0 lg:px-0 scrollbar-hide shrink-0">
       {weekDays.map((day, index) => {
         const isSelected = isSameDay(day, selectedDate);
         const isToday = isSameDay(day, today);
@@ -53,7 +53,7 @@ export function WeekView() {
             key={index}
             onClick={() => handleDateSelect(day)}
             className={cn(
-              "flex flex-col items-center justify-center min-w-[40px] lg:min-w-[44px] h-9 px-1.5 lg:px-2 rounded-md transition-colors cursor-pointer shrink-0",
+              "flex flex-col items-center justify-center min-w-[40px] lg:min-w-[40px] h-9 px-1 lg:px-1.5 rounded-md transition-colors cursor-pointer shrink-0",
               "text-xs font-medium",
               isSelected
                 ? "bg-slate-900 text-white hover:bg-slate-800"

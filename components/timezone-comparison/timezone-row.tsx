@@ -52,7 +52,7 @@ export function TimezoneRow({
         {/* Control Buttons Group */}
         <div
           className={cn(
-            "hidden lg:flex items-center gap-2 lg:gap-1 shrink-0 mb-2 mr-0 lg:mb-0 lg:mr-3"
+            "hidden lg:flex items-center gap-1 shrink-0 lg:mr-3"
           )}
         >
           {/* Drag Handle */}
@@ -99,11 +99,14 @@ export function TimezoneRow({
           </button>
         </div>
 
-        {/* City/Country + Current Time (sticky on desktop, scrolls on mobile) */}
+        {/* City/Country + Current Time - Sticky on desktop (lg+), scrolls on mobile */}
         <div
           ref={infoRef}
           className={cn(
-            "w-full lg:w-64 shrink-0 px-0 py-3 lg:px-2 lg:py-0 lg:sticky lg:left-0 lg:z-20 bg-white lg:bg-transparent shadow-[2px_0_4px_-2px_rgba(0,0,0,0.05)] lg:shadow-none flex items-center mb-1 lg:mb-0 lg:mr-3"
+            "w-full lg:w-64 shrink-0 px-0 py-3 lg:px-2 lg:py-0",
+            "lg:sticky lg:left-0 lg:z-20",
+            "bg-white",
+            "flex items-center mb-1 lg:mb-0 lg:mr-3"
           )}
         >
           <div className="flex w-full items-center justify-between gap-3 min-w-0">
@@ -182,12 +185,21 @@ export function TimezoneRow({
           </div>
         </div>
 
-        {/* Timeline */}
+        {/* Timeline - Hidden on mobile when in edit mode */}
         {!(isMobile && isEditMode) && (
           <div className="relative flex w-full pl-0 lg:pl-4 flex-1 xl:min-w-0 items-center">
             <div
               data-timeline-flex-container
-              className="relative flex items-center rounded-md border border-slate-400 overflow-hidden w-[calc(100%*(24/7))] lg:w-[1200px] xl:w-full xl:flex-1 shrink-0 h-[52px] lg:h-auto"
+              className={cn(
+                "relative flex items-center rounded-md border border-slate-400 overflow-hidden shrink-0",
+                "h-[52px] lg:h-auto",
+                // Mobile: Show 7 hours visible, scrollable to see all 24
+                "w-[calc(100%*(24/7))]",
+                // Desktop (lg): Fixed width for consistency
+                "lg:w-[1200px]",
+                // XL: Full width, flexible
+                "xl:w-full xl:flex-1"
+              )}
             >
               {referenceHours.map((referenceHourDate, hourIndex) => (
                 <HourCell
