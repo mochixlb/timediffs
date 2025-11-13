@@ -64,7 +64,7 @@ export function DatePicker() {
     <div 
       className={cn(
         "p-4 lg:p-4",
-        isMobile && "px-8 py-10 flex-1 flex flex-col justify-center"
+        isMobile && "px-8 pt-10 pb-10 flex flex-col"
       )}>
       {/* Month/Year Header with Navigation */}
       <div className={cn(
