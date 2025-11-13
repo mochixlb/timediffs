@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/popover";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-is-mobile";
+import { cn } from "@/lib/utils";
 
 /**
  * Date picker component that displays a calendar for selecting dates.
@@ -60,34 +61,55 @@ export function DatePicker() {
 
   // Calendar content - shared between drawer and popover
   const calendarContent = (
-    <div className="p-4">
+    <div className={cn(
+      "p-4 lg:p-4",
+      isMobile && "px-8 py-10 flex-1 flex flex-col justify-center"
+    )}>
       {/* Month/Year Header with Navigation */}
-      <div className="flex items-center justify-between mb-4">
+      <div className={cn(
+        "flex items-center justify-between",
+        isMobile ? "mb-6" : "mb-4"
+      )}>
         <button
           onClick={handlePreviousMonth}
-          className="p-1.5 rounded-md hover:bg-slate-200 transition-colors text-slate-600 hover:text-slate-900 cursor-pointer"
+          className={cn(
+            "p-1.5 rounded-md hover:bg-slate-200 transition-colors text-slate-600 hover:text-slate-900 cursor-pointer",
+            isMobile && "p-2"
+          )}
           aria-label="Previous month"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className={cn("h-4 w-4", isMobile && "h-5 w-5")} />
         </button>
-        <h3 className="text-sm font-semibold text-slate-900">
+        <h3 className={cn(
+          "font-semibold text-slate-900",
+          isMobile ? "text-lg" : "text-sm"
+        )}>
           {monthYearLabel}
         </h3>
         <button
           onClick={handleNextMonth}
-          className="p-1.5 rounded-md hover:bg-slate-200 transition-colors text-slate-600 hover:text-slate-900 cursor-pointer"
+          className={cn(
+            "p-1.5 rounded-md hover:bg-slate-200 transition-colors text-slate-600 hover:text-slate-900 cursor-pointer",
+            isMobile && "p-2"
+          )}
           aria-label="Next month"
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className={cn("h-4 w-4", isMobile && "h-5 w-5")} />
         </button>
       </div>
 
       {/* Day Names Header */}
-      <div className="grid grid-cols-7 gap-1 mb-1">
+      <div className={cn(
+        "grid grid-cols-7 mb-1",
+        isMobile ? "gap-2 mb-2" : "gap-1"
+      )}>
         {dayNames.map((day) => (
           <div
             key={day}
-            className="h-8 flex items-center justify-center text-xs font-semibold text-slate-600"
+            className={cn(
+              "flex items-center justify-center font-semibold text-slate-600",
+              isMobile ? "h-10 text-sm" : "h-8 text-xs"
+            )}
           >
             {day}
           </div>
@@ -95,7 +117,10 @@ export function DatePicker() {
       </div>
 
       {/* Calendar Grid */}
-      <div className="grid grid-cols-7 gap-1">
+      <div className={cn(
+        "grid grid-cols-7",
+        isMobile ? "gap-2" : "gap-1"
+      )}>
         {calendarDays.map((day, index) => {
           const isCurrentMonth = isSameMonth(day, currentMonth);
           const isSelected = isSameDay(day, selectedDate);
@@ -105,16 +130,18 @@ export function DatePicker() {
             <button
               key={index}
               onClick={() => handleDateSelect(day)}
-              className={`
-                h-9 w-9 flex items-center justify-center text-sm rounded-md transition-colors cursor-pointer
-                ${isCurrentMonth ? "text-slate-900" : "text-slate-400"}
-                ${isSelected 
+              className={cn(
+                "flex items-center justify-center rounded-md transition-colors cursor-pointer",
+                isMobile 
+                  ? "h-12 w-full text-base font-medium" 
+                  : "h-9 w-9 text-sm",
+                isCurrentMonth ? "text-slate-900" : "text-slate-400",
+                isSelected 
                   ? "bg-slate-900 text-white font-medium hover:bg-slate-800" 
                   : isToday
                   ? "bg-slate-100 text-slate-900 font-medium hover:bg-slate-200"
                   : "hover:bg-slate-200"
-                }
-              `}
+              )}
             >
               {format(day, "d")}
             </button>

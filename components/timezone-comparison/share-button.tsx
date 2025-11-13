@@ -7,8 +7,6 @@ import { Button } from "@/components/ui/button";
 /**
  * Copy link button component that copies the current URL to clipboard.
  * Shows visual feedback when the URL is successfully copied.
- * Uses Web Share API on supported devices (mobile) as a bonus feature,
- * but primarily focuses on copying the link.
  */
 export function CopyLinkButton() {
   const [copied, setCopied] = useState(false);
@@ -16,27 +14,7 @@ export function CopyLinkButton() {
   const handleCopyLink = async () => {
     const url = window.location.href;
 
-    // Try Web Share API first on mobile devices (bonus feature)
-    if (
-      navigator.share &&
-      /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-    ) {
-      try {
-        await navigator.share({
-          title: "TimeDiffs - Timezone Comparison",
-          text: "A simple tool for comparing timezones",
-          url: url,
-        });
-        return;
-      } catch (error) {
-        // User cancelled or error occurred, fall back to clipboard
-        if ((error as Error).name !== "AbortError") {
-          console.error("Error sharing:", error);
-        }
-      }
-    }
-
-    // Primary action: Copy to clipboard
+    // Copy to clipboard
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
