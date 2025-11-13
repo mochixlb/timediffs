@@ -2,9 +2,10 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { Plus } from "lucide-react";
-import { getTimeZones, type TimeZone } from "@vvo/tzdb";
+import type { TimeZone } from "@vvo/tzdb";
 import { useTimezone } from "@/contexts/timezone-context";
 import { getAllTimezoneIds, parseTimezoneId, formatTime } from "@/lib/timezone";
+import { getTimezoneMap } from "@/lib/timezone-data";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -50,20 +51,15 @@ export function TimezonePicker() {
     return () => clearInterval(interval);
   }, [open]);
 
-  // Get timezone data from @vvo/tzdb for enhanced search capabilities
-  const timezoneData = useMemo(() => {
+  // Get timezone data map from shared service
+  const timezoneDataMap = useMemo(() => {
     try {
-      return getTimeZones();
+      return getTimezoneMap();
     } catch (error) {
       console.error("Failed to load timezone data:", error);
-      return [];
+      return new Map<string, TimeZone>();
     }
   }, []);
-
-  // Create a map for quick lookups
-  const timezoneDataMap = useMemo(() => {
-    return new Map<string, TimeZone>(timezoneData.map((tz) => [tz.name, tz]));
-  }, [timezoneData]);
 
   // Get all timezone IDs and group them by continent/region
   const timezonesByRegion = useMemo(() => {

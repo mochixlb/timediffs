@@ -1,24 +1,6 @@
 import { formatInTimeZone } from "date-fns-tz";
-import { getTimeZones, type TimeZone } from "@vvo/tzdb";
 import type { Timezone, TimezoneDisplay, TimezoneId } from "@/types";
-
-/**
- * Cache for timezone data from @vvo/tzdb to avoid repeated lookups.
- * This improves performance when creating multiple timezone objects.
- */
-let timezoneDataCache: Map<string, TimeZone> | null = null;
-
-/**
- * Initializes and returns the timezone data cache.
- * Uses @vvo/tzdb for comprehensive, accurate timezone information.
- */
-function getTimezoneDataCache(): Map<string, TimeZone> {
-  if (!timezoneDataCache) {
-    const timezones = getTimeZones();
-    timezoneDataCache = new Map(timezones.map((tz) => [tz.name, tz]));
-  }
-  return timezoneDataCache;
-}
+import { getTimezoneMap, getTimezoneData } from "./timezone-data";
 
 /**
  * Parses an IANA timezone ID (e.g., "America/New_York") and extracts
@@ -30,8 +12,8 @@ export function parseTimezoneId(timezoneId: string): {
   city: string;
   displayName: string;
 } {
-  const cache = getTimezoneDataCache();
-  const tzData = cache.get(timezoneId);
+  const timezoneMap = getTimezoneMap();
+  const tzData = timezoneMap.get(timezoneId);
 
   if (tzData) {
     // Use the first main city as the display name, or alternative name
@@ -63,8 +45,8 @@ export function parseTimezoneId(timezoneId: string): {
  * and Intl API for current offset calculations.
  */
 export function createTimezoneFromId(timezoneId: TimezoneId): Timezone {
-  const cache = getTimezoneDataCache();
-  const tzData = cache.get(timezoneId);
+  const timezoneMap = getTimezoneMap();
+  const tzData = timezoneMap.get(timezoneId);
   const now = new Date();
 
   // Get current offset using Intl API (accounts for DST)
@@ -128,7 +110,7 @@ export function createTimezoneFromId(timezoneId: TimezoneId): Timezone {
  */
 export function getAllTimezoneIds(): string[] {
   try {
-    const timezones = getTimeZones();
+    const timezones = getTimezoneData();
     return timezones.map((tz) => tz.name);
   } catch (error) {
     console.error("Failed to load timezones from @vvo/tzdb:", error);

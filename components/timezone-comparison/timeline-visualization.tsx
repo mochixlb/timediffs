@@ -2,7 +2,6 @@
 
 import { useTimezone } from "@/contexts/timezone-context";
 import { getTimelineHours } from "@/lib/timezone";
-import { useColumnHighlight } from "@/hooks/use-column-highlight";
 import { useTimelineHover } from "@/hooks/use-timeline-hover";
 import { useExactTimePosition } from "@/hooks/use-exact-time-position";
 import { ColumnHighlightRing } from "./column-highlight-ring";
@@ -67,11 +66,8 @@ export function TimelineVisualization({
     handleMouseLeave,
   } = useTimelineHover(referenceHours.length);
 
-  // Calculate which column to highlight (only on hover)
-  // The exact time indicator handles showing the current time position
-  const { highlightedColumnIndex } = useColumnHighlight({
-    hoveredColumnIndex,
-  });
+  // Column to highlight (only on hover - exact time indicator handles current time)
+  const highlightedColumnIndex = hoveredColumnIndex;
 
   // Check if viewing today's date for exact time indicator
   const isToday = useMemo(() => {
@@ -90,8 +86,6 @@ export function TimelineVisualization({
     now: isToday ? currentTime : selectedDate,
     shouldShow: isToday,
   });
-
-
 
   if (timezoneDisplays.length === 0) {
     return null;
