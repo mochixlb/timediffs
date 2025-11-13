@@ -46,10 +46,24 @@ const TimezoneContext = createContext<TimezoneContextType | undefined>(
 );
 
 // Backup default timezones (used if browser timezone detection fails)
-const BACKUP_TIMEZONES = ["America/New_York", "Europe/London", "Asia/Tokyo"];
+// Five most common timezones globally
+const BACKUP_TIMEZONES = [
+  "America/New_York",
+  "Europe/London",
+  "Asia/Tokyo",
+  "America/Los_Angeles",
+  "Asia/Shanghai",
+];
 
-// Additional timezones to show alongside browser timezone (2 total)
-const ADDITIONAL_TIMEZONES = ["America/New_York", "Europe/London"];
+// Additional timezones to show alongside browser timezone (4 total to make 5 with browser)
+// These are the most common timezones globally, in order of popularity
+const ADDITIONAL_TIMEZONES = [
+  "America/New_York",
+  "Europe/London",
+  "Asia/Tokyo",
+  "America/Los_Angeles",
+  "Asia/Shanghai", // Extra option in case browser timezone matches one above
+];
 
 /**
  * Validates that a timezone ID exists in the available timezones.
@@ -112,19 +126,20 @@ export function TimezoneProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    // No URL timezones - set up defaults (browser timezone + 2 others, or 3 backups)
+    // No URL timezones - set up defaults (browser timezone + 4 others, or 5 backups)
     const browserTz = getBrowserTimezone();
     let defaultIds: string[];
 
     if (browserTz) {
-      // Browser timezone detected: use it + 2 additional timezones (filter out duplicates)
-      defaultIds = [
-        browserTz,
-        ...ADDITIONAL_TIMEZONES.filter((tz) => tz !== browserTz).slice(0, 2),
-      ];
+      // Browser timezone detected: use it + 4 additional timezones (filter out duplicates)
+      // User's timezone is most popular, so it comes first
+      const additionalFiltered = ADDITIONAL_TIMEZONES.filter(
+        (tz) => tz !== browserTz
+      );
+      defaultIds = [browserTz, ...additionalFiltered.slice(0, 4)];
       setDetectedTimezone(browserTz);
     } else {
-      // Browser timezone not detected: use 3 backup timezones
+      // Browser timezone not detected: use 5 backup timezones
       defaultIds = BACKUP_TIMEZONES;
     }
 
