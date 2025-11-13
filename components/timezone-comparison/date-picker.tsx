@@ -68,13 +68,15 @@ export function DatePicker() {
   });
 
   // Calendar content - shared between drawer and popover
+  const { className: touchClassName, ...restTouchProps } = touchProps;
   const calendarContent = (
     <div 
       className={cn(
         "p-4 lg:p-4",
-        isMobile && "px-8 py-10 flex-1 flex flex-col justify-center"
+        isMobile && "px-8 py-10 flex-1 flex flex-col justify-center",
+        isMobile && touchClassName
       )}
-      {...(isMobile ? touchProps : {})}>
+      {...(isMobile ? restTouchProps : {})}>
       {/* Month/Year Header with Navigation */}
       <div className={cn(
         "flex items-center justify-between",

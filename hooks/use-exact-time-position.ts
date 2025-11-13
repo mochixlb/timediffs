@@ -8,7 +8,7 @@ interface UseExactTimePositionParams {
   shouldShow: boolean;
 }
 
-interface ExactTimePosition {
+export interface ExactTimePosition {
   columnIndex: number | null;
   offsetPercentage: number; // 0-100, position within the hour column
   exactTimeInTimezone: Date | null;

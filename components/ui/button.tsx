@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -50,6 +52,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     
     const Comp = asChild ? Slot : "button";
     
+    // Extract ref from rippleProps to avoid conflicts
+    const { ref: rippleRef, ...restRippleProps } = rippleProps;
+    
     // Merge refs
     const mergedRef = React.useCallback(
       (node: HTMLButtonElement | null) => {
@@ -58,9 +63,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         } else if (ref) {
           ref.current = node;
         }
-        rippleProps.ref(node);
+        rippleRef(node);
       },
-      [ref, rippleProps]
+      [ref, rippleRef]
     );
     
     return (
@@ -68,7 +73,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(buttonVariants({ variant, size, className }))}
         ref={mergedRef}
         {...props}
-        {...(asChild ? {} : rippleProps)}
+        {...(asChild ? {} : restRippleProps)}
       />
     );
   }
