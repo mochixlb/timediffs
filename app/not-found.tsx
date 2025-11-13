@@ -2,7 +2,6 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { LogoIcon } from "@/components/logo-icon";
 import { Button } from "@/components/ui/button";
-import { Footer } from "@/components/footer";
 
 /**
  * 404 Not Found page.
@@ -56,7 +55,6 @@ export default function NotFound() {
           </div>
         </main>
       </div>
-      <Footer />
     </div>
   );
 }

@@ -1,50 +1,89 @@
 import Link from "next/link";
+import { siteConfig } from "@/lib/seo";
 import { Github } from "lucide-react";
 
 export function Footer() {
+  const githubUrl = "https://github.com/mochixlb/timediffs";
+
   return (
-    <footer className="border-t border-border mt-auto bg-background lg:mt-0">
-      <div className="w-full max-w-[1920px] mx-auto px-3 py-4 lg:px-6 lg:py-8 xl:px-8 pb-20 lg:pb-8">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
-          {/* Left section: Copyright and links */}
-          <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-6">
-            <p className="text-xs lg:text-sm text-muted-foreground text-center lg:text-left">
-              © {new Date().getFullYear()} timediffs.app
-            </p>
-            <div className="flex items-center justify-center gap-2.5 lg:gap-3 text-xs lg:text-sm lg:justify-start">
+    <footer
+      className="w-full border-t bg-background/60 backdrop-blur supports-backdrop-filter:bg-background/60 safe-area-inset-bottom"
+      aria-label="Site footer"
+    >
+      <div className="w-full max-w-[1920px] mx-auto px-4 lg:px-6 xl:px-8">
+        <div className="flex flex-col md:flex-row items-center md:items-center md:justify-between gap-5 md:gap-6 py-6 md:py-8">
+          {/* Mobile layout: centered, balanced stack */}
+          <div className="w-full flex flex-col items-center gap-3 md:hidden">
+            <span className="text-sm text-foreground">
+              © 2025 {siteConfig.name}
+            </span>
+            <nav
+              className="flex items-center gap-3 text-sm text-muted-foreground"
+              aria-label="Legal"
+            >
               <Link
                 href="/privacy"
-                className="text-muted-foreground hover:text-foreground transition-colors py-1 px-1 -mx-1"
+                className="hover:text-foreground transition-colors"
               >
                 Privacy Policy
               </Link>
-              <span className="text-muted-foreground/50">·</span>
+              <span className="select-none">·</span>
               <Link
                 href="/terms"
-                className="text-muted-foreground hover:text-foreground transition-colors py-1 px-1 -mx-1"
+                className="hover:text-foreground transition-colors"
               >
                 Terms of Use
               </Link>
-            </div>
-          </div>
-          {/* Right section: Tagline and GitHub */}
-          <div className="flex items-center justify-center gap-2.5 lg:justify-end lg:gap-4">
-            <p className="text-sm text-muted-foreground hidden lg:block">
-              A simple tool for comparing timezones
-            </p>
-            <Link
-              href="https://github.com/mochixlb/timediffs"
+            </nav>
+            <a
+              href={githubUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-foreground transition-colors p-1 -m-1 lg:p-1.5 lg:-m-1.5 rounded-sm hover:bg-accent/50"
-              aria-label="View source code on GitHub"
+              className="inline-flex items-center gap-2 rounded-md border border-slate-200 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+              aria-label="View project on GitHub (opens in a new tab)"
+              title="GitHub"
             >
-              <Github className="h-4 w-4 lg:h-5 lg:w-5" />
-            </Link>
+              <Github className="h-4 w-4" aria-hidden="true" />
+              <span>GitHub</span>
+            </a>
+          </div>
+
+          {/* Desktop/tablet left cluster */}
+          <div className="hidden md:flex items-center gap-4 text-sm text-muted-foreground">
+            <span className="text-foreground">© 2025 {siteConfig.name}</span>
+            <nav className="flex items-center gap-3" aria-label="Legal">
+              <Link
+                href="/privacy"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Privacy Policy
+              </Link>
+              <span className="select-none text-muted-foreground">·</span>
+              <Link
+                href="/terms"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Terms of Use
+              </Link>
+            </nav>
+          </div>
+
+          {/* Desktop/tablet right cluster */}
+          <div className="hidden md:flex items-center justify-end gap-3 text-sm text-muted-foreground">
+            <span className="hidden md:inline">{siteConfig.description}</span>
+            <a
+              href={githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="View project on GitHub (opens in a new tab)"
+              title="GitHub"
+            >
+              <Github className="h-5 w-5" aria-hidden="true" />
+            </a>
           </div>
         </div>
       </div>
     </footer>
   );
 }
-

@@ -12,7 +12,6 @@ import { useTimezone } from "@/contexts/timezone-context";
 import { LogoIcon } from "@/components/logo-icon";
 import { Button } from "@/components/ui/button";
 import { Toast } from "@/components/ui/toast";
-import { Footer } from "@/components/footer";
 import { parseTimezoneId } from "@/lib/timezone";
 import { cn } from "@/lib/utils";
 
@@ -39,7 +38,7 @@ export function TimezoneComparison() {
   }, [detectedTimezone, clearDetectedTimezone]);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="bg-background flex flex-col">
       <div className="w-full max-w-[1920px] mx-auto px-3 py-4 lg:px-6 lg:py-8 xl:px-8 flex-1 pb-20 lg:pb-0">
         {/* Header */}
         <header className="mb-6 lg:mb-8">
@@ -117,6 +116,8 @@ export function TimezoneComparison() {
             />
           )}
         </main>
+        {/* Spacer to push footer below first view on mobile with bottom menu */}
+        <div className="lg:hidden h-16" aria-hidden="true" />
       </div>
       
       {/* Mobile Bottom Action Bar - Primary Actions */}
@@ -148,7 +149,6 @@ export function TimezoneComparison() {
         </div>
       </div>
       
-      <Footer />
       {showToast && detectedTimezone && (
         <Toast
           message={`Detected your timezone: ${

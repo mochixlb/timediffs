@@ -6,6 +6,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { siteConfig, createMetadata, getWebApplicationStructuredData } from "@/lib/seo";
+import { Footer } from "@/components/footer";
 
 const baseMetadata = createMetadata({
   title: "Timediffs - Timezone Comparison Tool",
@@ -54,11 +55,18 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={GeistSans.className}>
-        <NuqsAdapter>
-          <Suspense fallback={<LoadingSpinner />}>
-            <TimezoneProviderWrapper>{children}</TimezoneProviderWrapper>
-          </Suspense>
-        </NuqsAdapter>
+        <div className="flex min-h-[100svh] flex-col">
+          <main className="flex-1">
+            <NuqsAdapter>
+              <Suspense fallback={<LoadingSpinner />}>
+                <TimezoneProviderWrapper>{children}</TimezoneProviderWrapper>
+              </Suspense>
+            </NuqsAdapter>
+          </main>
+          <Footer />
+          {/* Spacer to ensure footer can be fully viewed on small screens with a fixed bottom menu */}
+          <div className="lg:hidden h-24 safe-area-inset-bottom" aria-hidden="true" />
+        </div>
       </body>
     </html>
   );
