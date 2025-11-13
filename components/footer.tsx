@@ -12,11 +12,11 @@ export function Footer() {
       aria-label="Site footer"
     >
       <div className="w-full max-w-[1920px] mx-auto px-4 lg:px-6 xl:px-8">
-        <div className="flex flex-col md:flex-row items-center md:items-center md:justify-between py-8 md:py-8">
+        <div className="flex flex-col md:flex-row items-center md:items-center md:justify-between py-6 md:py-8">
           {/* Mobile layout: refined, elegant design */}
           <div className="w-full md:hidden">
             {/* Logo and Title Section */}
-            <div className="flex flex-col items-center mb-6">
+            <div className="flex flex-col items-center mb-4">
               <div className="flex items-center gap-2.5 mb-1">
                 <LogoIcon className="h-7 w-7 text-foreground shrink-0" />
                 <h1 className="text-xl font-semibold tracking-tight text-foreground">
@@ -29,45 +29,37 @@ export function Footer() {
             </div>
 
             {/* Divider */}
-            <div className="w-full h-px bg-border mb-6" aria-hidden="true" />
+            <div className="w-full h-px bg-border mb-4" aria-hidden="true" />
 
-            {/* Links and Actions Grid */}
-            <div className="flex flex-col gap-4">
-              {/* Legal Links */}
-              <nav
-                className="flex items-center justify-center gap-2 text-xs text-muted-foreground"
-                aria-label="Legal"
+            {/* Links - each on its own row */}
+            <nav
+              className="flex flex-col items-center gap-2 text-xs text-muted-foreground"
+              aria-label="Footer links"
+            >
+              <Link
+                href="/privacy"
+                className="hover:text-foreground transition-colors px-4 py-3 min-h-[44px] flex items-center justify-center touch-manipulation w-full"
               >
-                <Link
-                  href="/privacy"
-                  className="hover:text-foreground transition-colors px-4 py-3 min-h-[44px] flex items-center touch-manipulation"
-                >
-                  Privacy Policy
-                </Link>
-                <div className="w-px h-4 bg-border" aria-hidden="true" />
-                <Link
-                  href="/terms"
-                  className="hover:text-foreground transition-colors px-4 py-3 min-h-[44px] flex items-center touch-manipulation"
-                >
-                  Terms of Use
-                </Link>
-              </nav>
-
-              {/* Bottom Row: GitHub */}
-              <div className="flex items-center justify-center">
-                <a
-                  href={githubUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-4 py-3 min-h-[44px] touch-manipulation"
-                  aria-label="View project on GitHub (opens in a new tab)"
-                  title="GitHub"
-                >
-                  <Github className="h-4 w-4" aria-hidden="true" />
-                  <span>GitHub</span>
-                </a>
-              </div>
-            </div>
+                Privacy Policy
+              </Link>
+              <Link
+                href="/terms"
+                className="hover:text-foreground transition-colors px-4 py-3 min-h-[44px] flex items-center justify-center touch-manipulation w-full"
+              >
+                Terms of Use
+              </Link>
+              <a
+                href={githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors px-4 py-3 min-h-[44px] touch-manipulation w-full"
+                aria-label="View project on GitHub (opens in a new tab)"
+                title="GitHub"
+              >
+                <Github className="h-4 w-4" aria-hidden="true" />
+                <span>GitHub</span>
+              </a>
+            </nav>
           </div>
 
           {/* Desktop/tablet layout */}

@@ -12,6 +12,7 @@ interface SortableTimezoneRowProps {
   onRemove: (timezoneId: string) => void;
   onSetHome: (timezoneId: string) => void;
   highlightedColumnIndex?: number | null;
+  centerColumnIndex?: number | null;
   isEditMode?: boolean;
   isFirst?: boolean;
   isLast?: boolean;
@@ -26,6 +27,7 @@ export function SortableTimezoneRow({
   onRemove,
   onSetHome,
   highlightedColumnIndex,
+  centerColumnIndex,
   isEditMode = false,
   isFirst = false,
   isLast = false,
@@ -61,6 +63,7 @@ export function SortableTimezoneRow({
         onRemove={onRemove}
         onSetHome={onSetHome}
         highlightedColumnIndex={highlightedColumnIndex}
+        centerColumnIndex={centerColumnIndex}
         dragHandleProps={{ ...attributes, ...listeners }}
         isDragging={isDragging}
         isEditMode={isEditMode}

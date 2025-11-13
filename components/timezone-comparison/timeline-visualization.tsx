@@ -5,6 +5,7 @@ import { getTimelineHours } from "@/lib/timezone";
 import { useTimelineHover } from "@/hooks/use-timeline-hover";
 import { useExactTimePosition } from "@/hooks/use-exact-time-position";
 import { useScrollToCurrentTime } from "@/hooks/use-scroll-to-current-time";
+import { useCenterColumn } from "@/hooks/use-center-column";
 import { ColumnHighlightRing } from "./column-highlight-ring";
 import { ExactTimeIndicator } from "./exact-time-indicator";
 import { useState, useMemo, useRef } from "react";
@@ -133,6 +134,13 @@ export function TimelineVisualization({
     enabled: isToday && hasTimezones,
   });
 
+  // Track center column for mobile scroll alignment indicator
+  const centerColumnIndex = useCenterColumn({
+    scrollContainerRef,
+    totalColumns: referenceHours.length || 24,
+    enabled: hasTimezones,
+  });
+
   // Always call useSensors - hooks must be called unconditionally
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -157,7 +165,7 @@ export function TimelineVisualization({
   return (
     <div
       ref={scrollContainerRef}
-      className="w-full overflow-x-auto lg:overflow-x-auto xl:overflow-x-visible scroll-touch"
+      className="w-full overflow-x-auto lg:overflow-x-auto xl:overflow-x-visible scroll-touch px-4 lg:px-0 snap-x snap-mandatory lg:snap-none"
       tabIndex={0}
       role="region"
       aria-label="Timezone comparison timeline"
@@ -169,6 +177,9 @@ export function TimelineVisualization({
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
+        {/* Fade gradients on mobile to indicate scrollability */}
+        <div className="lg:hidden absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-background via-background/80 to-transparent pointer-events-none z-30" />
+        <div className="lg:hidden absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-background via-background/80 to-transparent pointer-events-none z-30" />
         {/* Single column highlight ring spanning all rows */}
         <ColumnHighlightRing
           columnIndex={highlightedColumnIndex}
@@ -216,6 +227,7 @@ export function TimelineVisualization({
                   display={display}
                   referenceHours={referenceHours}
                   highlightedColumnIndex={highlightedColumnIndex}
+                  centerColumnIndex={centerColumnIndex}
                   onRemove={onRemoveTimezone}
                   onSetHome={setHomeTimezone}
                   isEditMode={isEditMode}
@@ -235,6 +247,7 @@ export function TimelineVisualization({
                   display={activeDisplay}
                   referenceHours={referenceHours}
                   highlightedColumnIndex={highlightedColumnIndex}
+                  centerColumnIndex={centerColumnIndex}
                   onRemove={onRemoveTimezone}
                   onSetHome={setHomeTimezone}
                   isDragging

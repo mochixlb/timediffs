@@ -19,6 +19,7 @@ interface TimezoneRowProps {
   isDragging?: boolean;
   isEditMode?: boolean;
   highlightedColumnIndex?: number | null;
+  centerColumnIndex?: number | null;
   isFirst?: boolean;
   isLast?: boolean;
   scrollContainerRef?: React.RefObject<HTMLElement | null>;
@@ -38,6 +39,7 @@ export function TimezoneRow({
   isDragging = false,
   isEditMode = false,
   highlightedColumnIndex = null,
+  centerColumnIndex = null,
   isFirst = false,
   isLast = false,
   scrollContainerRef,
@@ -206,15 +208,19 @@ export function TimezoneRow({
                 </div>
               )}
               <div className="flex flex-col gap-1 min-w-0">
+                {/* Date - shown on mobile only, above city */}
+                <span className="text-xs lg:hidden text-muted-foreground leading-tight tracking-tight">
+                  {display.formattedDate}
+                </span>
                 <div className="flex items-baseline gap-1.5 min-w-0">
-                  <span className="text-lg lg:text-sm font-semibold text-slate-900 leading-tight tracking-tight truncate">
+                  <span className="text-2xl lg:text-sm font-semibold text-slate-900 leading-tight tracking-tight truncate">
                     {display.timezone.city}
                   </span>
                   <span className="text-xs lg:text-[11px] text-slate-600 leading-tight tracking-tight font-medium shrink-0">
                     {display.offsetDisplay}
                   </span>
                 </div>
-                <span className="text-xs lg:text-[11px] text-slate-500 leading-tight tracking-tight truncate">
+                <span className="hidden lg:block text-xs lg:text-[11px] text-slate-500 leading-tight tracking-tight truncate">
                   {display.timezone.country}
                 </span>
               </div>
@@ -231,14 +237,21 @@ export function TimezoneRow({
                   <GripHorizontal className="h-4 w-4" />
                 </button>
               ) : (
-                <div className="flex flex-col items-end gap-1">
-                  <span className="text-2xl font-semibold tracking-tight text-foreground leading-tight lg:text-base">
+                <>
+                  {/* Time - shown on mobile, right-aligned */}
+                  <span className="text-3xl lg:hidden font-semibold tracking-tight text-foreground leading-tight">
                     {display.formattedTime}
                   </span>
-                  <span className="text-xs lg:text-[11px] text-muted-foreground leading-tight tracking-tight">
-                    {display.formattedDate}
-                  </span>
-                </div>
+                  {/* Time and date - shown on desktop */}
+                  <div className="hidden lg:flex flex-col items-end gap-1">
+                    <span className="text-base font-semibold tracking-tight text-foreground leading-tight">
+                      {display.formattedTime}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground leading-tight tracking-tight">
+                      {display.formattedDate}
+                    </span>
+                  </div>
+                </>
               )}
             </div>
           </div>
@@ -271,6 +284,11 @@ export function TimezoneRow({
                     isMobile &&
                     highlightedColumnIndex !== null &&
                     hourIndex === highlightedColumnIndex
+                  }
+                  isCenterColumn={
+                    isMobile &&
+                    centerColumnIndex !== null &&
+                    hourIndex === centerColumnIndex
                   }
                   isCurrentHour={
                     currentHourIndexForRow !== null &&

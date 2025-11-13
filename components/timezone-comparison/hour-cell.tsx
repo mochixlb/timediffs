@@ -10,6 +10,7 @@ interface HourCellProps {
   hourIndex: number;
   totalHours: number;
   isHighlightedMobile?: boolean;
+  isCenterColumn?: boolean;
   isCurrentHour?: boolean;
 }
 
@@ -24,6 +25,7 @@ export function HourCell({
   hourIndex,
   totalHours,
   isHighlightedMobile = false,
+  isCenterColumn = false,
   isCurrentHour = false,
 }: HourCellProps) {
   const { timeFormat } = useTimezone();
@@ -85,6 +87,8 @@ export function HourCell({
         "lg:w-[50px]",
         // XL: Flexible width to fill available space
         "xl:flex-1",
+        // Snap scrolling on mobile for better column alignment
+        "snap-start lg:snap-none",
         bgClass,
         !isLastHour && "border-r border-slate-200",
         isFirstHour && "rounded-l-md",
@@ -93,7 +97,10 @@ export function HourCell({
       title={`${hourInTz}:00`}
     >
       {isHighlightedMobile ? (
-        <div className="absolute inset-0 bg-slate-400/20 pointer-events-none" />
+        <div className="absolute inset-0 bg-slate-400/20 pointer-events-none z-0" />
+      ) : null}
+      {isCenterColumn ? (
+        <div className="absolute inset-0 bg-blue-500/15 pointer-events-none z-0" />
       ) : null}
       {isNewDay && monthLabel && dayLabel ? (
         <div className="flex flex-col items-center gap-[2px] z-10">
