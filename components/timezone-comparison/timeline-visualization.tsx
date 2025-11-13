@@ -3,7 +3,7 @@
 import { useTimezone } from "@/contexts/timezone-context";
 import { getTimelineHours } from "@/lib/timezone";
 import { useColumnHighlight } from "@/hooks/use-column-highlight";
-import { useTimelineTouch } from "@/hooks/use-timeline-touch";
+import { useTimelineHover } from "@/hooks/use-timeline-hover";
 import { useExactTimePosition } from "@/hooks/use-exact-time-position";
 import { ColumnHighlightRing } from "./column-highlight-ring";
 import { ExactTimeIndicator } from "./exact-time-indicator";
@@ -59,24 +59,18 @@ export function TimelineVisualization({
     ? getTimelineHours(referenceTimezone.timezone.id, selectedDate)
     : [];
 
-  // Track mouse hover and touch position
+  // Track mouse hover position
   const {
     timelineContainerRef,
     hoveredColumnIndex,
-    touchedColumnIndex,
-    activeColumnIndex,
     handleMouseMove,
     handleMouseLeave,
-    handleTouchStart,
-    handleTouchMove,
-    handleTouchEnd,
-    handleTouchCancel,
-  } = useTimelineTouch(referenceHours.length);
+  } = useTimelineHover(referenceHours.length);
 
-  // Calculate which column to highlight (on hover or touch)
+  // Calculate which column to highlight (only on hover)
   // The exact time indicator handles showing the current time position
   const { highlightedColumnIndex } = useColumnHighlight({
-    hoveredColumnIndex: activeColumnIndex,
+    hoveredColumnIndex,
   });
 
   // Check if viewing today's date for exact time indicator
@@ -121,7 +115,7 @@ export function TimelineVisualization({
   return (
     <div
       ref={scrollContainerRef}
-      className="w-full overflow-x-auto lg:overflow-x-auto xl:overflow-x-visible scroll-touch touch-pan-x"
+      className="w-full overflow-x-auto lg:overflow-x-auto xl:overflow-x-visible scroll-touch"
       tabIndex={0}
       role="region"
       aria-label="Timezone comparison timeline"
@@ -129,13 +123,9 @@ export function TimelineVisualization({
       <div
         ref={timelineContainerRef}
         data-timeline-container
-        className="relative min-w-0 lg:min-w-[1650px] xl:min-w-0 lg:mt-10 no-tap-highlight"
+        className="relative min-w-0 lg:min-w-[1650px] xl:min-w-0 lg:mt-10"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onTouchCancel={handleTouchCancel}
       >
         {/* Single column highlight ring spanning all rows */}
         <ColumnHighlightRing

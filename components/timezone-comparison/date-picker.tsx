@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/popover";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-is-mobile";
-import { useTouchInteractions } from "@/hooks/use-touch-interactions";
 import { cn } from "@/lib/utils";
 
 /**
@@ -60,23 +59,13 @@ export function DatePicker() {
   const monthYearLabel = format(currentMonth, "MMMM yyyy");
   const today = new Date();
 
-  // Add swipe gestures for month navigation on mobile
-  const { touchProps } = useTouchInteractions({
-    onSwipeLeft: handleNextMonth,
-    onSwipeRight: handlePreviousMonth,
-    swipeThreshold: 30,
-  });
-
   // Calendar content - shared between drawer and popover
-  const { className: touchClassName, ...restTouchProps } = touchProps;
   const calendarContent = (
     <div 
       className={cn(
         "p-4 lg:p-4",
-        isMobile && "px-8 py-10 flex-1 flex flex-col justify-center",
-        isMobile && touchClassName
-      )}
-      {...(isMobile ? restTouchProps : {})}>
+        isMobile && "px-8 py-10 flex-1 flex flex-col justify-center"
+      )}>
       {/* Month/Year Header with Navigation */}
       <div className={cn(
         "flex items-center justify-between",

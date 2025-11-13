@@ -60,7 +60,7 @@ export function TimezoneRow({
           {/* Drag Handle */}
           <button
             className={cn(
-              "flex items-center justify-center h-11 w-11 lg:h-7 lg:w-7 rounded-md text-slate-400 transition-colors hover:text-slate-600 hover:bg-slate-50 cursor-grab active:cursor-grabbing focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 touch-active no-tap-highlight"
+              "flex items-center justify-center h-11 w-11 lg:h-7 lg:w-7 rounded-md text-slate-400 transition-colors hover:text-slate-600 hover:bg-slate-50 cursor-grab active:cursor-grabbing focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
             )}
             aria-label={`Reorder ${display.timezone.city}`}
             {...dragHandleProps}
@@ -71,7 +71,7 @@ export function TimezoneRow({
           {/* Remove Button */}
           <button
             onClick={() => onRemove(display.timezone.id)}
-            className="flex items-center justify-center h-11 w-11 lg:h-7 lg:w-7 rounded-md text-slate-500 transition-colors hover:text-red-600 hover:bg-red-50 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 touch-active no-tap-highlight"
+            className="flex items-center justify-center h-11 w-11 lg:h-7 lg:w-7 rounded-md text-slate-500 transition-colors hover:text-red-600 hover:bg-red-50 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
             aria-label={`Remove ${display.timezone.city}`}
           >
             <X className="h-5 w-5 lg:h-3.5 lg:w-3.5" />
