@@ -80,7 +80,7 @@ export function HourCell({
     <div
       className={cn(
         "relative flex flex-col items-center justify-center shrink-0",
-        "h-[52px] lg:h-auto lg:min-h-[38px]",
+        "h-[56px] lg:h-auto lg:min-h-[38px]",
         // Mobile: Each hour is 1/24 of timeline width (timeline shows 7 hours visible)
         "w-[calc(100%/24)]",
         // Desktop (lg): Fixed width per hour
@@ -88,9 +88,11 @@ export function HourCell({
         // XL: Flexible width to fill available space
         "xl:flex-1",
         bgClass,
-        !isLastHour && "border-r border-slate-200",
-        isFirstHour && "rounded-l-md",
-        isLastHour && "rounded-r-md"
+        // Subtle borders between cells
+        !isLastHour && "border-r border-slate-200/60 lg:border-slate-200",
+        // Mobile: First cell gets rounded bottom-left, last gets rounded bottom-right
+        isFirstHour && "rounded-bl-xl lg:rounded-l-md lg:rounded-bl-md",
+        isLastHour && "rounded-br-xl lg:rounded-r-md lg:rounded-br-md"
       )}
       title={`${hourInTz}:00`}
     >

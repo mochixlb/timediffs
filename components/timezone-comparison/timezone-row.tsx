@@ -49,6 +49,9 @@ export function TimezoneRow({
   const isMobile = useIsMobile();
   const { selectedDate, currentTime } = useTimezone();
   const infoRef = useRef<HTMLDivElement | null>(null);
+  
+  // Use JavaScript-based scroll following for mobile to keep info section visible
+  // This is more reliable than CSS sticky for the vertical flex layout on mobile
   useScrollFollow(
     scrollContainerRef || { current: null },
     infoRef,
@@ -108,7 +111,12 @@ export function TimezoneRow({
     <div>
       <div
         className={cn(
-          "group relative flex flex-col lg:flex-row items-stretch overflow-visible lg:min-h-[38px] lg:pt-0.5 lg:rounded-md gap-2",
+          "group relative flex flex-col lg:flex-row items-stretch overflow-visible lg:min-h-[38px] lg:pt-0.5 lg:rounded-md gap-1",
+          // Mobile: subtle card-like appearance
+          "bg-white lg:bg-transparent",
+          "rounded-2xl lg:rounded-md",
+          "shadow-[0_1px_3px_rgba(0,0,0,0.04)] lg:shadow-none",
+          "border border-slate-100 lg:border-0",
           isDragging && "bg-white shadow-lg shadow-slate-900/10"
         )}
       >
@@ -160,14 +168,16 @@ export function TimezoneRow({
           </button>
         </div>
 
-        {/* City/Country + Current Time - Sticky on desktop (lg+), scrolls on mobile */}
+        {/* City/Country + Current Time - Uses JS transform on mobile, sticky on desktop */}
         <div
           ref={infoRef}
           className={cn(
-            "w-full lg:w-64 shrink-0 px-3 py-3 lg:px-2 lg:py-0",
-            "lg:sticky lg:left-0 lg:z-20",
+            "w-full lg:w-64 shrink-0 px-4 py-3.5 lg:px-2 lg:py-0",
+            // Only use sticky on desktop; mobile uses JS-based scroll following via useScrollFollow
+            "lg:sticky lg:left-0 z-20",
             "bg-white",
-            "flex items-center mb-1 lg:mb-0 lg:mr-3"
+            "flex items-center mb-0 lg:mb-0 lg:mr-3",
+            "rounded-t-2xl lg:rounded-none"
           )}
         >
           <div className="flex w-full items-center justify-between gap-3 min-w-0">
@@ -263,9 +273,13 @@ export function TimezoneRow({
             <div
               data-timeline-flex-container
               className={cn(
-                "relative flex items-center border border-slate-400 overflow-hidden shrink-0",
-                "rounded-none lg:rounded-md",
-                "h-[52px] lg:h-auto",
+                "relative flex items-center overflow-hidden shrink-0",
+                // Mobile: subtle border inside card
+                "border-0 lg:border lg:border-slate-400",
+                "rounded-b-xl lg:rounded-md",
+                "h-[56px] lg:h-auto",
+                // Mobile: subtle top border to separate from info
+                "border-t border-t-slate-100 lg:border-t-slate-400",
                 // Mobile: Show 7 hours visible, scrollable to see all 24
                 // Extend to screen edges by using viewport width
                 "w-[calc(100vw*(24/7))]",

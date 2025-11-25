@@ -19,10 +19,10 @@ export function TimeFormatToggle() {
 
   return (
     <Button
-      variant="outline"
+      variant="ghost"
       onClick={toggleFormat}
       className={cn(
-        "h-11 lg:h-9 lg:min-w-[100px] lg:w-auto gap-1.5 lg:gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 px-2.5 lg:px-4 shrink-0",
+        "h-9 w-auto lg:h-9 lg:min-w-[100px] gap-1.5 lg:gap-2 rounded-lg lg:rounded-md text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 lg:border lg:border-slate-300 lg:bg-white lg:hover:bg-slate-50 px-2 lg:px-4 shrink-0",
         "transition-colors"
       )}
       aria-label={`Switch to ${
@@ -32,9 +32,9 @@ export function TimeFormatToggle() {
         timeFormat === "12h" ? "12-hour (AM/PM)" : "24-hour"
       }. Click to switch.`}
     >
-      <Clock className="h-4 w-4 shrink-0" />
-      <span className="text-xs lg:text-sm">
-        {timeFormat === "12h" ? "12h" : "24h"}
+      <Clock className="h-4 w-4 shrink-0 lg:block hidden" />
+      <span className="text-xs lg:text-sm font-semibold">
+        {timeFormat === "12h" ? "12H" : "24H"}
       </span>
     </Button>
   );

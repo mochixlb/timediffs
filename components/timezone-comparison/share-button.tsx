@@ -41,9 +41,9 @@ export function CopyLinkButton() {
 
   return (
     <Button
-      variant="outline"
+      variant="ghost"
       onClick={handleCopyLink}
-      className="h-11 w-11 lg:h-9 lg:w-[100px] p-0 lg:px-3 lg:gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 shrink-0"
+      className="h-9 w-9 lg:h-9 lg:w-[100px] p-0 lg:px-3 lg:gap-2 rounded-lg lg:rounded-md lg:border lg:border-slate-300 lg:bg-white text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 lg:text-slate-700 lg:hover:bg-slate-50 shrink-0 transition-colors"
       aria-label={
         copied ? "Link copied to clipboard" : "Copy link to share this view"
       }
@@ -51,7 +51,7 @@ export function CopyLinkButton() {
     >
       {copied ? (
         <>
-          <Check className="h-4 w-4 shrink-0" />
+          <Check className="h-4 w-4 shrink-0 text-green-600" />
           <span className="hidden lg:inline">Copied!</span>
         </>
       ) : (
