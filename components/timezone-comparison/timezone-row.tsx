@@ -112,8 +112,8 @@ export function TimezoneRow({
       <div
         className={cn(
           "group relative flex flex-col lg:flex-row items-stretch overflow-visible lg:min-h-[38px] lg:pt-0.5 lg:rounded-md gap-1",
-          // Mobile: subtle card-like appearance
-          "bg-white dark:bg-stone-900 lg:bg-transparent",
+          // Mobile: subtle card-like appearance (background removed to avoid overlap with info section)
+          "lg:bg-transparent",
           "rounded-2xl lg:rounded-md",
           "shadow-[0_1px_3px_rgba(0,0,0,0.04)] lg:shadow-none",
           "border border-slate-100 dark:border-stone-800 lg:border-0",
