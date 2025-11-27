@@ -108,8 +108,8 @@ export function TimezoneRow({
       <div
         className={cn(
           "group relative flex flex-col lg:flex-row items-stretch lg:min-h-[38px] lg:pt-0.5 lg:rounded-md gap-1",
-          // Mobile: overflow-hidden to clip child backgrounds to rounded corners; desktop: visible
-          "overflow-hidden lg:overflow-visible",
+          // Must be overflow-visible to allow horizontal scrolling on mobile
+          "overflow-visible",
           // Mobile: subtle card-like appearance (background removed to avoid overlap with info section)
           "lg:bg-transparent",
           "rounded-2xl lg:rounded-md",
