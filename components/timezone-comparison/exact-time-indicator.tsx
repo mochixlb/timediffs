@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, type Transition } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { formatTime } from "@/lib/timezone";
 import { useTimezone } from "@/contexts/timezone-context";
@@ -43,42 +43,69 @@ export function ExactTimeIndicator({
   const { timeFormat } = useTimezone();
   const [measurements, setMeasurements] =
     useState<FlexContainerMeasurements | null>(null);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
+  const lastMeasurementsRef = useRef<FlexContainerMeasurements | null>(null);
 
-  // Measure the flex container's actual position and width
-  useEffect(() => {
-    const measureContainer = () => {
-      const flexContainer = document.querySelector(
-        "[data-timeline-flex-container]"
-      ) as HTMLElement;
+  // Memoized measurement function to avoid stale closures
+  const measureContainer = useCallback(() => {
+    const flexContainer = document.querySelector(
+      "[data-timeline-flex-container]"
+    ) as HTMLElement;
 
-      if (!flexContainer) return;
+    if (!flexContainer) return;
 
-      const parentContainer = document.querySelector(
-        "[data-timeline-container]"
-      ) as HTMLElement;
+    const parentContainer = document.querySelector(
+      "[data-timeline-container]"
+    ) as HTMLElement;
 
-      if (!parentContainer) return;
+    if (!parentContainer) return;
 
-      const containerRect = flexContainer.getBoundingClientRect();
-      const parentRect = parentContainer.getBoundingClientRect();
+    const containerRect = flexContainer.getBoundingClientRect();
+    const parentRect = parentContainer.getBoundingClientRect();
 
-      setMeasurements({
-        left: containerRect.left - parentRect.left,
-        width: flexContainer.offsetWidth,
-      });
+    const newMeasurements = {
+      left: containerRect.left - parentRect.left,
+      width: flexContainer.offsetWidth,
     };
 
+    // Only update state if measurements actually changed to avoid unnecessary re-renders
+    const last = lastMeasurementsRef.current;
+    if (!last || last.left !== newMeasurements.left || last.width !== newMeasurements.width) {
+      lastMeasurementsRef.current = newMeasurements;
+      setMeasurements(newMeasurements);
+    }
+  }, []);
+
+  // Use ResizeObserver to continuously monitor container dimensions
+  // This ensures measurements stay accurate even when layout changes
+  useEffect(() => {
+    const flexContainer = document.querySelector(
+      "[data-timeline-flex-container]"
+    ) as HTMLElement;
+
+    if (!flexContainer) return;
+
+    // Initial measurement
     measureContainer();
+
+    // Set up ResizeObserver for continuous monitoring
+    resizeObserverRef.current = new ResizeObserver(() => {
+      measureContainer();
+    });
+    resizeObserverRef.current.observe(flexContainer);
+
+    // Also listen for window resize (for viewport changes that might not trigger ResizeObserver)
     window.addEventListener("resize", measureContainer);
 
-    // Re-measure after a short delay to ensure layout is complete
-    const timeoutId = setTimeout(measureContainer, 100);
+    // Re-measure after animations likely complete (spring animations can take ~300-500ms)
+    const timeoutId = setTimeout(measureContainer, 350);
 
     return () => {
+      resizeObserverRef.current?.disconnect();
       window.removeEventListener("resize", measureContainer);
       clearTimeout(timeoutId);
     };
-  }, [position.columnIndex, totalColumns]);
+  }, [measureContainer]);
 
   // Hide if no position data, on mobile, or if measurements aren't ready
   if (
