@@ -99,7 +99,7 @@ export function ColumnHighlightRing({
         bottom: 0,
       }}
     >
-      <div className="h-full border-2 border-black rounded-md" />
+      <div className="h-full border-2 border-black dark:border-white rounded-md" />
     </motion.div>
   );
 }

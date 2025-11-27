@@ -58,10 +58,10 @@ export function HourCell({
   // Day: amber-100 -> amber-200, Evening: indigo-100 -> indigo-200, Night: slate-100 -> slate-200
   const bgClass = isCurrentHour && !isNewDay
     ? timeOfDay === "day"
-      ? "bg-amber-200"
+      ? "bg-amber-200 dark:bg-amber-800/60"
       : timeOfDay === "evening"
-      ? "bg-indigo-200"
-      : "bg-slate-200"
+      ? "bg-indigo-200 dark:bg-indigo-800/60"
+      : "bg-slate-200 dark:bg-stone-700"
     : isNewDay
     ? NEW_DAY_CONFIG.bg
     : config.bg;
@@ -89,7 +89,7 @@ export function HourCell({
         "xl:flex-1",
         bgClass,
         // Subtle borders between cells
-        !isLastHour && "border-r border-slate-200/60 lg:border-slate-200",
+        !isLastHour && "border-r border-slate-200/60 dark:border-stone-700/60 lg:border-slate-200 dark:lg:border-stone-600",
         // Mobile: First cell gets rounded bottom-left, last gets rounded bottom-right
         isFirstHour && "rounded-bl-xl lg:rounded-l-md lg:rounded-bl-md",
         isLastHour && "rounded-br-xl lg:rounded-r-md lg:rounded-br-md"
@@ -97,10 +97,10 @@ export function HourCell({
       title={`${hourInTz}:00`}
     >
       {isHighlightedMobile ? (
-        <div className="absolute inset-0 bg-slate-400/20 pointer-events-none z-0" />
+        <div className="absolute inset-0 bg-slate-400/20 dark:bg-stone-400/20 pointer-events-none z-0" />
       ) : null}
       {isCenterColumn ? (
-        <div className="absolute inset-0 bg-blue-500/15 pointer-events-none z-0" />
+        <div className="absolute inset-0 bg-blue-500/15 dark:bg-blue-400/20 pointer-events-none z-0" />
       ) : null}
       {isNewDay && monthLabel && dayLabel ? (
         <div className="flex flex-col items-center gap-[2px] z-10">

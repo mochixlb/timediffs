@@ -8,6 +8,7 @@ import { DatePicker } from "./date-picker";
 import { WeekView } from "./week-view";
 import { TimeFormatToggle } from "./time-format-toggle";
 import { CopyLinkButton } from "./share-button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { useTimezone } from "@/contexts/timezone-context";
 import { LogoIcon } from "@/components/logo-icon";
 import { Button } from "@/components/ui/button";
@@ -48,13 +49,14 @@ export function TimezoneComparison() {
             {/* Mobile Header: Logo/Title */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <LogoIcon className="h-5 w-5 text-slate-800 shrink-0" />
-                <h1 className="text-lg font-semibold tracking-tight text-slate-800">
+                <LogoIcon className="h-5 w-5 text-slate-800 dark:text-stone-200 shrink-0" />
+                <h1 className="text-lg font-semibold tracking-tight text-slate-800 dark:text-stone-200">
                   timediffs
                 </h1>
               </div>
               {/* Utility actions - right side */}
               <div className="flex items-center gap-1.5">
+                <ThemeToggle />
                 <TimeFormatToggle />
                 <CopyLinkButton />
               </div>
@@ -81,6 +83,7 @@ export function TimezoneComparison() {
               <TimezonePicker />
               <DatePicker />
               <WeekView />
+              <ThemeToggle />
               <TimeFormatToggle />
               <CopyLinkButton />
             </div>
@@ -101,6 +104,7 @@ export function TimezoneComparison() {
               <TimezonePicker />
               <DatePicker />
               <WeekView />
+              <ThemeToggle />
               <TimeFormatToggle />
               <CopyLinkButton />
             </div>
@@ -135,7 +139,7 @@ export function TimezoneComparison() {
       </div>
       
       {/* Mobile Bottom Action Bar - Primary Actions */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/98 backdrop-blur-md border-t border-slate-100 shadow-[0_-8px_24px_-4px_rgba(0,0,0,0.08)] safe-area-inset-bottom">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/98 dark:bg-stone-900/98 backdrop-blur-md border-t border-slate-100 dark:border-stone-800 shadow-[0_-8px_24px_-4px_rgba(0,0,0,0.08)] safe-area-inset-bottom">
         <div className="w-full max-w-[1920px] mx-auto px-4 py-3.5">
           <div className="flex flex-row items-center gap-2.5">
             <div className="flex-1 min-w-0">
@@ -146,8 +150,8 @@ export function TimezoneComparison() {
                 variant="outline"
                 onClick={() => setIsEditMode(!isEditMode)}
                 className={cn(
-                  "h-12 w-12 p-0 rounded-xl border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-800 shrink-0 touch-manipulation transition-all duration-200",
-                  isEditMode && "bg-slate-900 border-slate-900 text-white hover:bg-slate-800 hover:text-white"
+                  "h-12 w-12 p-0 rounded-xl border-slate-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-slate-600 dark:text-stone-300 hover:bg-slate-50 dark:hover:bg-stone-700 hover:text-slate-800 dark:hover:text-stone-100 shrink-0 touch-manipulation transition-all duration-200",
+                  isEditMode && "bg-slate-900 dark:bg-stone-100 border-slate-900 dark:border-stone-100 text-white dark:text-stone-900 hover:bg-slate-800 dark:hover:bg-stone-200 hover:text-white dark:hover:text-stone-900"
                 )}
                 aria-label={isEditMode ? "Exit edit mode" : "Enter edit mode"}
                 title={isEditMode ? "Exit edit mode" : "Enter edit mode"}

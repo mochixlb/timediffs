@@ -2,7 +2,18 @@
 
 import { useState, useMemo } from "react";
 import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek } from "date-fns";
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameMonth,
+  isSameDay,
+  addMonths,
+  subMonths,
+  startOfWeek,
+  endOfWeek,
+} from "date-fns";
 import { useTimezone } from "@/contexts/timezone-context";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,7 +32,9 @@ import { cn } from "@/lib/utils";
 export function DatePicker() {
   const { selectedDate, setSelectedDate } = useTimezone();
   const [open, setOpen] = useState(false);
-  const [currentMonth, setCurrentMonth] = useState(() => startOfMonth(selectedDate));
+  const [currentMonth, setCurrentMonth] = useState(() =>
+    startOfMonth(selectedDate)
+  );
   const isMobile = useIsMobile();
 
   // Format the selected date for display
@@ -33,7 +46,7 @@ export function DatePicker() {
     const monthEnd = endOfMonth(currentMonth);
     const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 }); // Sunday
     const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
-    
+
     return eachDayOfInterval({ start: calendarStart, end: calendarEnd });
   }, [currentMonth]);
 
@@ -43,7 +56,11 @@ export function DatePicker() {
   const handleDateSelect = (date: Date) => {
     // Create a new date with the selected date but preserve the current time
     const updatedDate = new Date(selectedDate);
-    updatedDate.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
+    updatedDate.setFullYear(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate()
+    );
     setSelectedDate(new Date(updatedDate));
     setOpen(false);
   };
@@ -61,36 +78,38 @@ export function DatePicker() {
 
   // Calendar content - shared between drawer and popover
   const calendarContent = (
-    <div 
-      className={cn(
-        "p-4 lg:p-4",
-        isMobile && "px-8 pt-10 pb-10 flex flex-col"
-      )}>
+    <div
+      className={cn("p-4 lg:p-4", isMobile && "px-8 pt-10 pb-10 flex flex-col")}
+    >
       {/* Month/Year Header with Navigation */}
-      <div className={cn(
-        "flex items-center justify-between",
-        isMobile ? "mb-6" : "mb-4"
-      )}>
+      <div
+        className={cn(
+          "flex items-center justify-between",
+          isMobile ? "mb-6" : "mb-4"
+        )}
+      >
         <button
           onClick={handlePreviousMonth}
           className={cn(
-            "p-1.5 rounded-md hover:bg-slate-200 transition-colors text-slate-600 hover:text-slate-900 cursor-pointer",
+            "p-1.5 rounded-md hover:bg-slate-200 dark:hover:bg-stone-700 transition-colors text-slate-600 dark:text-stone-400 hover:text-slate-900 dark:hover:text-stone-100 cursor-pointer",
             isMobile && "p-2"
           )}
           aria-label="Previous month"
         >
           <ChevronLeft className={cn("h-4 w-4", isMobile && "h-5 w-5")} />
         </button>
-        <h3 className={cn(
-          "font-semibold text-slate-900",
-          isMobile ? "text-lg" : "text-sm"
-        )}>
+        <h3
+          className={cn(
+            "font-semibold text-slate-900 dark:text-stone-100",
+            isMobile ? "text-lg" : "text-sm"
+          )}
+        >
           {monthYearLabel}
         </h3>
         <button
           onClick={handleNextMonth}
           className={cn(
-            "p-1.5 rounded-md hover:bg-slate-200 transition-colors text-slate-600 hover:text-slate-900 cursor-pointer",
+            "p-1.5 rounded-md hover:bg-slate-200 dark:hover:bg-stone-700 transition-colors text-slate-600 dark:text-stone-400 hover:text-slate-900 dark:hover:text-stone-100 cursor-pointer",
             isMobile && "p-2"
           )}
           aria-label="Next month"
@@ -100,15 +119,17 @@ export function DatePicker() {
       </div>
 
       {/* Day Names Header */}
-      <div className={cn(
-        "grid grid-cols-7 mb-1",
-        isMobile ? "gap-2 mb-2" : "gap-1"
-      )}>
+      <div
+        className={cn(
+          "grid grid-cols-7 mb-1",
+          isMobile ? "gap-2 mb-2" : "gap-1"
+        )}
+      >
         {dayNames.map((day) => (
           <div
             key={day}
             className={cn(
-              "flex items-center justify-center font-semibold text-slate-600",
+              "flex items-center justify-center font-semibold text-slate-600 dark:text-stone-400",
               isMobile ? "h-10 text-sm" : "h-8 text-xs"
             )}
           >
@@ -118,10 +139,7 @@ export function DatePicker() {
       </div>
 
       {/* Calendar Grid */}
-      <div className={cn(
-        "grid grid-cols-7",
-        isMobile ? "gap-2" : "gap-1"
-      )}>
+      <div className={cn("grid grid-cols-7", isMobile ? "gap-2" : "gap-1")}>
         {calendarDays.map((day, index) => {
           const isCurrentMonth = isSameMonth(day, currentMonth);
           const isSelected = isSameDay(day, selectedDate);
@@ -133,15 +151,17 @@ export function DatePicker() {
               onClick={() => handleDateSelect(day)}
               className={cn(
                 "flex items-center justify-center rounded-md transition-colors cursor-pointer",
-                isMobile 
-                  ? "h-12 w-full text-base font-medium" 
+                isMobile
+                  ? "h-12 w-full text-base font-medium"
                   : "h-9 w-9 text-sm",
-                isCurrentMonth ? "text-slate-900" : "text-slate-400",
-                isSelected 
-                  ? "bg-slate-900 text-white font-medium hover:bg-slate-800" 
+                isCurrentMonth
+                  ? "text-slate-900 dark:text-stone-100"
+                  : "text-slate-400 dark:text-stone-600",
+                isSelected
+                  ? "bg-slate-900 dark:bg-stone-100 text-white dark:text-stone-900 font-medium hover:bg-slate-800 dark:hover:bg-stone-200"
                   : isToday
-                  ? "bg-slate-100 text-slate-900 font-medium hover:bg-slate-200"
-                  : "hover:bg-slate-200"
+                  ? "bg-slate-100 dark:bg-stone-800 text-slate-900 dark:text-stone-100 font-medium hover:bg-slate-200 dark:hover:bg-stone-700"
+                  : "hover:bg-slate-200 dark:hover:bg-stone-700"
               )}
             >
               {format(day, "d")}
@@ -155,10 +175,12 @@ export function DatePicker() {
   const triggerButton = (
     <Button
       variant="outline"
-      className="h-11 w-full lg:h-9 lg:min-w-[120px] lg:w-auto gap-2 lg:gap-2 rounded-xl lg:rounded-md border-slate-200 lg:border-slate-300 bg-slate-50 lg:bg-white text-sm font-medium text-slate-700 hover:bg-slate-100 lg:hover:bg-slate-50 px-4 lg:px-4 shrink-0 justify-start lg:justify-center"
+      className="h-11 w-full lg:h-9 lg:min-w-[120px] lg:w-auto gap-2 lg:gap-2 rounded-xl lg:rounded-md border-slate-200 dark:border-stone-700 lg:border-slate-300 dark:lg:border-stone-600 bg-slate-50 dark:bg-stone-800 lg:bg-white dark:lg:bg-stone-900 text-sm font-medium text-slate-700 dark:text-stone-300 hover:bg-slate-100 dark:hover:bg-stone-700 lg:hover:bg-slate-50 dark:lg:hover:bg-stone-800 px-4 lg:px-4 shrink-0 justify-start lg:justify-center"
     >
-      <Calendar className="h-4 w-4 shrink-0 text-slate-500" />
-      <span className="font-semibold">{format(selectedDate, "EEE, MMM d")}</span>
+      <Calendar className="h-4 w-4 shrink-0 text-slate-500 dark:text-stone-400" />
+      <span className="font-semibold">
+        {format(selectedDate, "EEE, MMM d")}
+      </span>
     </Button>
   );
 
@@ -178,7 +200,7 @@ export function DatePicker() {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>{triggerButton}</PopoverTrigger>
       <PopoverContent
-        className="w-auto p-0 bg-white border border-slate-200 shadow-sm"
+        className="w-auto p-0 bg-white dark:bg-stone-900 border border-slate-200 dark:border-stone-700 shadow-sm"
         align="start"
       >
         {calendarContent}
@@ -186,4 +208,3 @@ export function DatePicker() {
     </Popover>
   );
 }
-

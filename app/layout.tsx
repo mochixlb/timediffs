@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { TimezoneProviderWrapper } from "@/components/timezone-provider-wrapper";
+import { ThemeProvider } from "@/contexts/theme-context";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -56,18 +57,38 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Prevent flash of wrong theme */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('timediffs-theme');
+                  var resolved = theme === 'dark' ? 'dark' : 
+                    theme === 'light' ? 'light' : 
+                    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                  document.documentElement.classList.add(resolved);
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className={GeistSans.className}>
-        <div className="flex min-h-[100svh] flex-col">
-          <main className="flex-1">
-            <NuqsAdapter>
-              <Suspense fallback={<LoadingSpinner />}>
-                <TimezoneProviderWrapper>{children}</TimezoneProviderWrapper>
-              </Suspense>
-            </NuqsAdapter>
-          </main>
-          <FooterWrapper />
-        </div>
+        <ThemeProvider>
+          <div className="flex min-h-[100svh] flex-col">
+            <main className="flex-1">
+              <NuqsAdapter>
+                <Suspense fallback={<LoadingSpinner />}>
+                  <TimezoneProviderWrapper>{children}</TimezoneProviderWrapper>
+                </Suspense>
+              </NuqsAdapter>
+            </main>
+            <FooterWrapper />
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

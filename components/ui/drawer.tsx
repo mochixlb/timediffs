@@ -74,8 +74,8 @@ const DrawerContent = React.forwardRef<
             >
               <motion.div
                 className={cn(
-                  "fixed z-50 bg-white shadow-lg flex flex-col",
-                  "inset-x-0 bottom-0 border-t border-slate-200 rounded-t-[1.5rem]",
+                  "fixed z-50 bg-white dark:bg-stone-900 shadow-lg flex flex-col",
+                  "inset-x-0 bottom-0 border-t border-slate-200 dark:border-stone-700 rounded-t-[1.5rem]",
                   className
                 )}
                 style={{
@@ -88,7 +88,7 @@ const DrawerContent = React.forwardRef<
                 transition={DRAWER_TRANSITION}
               >
                 {/* Drag handle indicator */}
-                <div className="mx-auto h-1.5 w-12 rounded-full bg-slate-300 mb-2 mt-3 shrink-0" />
+                <div className="mx-auto h-1.5 w-12 rounded-full bg-slate-300 dark:bg-stone-600 mb-2 mt-3 shrink-0" />
                 <div className="flex-1 overflow-hidden flex flex-col min-h-0">
                   {children}
                 </div>

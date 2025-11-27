@@ -26,7 +26,7 @@ export function Toast({ message, duration = 4000, onClose }: ToastProps) {
     <div
       className={cn(
         "fixed top-4 left-1/2 -translate-x-1/2 z-50",
-        "bg-slate-900 text-white px-4 py-3 rounded-lg shadow-lg",
+        "bg-slate-900 dark:bg-stone-100 text-white dark:text-stone-900 px-4 py-3 rounded-lg shadow-lg",
         "flex items-center gap-3 min-w-[280px] max-w-[90vw]",
         "transition-opacity duration-300",
         isVisible ? "opacity-100" : "opacity-0"
@@ -40,7 +40,7 @@ export function Toast({ message, duration = 4000, onClose }: ToastProps) {
           setIsVisible(false);
           setTimeout(onClose, 300);
         }}
-        className="p-1 hover:bg-slate-800 rounded transition-colors"
+        className="p-1 hover:bg-slate-800 dark:hover:bg-stone-200 rounded transition-colors"
         aria-label="Dismiss notification"
       >
         <X className="h-4 w-4" />

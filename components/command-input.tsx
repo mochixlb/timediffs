@@ -317,11 +317,11 @@ export function CommandInput({ className }: CommandInputProps) {
     <div className={cn("relative w-full", className)} ref={containerRef}>
       <div className="relative">
         <div className={cn(
-          "relative flex items-center border bg-white shadow-sm transition-all duration-200",
+          "relative flex items-center border bg-white dark:bg-stone-900 shadow-sm transition-all duration-200",
           "hover:shadow-md focus-within:shadow-md",
           error 
-            ? "border-red-300 focus-within:border-red-400" 
-            : "border-slate-200 focus-within:border-slate-300",
+            ? "border-red-300 dark:border-red-800 focus-within:border-red-400 dark:focus-within:border-red-700" 
+            : "border-slate-200 dark:border-stone-700 focus-within:border-slate-300 dark:focus-within:border-stone-600",
           isMobile ? "rounded-xl" : "rounded-2xl"
         )}>
           <input
@@ -343,12 +343,11 @@ export function CommandInput({ className }: CommandInputProps) {
             onBlur={handleBlur}
             placeholder={PLACEHOLDER_EXAMPLES[placeholderIndex]}
             className={cn(
-              "flex-1 bg-transparent outline-none placeholder:text-slate-400",
-              "text-slate-900 font-normal caret-slate-900",
-              "focus:caret-slate-900",
+              "flex-1 bg-transparent outline-none placeholder:text-slate-400 dark:placeholder:text-stone-500",
+              "text-slate-900 dark:text-stone-100 font-normal caret-slate-900 dark:caret-stone-100",
+              "focus:caret-slate-900 dark:focus:caret-stone-100",
               isMobile ? "px-3 py-2.5 pr-10 text-sm" : "px-4 py-3 pr-12 text-sm"
             )}
-            style={{ caretColor: '#0f172a' }} // Explicit cursor color fallback (slate-900)
             disabled={isProcessing}
             role="combobox"
             aria-expanded={showSuggestions}
@@ -364,10 +363,10 @@ export function CommandInput({ className }: CommandInputProps) {
             disabled={!input.trim() || isProcessing}
             className={cn(
               "absolute transition-all duration-200",
-              "bg-slate-900 text-white",
-              "hover:bg-slate-800",
-              "disabled:bg-slate-200 disabled:text-slate-400",
-              "focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2",
+              "bg-slate-900 dark:bg-stone-100 text-white dark:text-stone-900",
+              "hover:bg-slate-800 dark:hover:bg-stone-200",
+              "disabled:bg-slate-200 dark:disabled:bg-stone-700 disabled:text-slate-400 dark:disabled:text-stone-500",
+              "focus:outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-stone-500 focus:ring-offset-2",
               isMobile ? "right-1.5 p-1.5 rounded-lg" : "right-2 p-2 rounded-lg"
             )}
             aria-label="Execute command"
@@ -383,7 +382,7 @@ export function CommandInput({ className }: CommandInputProps) {
             role="listbox"
             aria-label="Timezone suggestions"
             className={cn(
-              "absolute w-full rounded-xl border border-slate-200 bg-white shadow-lg overflow-hidden z-50",
+              "absolute w-full rounded-xl border border-slate-200 dark:border-stone-700 bg-white dark:bg-stone-900 shadow-lg overflow-hidden z-50",
               isMobile ? "bottom-full mb-2" : "top-full mt-2"
             )}
           >
@@ -401,20 +400,20 @@ export function CommandInput({ className }: CommandInputProps) {
                   }}
                   className={cn(
                     "w-full px-4 py-2.5 text-left text-sm transition-colors duration-150",
-                    "hover:bg-slate-50 focus:bg-slate-50 focus:outline-none",
-                    selectedSuggestionIndex === index && "bg-slate-50",
+                    "hover:bg-slate-50 dark:hover:bg-stone-800 focus:bg-slate-50 dark:focus:bg-stone-800 focus:outline-none",
+                    selectedSuggestionIndex === index && "bg-slate-50 dark:bg-stone-800",
                     "flex items-center justify-between"
                   )}
                 >
                   <div>
-                    <span className="font-medium text-slate-900">{suggestion.name}</span>
-                    <span className="ml-2 text-xs text-slate-500">
+                    <span className="font-medium text-slate-900 dark:text-stone-100">{suggestion.name}</span>
+                    <span className="ml-2 text-xs text-slate-500 dark:text-stone-400">
                       {suggestion.type === 'city' && 'City'}
                       {suggestion.type === 'country' && 'Country'}
                       {suggestion.type === 'timezone' && 'Timezone'}
                     </span>
                   </div>
-                  <span className="text-xs text-slate-400">{suggestion.timezone}</span>
+                  <span className="text-xs text-slate-400 dark:text-stone-500">{suggestion.timezone}</span>
                 </button>
               ))}
             </div>
@@ -426,11 +425,11 @@ export function CommandInput({ className }: CommandInputProps) {
       {!isMobile && (
         <div className="mt-2 px-1 min-h-[20px] transition-all duration-200">
           {error ? (
-            <p id="command-error-text" className="text-xs text-red-600">
+            <p id="command-error-text" className="text-xs text-red-600 dark:text-red-400">
               {error}
             </p>
           ) : (
-            <p id="command-helper-text" className="text-xs text-slate-500">
+            <p id="command-helper-text" className="text-xs text-slate-500 dark:text-stone-400">
               Ask in natural language • Press Enter to submit
             </p>
           )}
@@ -440,7 +439,7 @@ export function CommandInput({ className }: CommandInputProps) {
       {/* Error message - Mobile */}
       {isMobile && error && (
         <div className="mt-2 px-1 min-h-[20px] transition-all duration-200">
-          <p className="text-xs text-red-600">
+          <p className="text-xs text-red-600 dark:text-red-400">
             {error}
           </p>
         </div>

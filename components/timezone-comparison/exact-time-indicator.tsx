@@ -147,11 +147,11 @@ export function ExactTimeIndicator({
           transform: "translateX(-50%)",
         }}
       >
-        <div className="px-2 py-1 bg-slate-900 text-white text-xs font-medium rounded-md shadow-sm whitespace-nowrap">
+        <div className="px-2 py-1 bg-slate-900 dark:bg-stone-100 text-white dark:text-stone-900 text-xs font-medium rounded-md shadow-sm whitespace-nowrap">
           {formattedTime}
         </div>
         {/* Small arrow pointing down */}
-        <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-slate-900" />
+        <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-slate-900 dark:border-t-stone-100" />
       </motion.div>
 
       {/* Vertical line indicating exact time position */}
@@ -168,7 +168,7 @@ export function ExactTimeIndicator({
           bottom: 0,
         }}
       >
-        <div className="h-full w-0.5 bg-slate-900" />
+        <div className="h-full w-0.5 bg-slate-900 dark:bg-stone-100" />
       </motion.div>
     </>
   );

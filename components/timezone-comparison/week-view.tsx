@@ -56,10 +56,10 @@ export function WeekView() {
               "flex flex-col items-center justify-center min-w-[40px] lg:min-w-[40px] h-9 px-1 lg:px-1.5 rounded-md transition-colors cursor-pointer shrink-0",
               "text-xs font-medium",
               isSelected
-                ? "bg-slate-900 text-white hover:bg-slate-800"
+                ? "bg-slate-900 dark:bg-stone-100 text-white dark:text-stone-900 hover:bg-slate-800 dark:hover:bg-stone-200"
                 : isToday
-                ? "bg-slate-100 text-slate-900 hover:bg-slate-200"
-                : "text-slate-600 hover:bg-slate-200"
+                ? "bg-slate-100 dark:bg-stone-800 text-slate-900 dark:text-stone-100 hover:bg-slate-200 dark:hover:bg-stone-700"
+                : "text-slate-600 dark:text-stone-400 hover:bg-slate-200 dark:hover:bg-stone-700"
             )}
             aria-label={`Select ${format(day, "EEEE, MMMM d, yyyy")}`}
             title={format(day, "EEEE, MMMM d, yyyy")}

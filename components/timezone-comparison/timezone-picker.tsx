@@ -153,7 +153,7 @@ export function TimezonePicker() {
   const pickerContent = (
     <Command
       shouldFilter={false}
-      className="bg-white [&_[cmdk-input-wrapper]]:border-slate-200 flex flex-col h-full min-h-0"
+      className="bg-white dark:bg-stone-900 [&_[cmdk-input-wrapper]]:border-slate-200 dark:[&_[cmdk-input-wrapper]]:border-stone-700 flex flex-col h-full min-h-0"
     >
       <CommandInput
         placeholder="Search timezones..."
@@ -167,14 +167,14 @@ export function TimezonePicker() {
           isMobile ? "" : "max-h-[400px]"
         )}
       >
-        <CommandEmpty className="py-8 text-center text-sm text-slate-600">
+        <CommandEmpty className="py-8 text-center text-sm text-slate-600 dark:text-stone-400">
           {search.trim() ? "No timezones found." : "No timezones available."}
         </CommandEmpty>
         {Object.entries(filteredTimezonesByRegion).map(([region, ids]) => (
           <CommandGroup
             key={region}
             heading={region}
-            className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-slate-600 [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider"
+            className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-slate-600 dark:[&_[cmdk-group-heading]]:text-stone-400 [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider"
           >
             {ids.map((timezoneId) => {
               const tzData = timezoneDataMap.get(timezoneId);
@@ -188,23 +188,23 @@ export function TimezonePicker() {
                   key={timezoneId}
                   value={timezoneId}
                   onSelect={() => handleSelect(timezoneId)}
-                  className="cursor-pointer px-3 py-2.5 rounded-md transition-colors data-[selected=true]:bg-slate-50 data-[selected=true]:text-slate-900 hover:bg-slate-50"
+                  className="cursor-pointer px-3 py-2.5 rounded-md transition-colors data-[selected=true]:bg-slate-50 dark:data-[selected=true]:bg-stone-800 data-[selected=true]:text-slate-900 dark:data-[selected=true]:text-stone-100 hover:bg-slate-50 dark:hover:bg-stone-800"
                 >
                   <div className="flex-1 flex flex-col gap-0.5">
-                    <span className="text-sm font-medium text-slate-900">
+                    <span className="text-sm font-medium text-slate-900 dark:text-stone-100">
                       {displayCity}
                     </span>
                     {countryName && (
-                      <span className="text-xs text-slate-600">
+                      <span className="text-xs text-slate-600 dark:text-stone-400">
                         {countryName}
                       </span>
                     )}
                   </div>
                   <div className="flex flex-col items-end gap-0.5 ml-3">
-                    <span className="text-sm font-medium text-slate-700 tabular-nums">
+                    <span className="text-sm font-medium text-slate-700 dark:text-stone-300 tabular-nums">
                       {timeInTimezone}
                     </span>
-                    <span className="text-xs text-slate-600 font-mono">
+                    <span className="text-xs text-slate-600 dark:text-stone-400 font-mono">
                       {timezoneId}
                     </span>
                   </div>
@@ -220,7 +220,7 @@ export function TimezonePicker() {
   const triggerButton = (
     <Button
       variant="outline"
-      className="h-12 w-full lg:h-9 lg:min-w-[130px] lg:w-auto gap-2 lg:gap-2 rounded-xl lg:rounded-md border-slate-200 lg:border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 px-4 lg:px-4 touch-manipulation shrink-0 shadow-sm lg:shadow-none"
+      className="h-12 w-full lg:h-9 lg:min-w-[130px] lg:w-auto gap-2 lg:gap-2 rounded-xl lg:rounded-md border-slate-200 dark:border-stone-700 lg:border-slate-300 dark:lg:border-stone-600 bg-white dark:bg-stone-800 text-sm font-medium text-slate-700 dark:text-stone-300 hover:bg-slate-50 dark:hover:bg-stone-700 px-4 lg:px-4 touch-manipulation shrink-0 shadow-sm lg:shadow-none"
     >
       <Plus className="h-4 w-4 shrink-0" />
       <span className="text-sm">Add Timezone</span>
@@ -243,7 +243,7 @@ export function TimezonePicker() {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>{triggerButton}</PopoverTrigger>
       <PopoverContent
-        className="w-[400px] p-0 bg-white border border-slate-200 shadow-sm"
+        className="w-[400px] p-0 bg-white dark:bg-stone-900 border border-slate-200 dark:border-stone-700 shadow-sm"
         align="start"
       >
         {pickerContent}

@@ -113,11 +113,11 @@ export function TimezoneRow({
         className={cn(
           "group relative flex flex-col lg:flex-row items-stretch overflow-visible lg:min-h-[38px] lg:pt-0.5 lg:rounded-md gap-1",
           // Mobile: subtle card-like appearance
-          "bg-white lg:bg-transparent",
+          "bg-white dark:bg-stone-900 lg:bg-transparent",
           "rounded-2xl lg:rounded-md",
           "shadow-[0_1px_3px_rgba(0,0,0,0.04)] lg:shadow-none",
-          "border border-slate-100 lg:border-0",
-          isDragging && "bg-white shadow-lg shadow-slate-900/10"
+          "border border-slate-100 dark:border-stone-800 lg:border-0",
+          isDragging && "bg-white dark:bg-stone-900 shadow-lg shadow-slate-900/10 dark:shadow-stone-950/30"
         )}
       >
         {/* Control Buttons Group */}
@@ -127,7 +127,7 @@ export function TimezoneRow({
           {/* Drag Handle */}
           <button
             className={cn(
-              "flex items-center justify-center h-11 w-11 lg:h-7 lg:w-7 rounded-md text-slate-400 transition-colors hover:text-slate-600 hover:bg-slate-50 cursor-grab active:cursor-grabbing focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+              "flex items-center justify-center h-11 w-11 lg:h-7 lg:w-7 rounded-md text-slate-400 dark:text-stone-500 transition-colors hover:text-slate-600 dark:hover:text-stone-300 hover:bg-slate-50 dark:hover:bg-stone-800 cursor-grab active:cursor-grabbing focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 dark:focus-visible:ring-stone-500"
             )}
             aria-label={`Reorder ${display.timezone.city}`}
             {...dragHandleProps}
@@ -138,7 +138,7 @@ export function TimezoneRow({
           {/* Remove Button */}
           <button
             onClick={() => onRemove(display.timezone.id)}
-            className="flex items-center justify-center h-11 w-11 lg:h-7 lg:w-7 rounded-md text-slate-500 transition-colors hover:text-red-600 hover:bg-red-50 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+            className="flex items-center justify-center h-11 w-11 lg:h-7 lg:w-7 rounded-md text-slate-500 dark:text-stone-400 transition-colors hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 dark:focus-visible:ring-stone-500"
             aria-label={`Remove ${display.timezone.city}`}
           >
             <X className="h-5 w-5 lg:h-3.5 lg:w-3.5" />
@@ -148,10 +148,10 @@ export function TimezoneRow({
           <button
             onClick={() => onSetHome(display.timezone.id)}
             className={cn(
-              "flex items-center justify-center h-11 w-11 lg:h-7 lg:w-7 rounded-md transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400",
+              "flex items-center justify-center h-11 w-11 lg:h-7 lg:w-7 rounded-md transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 dark:focus-visible:ring-stone-500",
               display.timezone.isHome
-                ? "text-slate-700"
-                : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"
+                ? "text-slate-700 dark:text-stone-300"
+                : "text-slate-400 dark:text-stone-500 hover:text-slate-600 dark:hover:text-stone-300 hover:bg-slate-50 dark:hover:bg-stone-800"
             )}
             aria-label={
               display.timezone.isHome
@@ -175,7 +175,7 @@ export function TimezoneRow({
             "w-full lg:w-64 shrink-0 px-4 py-3.5 lg:px-2 lg:py-0",
             // Only use sticky on desktop; mobile uses JS-based scroll following via useScrollFollow
             "lg:sticky lg:left-0 z-20",
-            "bg-white",
+            "bg-white dark:bg-stone-900",
             "flex items-center mb-0 lg:mb-0 lg:mr-3",
             "rounded-t-2xl lg:rounded-none"
           )}
@@ -189,10 +189,10 @@ export function TimezoneRow({
                   <button
                     onClick={() => onSetHome(display.timezone.id)}
                     className={cn(
-                      "flex items-center justify-center h-8 w-8 rounded-md transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400",
+                      "flex items-center justify-center h-8 w-8 rounded-md transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 dark:focus-visible:ring-stone-500",
                       display.timezone.isHome
-                        ? "text-slate-700 bg-slate-100"
-                        : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"
+                        ? "text-slate-700 dark:text-stone-300 bg-slate-100 dark:bg-stone-800"
+                        : "text-slate-400 dark:text-stone-500 hover:text-slate-600 dark:hover:text-stone-300 hover:bg-slate-50 dark:hover:bg-stone-800"
                     )}
                     aria-label={
                       display.timezone.isHome
@@ -210,7 +210,7 @@ export function TimezoneRow({
                   {/* Remove Button (mobile edit mode) */}
                   <button
                     onClick={() => onRemove(display.timezone.id)}
-                    className="flex items-center justify-center h-8 w-8 rounded-md text-slate-500 transition-colors hover:text-red-600 hover:bg-red-50 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+                    className="flex items-center justify-center h-8 w-8 rounded-md text-slate-500 dark:text-stone-400 transition-colors hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 dark:focus-visible:ring-stone-500"
                     aria-label={`Remove ${display.timezone.city}`}
                   >
                     <X className="h-4 w-4" />
@@ -223,14 +223,14 @@ export function TimezoneRow({
                   {display.formattedDate}
                 </span>
                 <div className="flex items-baseline gap-1.5 min-w-0">
-                  <span className="text-2xl lg:text-sm font-semibold text-slate-900 leading-tight tracking-tight truncate">
+                  <span className="text-2xl lg:text-sm font-semibold text-slate-900 dark:text-stone-100 leading-tight tracking-tight truncate">
                     {display.timezone.city}
                   </span>
-                  <span className="text-xs lg:text-[11px] text-slate-600 leading-tight tracking-tight font-medium shrink-0">
+                  <span className="text-xs lg:text-[11px] text-slate-600 dark:text-stone-400 leading-tight tracking-tight font-medium shrink-0">
                     {display.offsetDisplay}
                   </span>
                 </div>
-                <span className="hidden lg:block text-xs lg:text-[11px] text-slate-500 leading-tight tracking-tight truncate">
+                <span className="hidden lg:block text-xs lg:text-[11px] text-slate-500 dark:text-stone-400 leading-tight tracking-tight truncate">
                   {display.timezone.country}
                 </span>
               </div>
@@ -239,7 +239,7 @@ export function TimezoneRow({
               {isMobile && isEditMode ? (
                 <button
                   className={cn(
-                    "flex items-center justify-center h-8 w-8 rounded-md text-slate-500 transition-colors hover:text-slate-700 hover:bg-slate-50 cursor-grab active:cursor-grabbing focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+                    "flex items-center justify-center h-8 w-8 rounded-md text-slate-500 dark:text-stone-400 transition-colors hover:text-slate-700 dark:hover:text-stone-200 hover:bg-slate-50 dark:hover:bg-stone-800 cursor-grab active:cursor-grabbing focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 dark:focus-visible:ring-stone-500"
                   )}
                   aria-label={`Reorder ${display.timezone.city}`}
                   {...dragHandleProps}
@@ -275,11 +275,11 @@ export function TimezoneRow({
               className={cn(
                 "relative flex items-center overflow-hidden shrink-0",
                 // Mobile: subtle border inside card
-                "border-0 lg:border lg:border-slate-400",
+                "border-0 lg:border lg:border-slate-400 dark:lg:border-stone-600",
                 "rounded-b-xl lg:rounded-md",
                 "h-[56px] lg:h-auto",
                 // Mobile: subtle top border to separate from info
-                "border-t border-t-slate-100 lg:border-t-slate-400",
+                "border-t border-t-slate-100 dark:border-t-stone-800 lg:border-t-slate-400 dark:lg:border-t-stone-600",
                 // Mobile: Show 7 hours visible, scrollable to see all 24
                 // Extend to screen edges by using viewport width
                 "w-[calc(100vw*(24/7))]",
