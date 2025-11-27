@@ -8,7 +8,11 @@ import { useState, useEffect } from "react";
  * SSR-safe: returns false on server-side to avoid hydration mismatches.
  */
 export function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false);
+  // Initialize with actual value on client to avoid flash of incorrect content
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth < 1024;
+  });
 
   useEffect(() => {
     // Only run on client side
