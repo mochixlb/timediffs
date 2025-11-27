@@ -20,8 +20,6 @@ interface TimezoneRowProps {
   isEditMode?: boolean;
   highlightedColumnIndex?: number | null;
   centerColumnIndex?: number | null;
-  isFirst?: boolean;
-  isLast?: boolean;
   scrollContainerRef?: React.RefObject<HTMLElement | null>;
   currentHourIndex?: number | null;
   referenceTimezoneId?: string;
@@ -40,8 +38,6 @@ export function TimezoneRow({
   isEditMode = false,
   highlightedColumnIndex = null,
   centerColumnIndex = null,
-  isFirst = false,
-  isLast = false,
   scrollContainerRef,
   currentHourIndex = null,
   referenceTimezoneId,
@@ -278,8 +274,8 @@ export function TimezoneRow({
                 "border-0 lg:border lg:border-slate-400 dark:lg:border-stone-600",
                 "rounded-b-xl lg:rounded-md",
                 "h-[56px] lg:h-auto",
-                // Mobile: subtle top border to separate from info
-                "border-t border-t-slate-100 dark:border-t-stone-800 lg:border-t-slate-400 dark:lg:border-t-stone-600",
+                // Desktop: subtle top border to separate from info
+                "lg:border-t lg:border-t-slate-400 dark:lg:border-t-stone-600",
                 // Mobile: Show 7 hours visible, scrollable to see all 24
                 // Extend to screen edges by using viewport width
                 "w-[calc(100vw*(24/7))]",

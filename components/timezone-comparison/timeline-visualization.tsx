@@ -267,8 +267,6 @@ export function TimelineVisualization({
                     onRemove={onRemoveTimezone}
                     onSetHome={setHomeTimezone}
                     isEditMode={isEditMode}
-                    isFirst={index === 0}
-                    isLast={index === timezoneDisplays.length - 1}
                     scrollContainerRef={scrollContainerRef}
                     currentHourIndex={currentHourIndex}
                     referenceTimezoneId={referenceTimezone?.timezone.id}
@@ -289,17 +287,6 @@ export function TimelineVisualization({
                   onSetHome={setHomeTimezone}
                   isDragging
                   isEditMode={isEditMode}
-                  isFirst={
-                    timezoneDisplays.findIndex(
-                      (d) => d.timezone.id === activeId
-                    ) === 0
-                  }
-                  isLast={
-                    timezoneDisplays.findIndex(
-                      (d) => d.timezone.id === activeId
-                    ) ===
-                    timezoneDisplays.length - 1
-                  }
                   currentHourIndex={currentHourIndex}
                   referenceTimezoneId={referenceTimezone?.timezone.id}
                 />
