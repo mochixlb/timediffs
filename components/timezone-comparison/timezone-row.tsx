@@ -113,7 +113,11 @@ export function TimezoneRow({
           "rounded-2xl lg:rounded-md",
           "shadow-[0_1px_3px_rgba(0,0,0,0.04)] lg:shadow-none",
           "border border-slate-100 dark:border-stone-800 lg:border-0",
-          isDragging && "bg-white dark:bg-stone-900 shadow-lg shadow-slate-900/10 dark:shadow-stone-950/30"
+          // When dragging, always show background on mobile to ensure visibility
+          isDragging && [
+            "bg-white dark:bg-stone-900",
+            "shadow-lg shadow-slate-900/10 dark:shadow-stone-950/30"
+          ]
         )}
       >
         {/* Control Buttons Group */}

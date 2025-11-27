@@ -277,7 +277,7 @@ export function TimelineVisualization({
           </SortableContext>
           <DragOverlay>
             {activeDisplay ? (
-              <div className="mb-4 last:mb-0 pointer-events-none">
+              <div className="mb-4 last:mb-0 pointer-events-none w-full opacity-100">
                 <TimezoneRow
                   display={activeDisplay}
                   referenceHours={referenceHours}
